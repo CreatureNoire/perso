@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion Factures – Jason & Aurore</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+    color: #1f2937;
+  }
+  h1 {
+    text-align: center;
+    color: #111827;
+    margin-bottom: 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Onglets */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .tab {
+    padding: 12px 20px;
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    width: auto;
+    margin-bottom: -2px;
+  }
+  .tab.active {
+    color: #111827;
+    border-bottom-color: #2563eb;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .forms { grid-template-columns: 1fr; } }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card.jason   { border-top: 4px solid #2563eb; }
+  .card.aurore  { border-top: 4px solid #db2777; }
+  .card h2 { margin: 0 0 12px 0; font-size: 18px; }
+  .card.jason h2  { color: #2563eb; }
+  .card.aurore h2 { color: #db2777; }
+
+  input[type="text"], input[type="number"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  input:focus { outline: none; border-color: #6366f1; }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button:hover { opacity: 0.9; }
+  .card.jason button  { background: #2563eb; }
+  .card.aurore button { background: #db2777; }
+
+  /* Bloc salaires */
+  .salaires-box {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .salaires-box h3 { margin: 0 0 12px 0; font-size: 16px; }
+  .salaires-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  @media (max-width: 700px) { .salaires-grid { grid-template-columns: 1fr; } }
+  .salaires-grid label {
+    font-size: 13px;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .salaires-grid input { margin-bottom: 0; }
+  .salaires-grid button { width: auto; padding: 10px 20px; }
+  .ratio-info {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  .bilan {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .bilan .solde {
+    font-size: 22px;
+    font-weight: 700;
+    color: #059669;
+    margin: 0;
+  }
+
+  .table-wrap {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  tr.paye { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+  tr.paye td { color: #9ca3af; }
+  tr.paye .actions button { opacity: 0.5; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.jason  { background: #dbeafe; color: #2563eb; }
+  .badge.aurore { background: #fce7f3; color: #db2777; }
+
+  .actions button {
+    width: auto;
+    padding: 6px 10px;
+    margin-right: 4px;
+    font-size: 14px;
+    background: #e5e7eb;
+    color: #111827;
+  }
+  .actions button.delete { background: #fee2e2; color: #dc2626; }
+
+  input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+  .empty { text-align: center; padding: 30px; color: #9ca3af; }
+  .config-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* Écran de connexion */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #2563eb 0%, #db2777 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  #login-box {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  #login-box h2 { margin: 0 0 8px 0; color: #111827; }
+  #login-box p { color: #6b7280; margin: 0 0 20px 0; font-size: 14px; }
+  #login-error { color: #dc2626; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  #app-content { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN DE CONNEXION -->
+<div id="login-overlay">
+  <div id="login-box">
+    <h2>🔒 Connexion</h2>
+    <p>Accès réservé à Jason & Aurore</p>
+    <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+    <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+    <button id="login-btn">Se connecter</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<div class="container" id="app-content">
+  <h1>💰 Gestion des Comptes
+    <button id="logout-btn" style="width:auto; padding:6px 12px; font-size:13px; background:#6b7280; margin-left:12px;">Déconnexion</button>
+  </h1>
+
+  <div id="warning" class="config-warning">
+    ⚠️ Configure d'abord ton Firebase dans le code (cherche <code>firebaseConfig</code>).
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="factures">🏠 Factures de la maison</button>
+    <button class="tab" data-tab="depenses">💸 Dépenses</button>
+  </div>
+
+  <!-- ============== ONGLET FACTURES MAISON (70/30) ============== -->
+  <div class="tab-content active" id="tab-factures">
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason (paye 70%)</h2>
+        <input type="text" id="desc-jason" placeholder="Facture pour ?">
+        <input type="number" id="montant-jason" placeholder="Montant €" step="0.01" min="0">
+        <button id="btn-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore (paye 30%)</h2>
+        <input type="text" id="desc-aurore" placeholder="Facture pour ?">
+        <input type="number" id="montant-aurore" placeholder="Montant €" step="0.01" min="0">
+        <button id="btn-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-factures">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-factures">
+          <tr><td colspan="7" class="empty">Aucune facture pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== ONGLET DÉPENSES (prorata salaires) ============== -->
+  <div class="tab-content" id="tab-depenses">
+
+    <div class="salaires-box">
+      <h3>💼 Salaires (base du calcul au prorata)</h3>
+      <div class="salaires-grid">
+        <div>
+          <label>Salaire Jason (€/mois)</label>
+          <input type="number" id="sal-jason" placeholder="Ex: 2000" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Salaire Aurore (€/mois)</label>
+          <input type="number" id="sal-aurore" placeholder="Ex: 1500" step="0.01" min="0">
+        </div>
+        <button id="btn-salaires">Enregistrer</button>
+      </div>
+      <p class="ratio-info" id="ratio-info">Renseigne les salaires pour activer le calcul au prorata.</p>
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason a payé</h2>
+        <input type="text" id="desc-dep-jason" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-jason" placeholder="Montant €" step="0.01" min="0">
+        <button id="btn-dep-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore a payé</h2>
+        <input type="text" id="desc-dep-aurore" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-aurore" placeholder="Montant €" step="0.01" min="0">
+        <button id="btn-dep-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-depenses">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-depenses">
+          <tr><td colspan="7" class="empty">Aucune dépense pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import {
+    getDatabase, ref, push, onValue, update, remove, set
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+  import {
+    getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+  // ============================================================
+  // 🔧 REMPLACE CETTE CONFIG PAR LA TIENNE (Firebase console)
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "TON_API_KEY",
+    authDomain: "TON_PROJET.firebaseapp.com",
+    databaseURL: "https://TON_PROJET-default-rtdb.firebaseio.com",
+    projectId: "TON_PROJET",
+    storageBucket: "TON_PROJET.appspot.com",
+    messagingSenderId: "XXXXX",
+    appId: "XXXXX"
+  };
+  // ============================================================
+
+  if (firebaseConfig.apiKey === "TON_API_KEY") {
+    document.getElementById('warning').style.display = 'block';
+  }
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
+
+  const facturesRef = ref(db, 'factures');
+  const depensesRef = ref(db, 'depenses');
+  const salairesRef = ref(db, 'salaires');
+
+  let facturesCache = {};
+  let depensesCache = {};
+  let salaires = { jason: 0, aurore: 0 };
+  let unsubFact = null, unsubDep = null, unsubSal = null;
+
+  // ===== ONGLETS =====
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ===== AUTHENTIFICATION =====
+  const loginOverlay = document.getElementById('login-overlay');
+  const appContent   = document.getElementById('app-content');
+  const emailInput   = document.getElementById('login-email');
+  const passwordInput= document.getElementById('login-password');
+  const loginError   = document.getElementById('login-error');
+
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+  emailInput.addEventListener('keydown',    e => { if (e.key === 'Enter') passwordInput.focus(); });
+
+  async function tryLogin() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) { loginError.textContent = 'Renseigne email et mot de passe'; return; }
+    loginError.textContent = '';
+    try { await signInWithEmailAndPassword(auth, email, password); }
+    catch (err) {
+      console.error(err);
+      if (['auth/invalid-credential','auth/wrong-password','auth/user-not-found'].includes(err.code))
+        loginError.textContent = 'Email ou mot de passe incorrect';
+      else if (err.code === 'auth/too-many-requests')
+        loginError.textContent = 'Trop de tentatives, réessaie plus tard';
+      else loginError.textContent = 'Erreur : ' + err.message;
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginOverlay.style.display = 'none';
+      appContent.style.display = 'block';
+      passwordInput.value = '';
+      demarrerEcoutes();
+    } else {
+      loginOverlay.style.display = 'flex';
+      appContent.style.display = 'none';
+      [unsubFact, unsubDep, unsubSal].forEach(u => u && u());
+      unsubFact = unsubDep = unsubSal = null;
+    }
+  });
+
+  // ===== AJOUT FACTURES MAISON (70/30) =====
+  function ajouterFacture(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-jason' : 'desc-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-jason' : 'montant-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    if (!description) { alert('Indique pour quoi est la facture.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    push(facturesRef, { payeur: personne, description, montant, date: Date.now(), paye: false });
+    descEl.value = ''; montEl.value = ''; descEl.focus();
+  }
+  document.getElementById('btn-jason').addEventListener('click',  () => ajouterFacture('Jason'));
+  document.getElementById('btn-aurore').addEventListener('click', () => ajouterFacture('Aurore'));
+
+  // ===== AJOUT DÉPENSES (prorata) =====
+  function ajouterDepense(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-dep-jason' : 'desc-dep-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-dep-jason' : 'montant-dep-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    if (!description) { alert('Indique pour quoi est la dépense.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    push(depensesRef, { payeur: personne, description, montant, date: Date.now(), paye: false });
+    descEl.value = ''; montEl.value = ''; descEl.focus();
+  }
+  document.getElementById('btn-dep-jason').addEventListener('click',  () => ajouterDepense('Jason'));
+  document.getElementById('btn-dep-aurore').addEventListener('click', () => ajouterDepense('Aurore'));
+
+  // ===== SALAIRES =====
+  document.getElementById('btn-salaires').addEventListener('click', () => {
+    const sj = parseFloat(document.getElementById('sal-jason').value);
+    const sa = parseFloat(document.getElementById('sal-aurore').value);
+    if (isNaN(sj) || sj < 0 || isNaN(sa) || sa < 0) { alert('Salaires invalides'); return; }
+    set(salairesRef, { jason: sj, aurore: sa });
+  });
+
+  // ===== ACTIONS sur les 2 tableaux (délégation) =====
+  function setupTableActions(tbodyId, dbPath, cache) {
+    const tbody = document.getElementById(tbodyId);
+    tbody.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"][data-id]')) {
+        update(ref(db, dbPath + '/' + e.target.dataset.id), { paye: e.target.checked });
+      }
+    });
+    tbody.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const item = cache()[id];
+      if (!item) return;
+      if (btn.dataset.action === 'edit') {
+        const nd = prompt('Description :', item.description);
+        if (nd === null) return;
+        const nm = prompt('Montant € :', item.montant);
+        if (nm === null) return;
+        const m = parseFloat(nm);
+        if (isNaN(m) || m <= 0) { alert('Montant invalide'); return; }
+        update(ref(db, dbPath + '/' + id), {
+          description: nd.trim() || item.description,
+          montant: m
+        });
+      } else if (btn.dataset.action === 'delete') {
+        if (confirm('Supprimer définitivement ?')) remove(ref(db, dbPath + '/' + id));
+      }
+    });
+  }
+  setupTableActions('tbody-factures', 'factures', () => facturesCache);
+  setupTableActions('tbody-depenses', 'depenses', () => depensesCache);
+
+  // ===== RENDU TABLEAU GÉNÉRIQUE =====
+  function rendreTableau(items, tbodyId, soldeId, partJasonFn, modeProrata) {
+    const tbody = document.getElementById(tbodyId);
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">Rien pour l'instant</td></tr>`;
+      const soldeEl = document.getElementById(soldeId);
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+      return;
+    }
+
+    let jasonDoit = 0, auroreDoit = 0;
+    tbody.innerHTML = '';
+
+    items.forEach(f => {
+      const tr = document.createElement('tr');
+      if (f.paye) tr.classList.add('paye');
+
+      const date = new Date(f.date).toLocaleString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      // Part de Jason dans la dépense (en fraction, ex 0.66)
+      const partJ = partJasonFn();
+      const partA = 1 - partJ;
+
+      let doitA, montantDu;
+      if (f.payeur === 'Jason') {
+        // Jason a avancé : Aurore lui doit sa part
+        doitA = 'Aurore → Jason';
+        montantDu = f.montant * partA;
+        if (!f.paye) auroreDoit += montantDu;
+      } else {
+        // Aurore a avancé : Jason lui doit sa part
+        doitA = 'Jason → Aurore';
+        montantDu = f.montant * partJ;
+        if (!f.paye) jasonDoit += montantDu;
+      }
+
+      const badgeClass = f.payeur === 'Jason' ? 'jason' : 'aurore';
+
+      const tdDate = document.createElement('td'); tdDate.textContent = date;
+      const tdPay = document.createElement('td');
+      tdPay.innerHTML = `<span class="badge ${badgeClass}">${f.payeur}</span>`;
+      const tdDesc = document.createElement('td'); tdDesc.textContent = f.description;
+      const tdMont = document.createElement('td'); tdMont.textContent = f.montant.toFixed(2) + ' €';
+      const tdDoit = document.createElement('td');
+      tdDoit.innerHTML = `${doitA}<br><small><strong>${montantDu.toFixed(2)} €</strong></small>`;
+      const tdChk = document.createElement('td');
+      tdChk.innerHTML = `<input type="checkbox" data-id="${f.id}" ${f.paye ? 'checked' : ''}>`;
+      const tdAct = document.createElement('td');
+      tdAct.className = 'actions';
+      tdAct.innerHTML = `
+        <button data-action="edit" data-id="${f.id}" title="Modifier">✏️</button>
+        <button data-action="delete" data-id="${f.id}" class="delete" title="Supprimer">🗑️</button>
+      `;
+      tr.append(tdDate, tdPay, tdDesc, tdMont, tdDoit, tdChk, tdAct);
+      tbody.appendChild(tr);
+    });
+
+    const net = auroreDoit - jasonDoit;
+    const soldeEl = document.getElementById(soldeId);
+    if (Math.abs(net) < 0.01) {
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+    } else if (net > 0) {
+      soldeEl.textContent = `Aurore doit ${net.toFixed(2)} € à Jason`;
+      soldeEl.style.color = '#2563eb';
+    } else {
+      soldeEl.textContent = `Jason doit ${(-net).toFixed(2)} € à Aurore`;
+      soldeEl.style.color = '#db2777';
+    }
+  }
+
+  // ===== ÉCOUTES TEMPS RÉEL =====
+  function demarrerEcoutes() {
+    if (unsubFact) return;
+
+    // SALAIRES
+    unsubSal = onValue(salairesRef, (snap) => {
+      const data = snap.val();
+      if (data) {
+        salaires = { jason: data.jason || 0, aurore: data.aurore || 0 };
+        document.getElementById('sal-jason').value = salaires.jason || '';
+        document.getElementById('sal-aurore').value = salaires.aurore || '';
+        const total = salaires.jason + salaires.aurore;
+        const info = document.getElementById('ratio-info');
+        if (total > 0) {
+          const pj = (salaires.jason / total * 100).toFixed(1);
+          const pa = (salaires.aurore / total * 100).toFixed(1);
+          info.innerHTML = `Ratio : Jason <strong>${pj}%</strong> / Aurore <strong>${pa}%</strong> des dépenses`;
+        } else {
+          info.textContent = 'Renseigne les salaires pour activer le calcul au prorata.';
+        }
+      }
+      // Re-rendre les dépenses car le ratio a peut-être changé
+      rendreDepenses();
+    });
+
+    // FACTURES (70/30 fixe)
+    unsubFact = onValue(facturesRef, (snap) => {
+      const data = snap.val() || {};
+      facturesCache = data;
+      const items = Object.entries(data).map(([id, f]) => ({ id, ...f }));
+      items.sort((a, b) => b.date - a.date);
+      rendreTableau(items, 'tbody-factures', 'solde-factures', () => 0.70);
+    });
+
+    // DÉPENSES (prorata)
+    unsubDep = onValue(depensesRef, (snap) => {
+      const data = snap.val() || {};
+      depensesCache = data;
+      rendreDepenses();
+    });
+  }
+
+  function rendreDepenses() {
+    const items = Object.entries(depensesCache).map(([id, f]) => ({ id, ...f }));
+    items.sort((a, b) => b.date - a.date);
+    rendreTableau(items, 'tbody-depenses', 'solde-depenses', () => {
+      const total = salaires.jason + salaires.aurore;
+      if (total <= 0) return 0.5; // 50/50 par défaut si pas de salaires
+      return salaires.jason / total;
+    });
+  }
+</script>
+</body>
+</html>
