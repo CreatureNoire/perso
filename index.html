@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion Factures – Jason & Aurore</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+    color: #1f2937;
+  }
+  h1 {
+    text-align: center;
+    color: #111827;
+    margin-bottom: 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Onglets */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .tab {
+    padding: 12px 20px;
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    width: auto;
+    margin-bottom: -2px;
+  }
+  .tab.active {
+    color: #111827;
+    border-bottom-color: #2563eb;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .forms { grid-template-columns: 1fr; } }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card.jason   { border-top: 4px solid #2563eb; }
+  .card.aurore  { border-top: 4px solid #db2777; }
+  .card h2 { margin: 0 0 12px 0; font-size: 18px; }
+  .card.jason h2  { color: #2563eb; }
+  .card.aurore h2 { color: #db2777; }
+
+  input[type="text"], input[type="number"], input[type="email"],
+  input[type="password"], input[type="date"], input[type="month"],
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, textarea:focus { outline: none; border-color: #6366f1; }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button:hover { opacity: 0.9; }
+  .card.jason button  { background: #2563eb; }
+  .card.aurore button { background: #db2777; }
+
+  /* Bloc salaires / libellés / filtre */
+  .salaires-box, .libelles-box, .filtre-box {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .salaires-box h3, .libelles-box h3, .filtre-box h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+  }
+  .salaires-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  @media (max-width: 700px) { .salaires-grid { grid-template-columns: 1fr; } }
+  .salaires-grid label {
+    font-size: 13px;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .salaires-grid input { margin-bottom: 0; }
+  .salaires-grid button { width: auto; padding: 10px 20px; }
+  .ratio-info {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  /* Libellés rapides */
+  .libelles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    min-height: 36px;
+  }
+  .libelle-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    padding: 0;
+    font-size: 13px;
+    overflow: hidden;
+    transition: all 0.15s;
+  }
+  .libelle-chip:hover { background: #e0e7ff; border-color: #6366f1; }
+  .libelle-chip .lib-name {
+    padding: 6px 4px 6px 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .libelle-chip .lib-remove {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    padding: 6px 10px 6px 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: auto;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .libelle-chip .lib-remove:hover { color: #dc2626; }
+  .empty-libelles {
+    color: #9ca3af;
+    font-size: 13px;
+    font-style: italic;
+    padding: 8px 0;
+  }
+  .add-libelle {
+    display: flex;
+    gap: 8px;
+  }
+  .add-libelle input { margin-bottom: 0; flex: 1; }
+  .add-libelle button { width: auto; padding: 10px 16px; }
+
+  /* Filtre par mois */
+  .filtre-grid {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filtre-grid input { margin-bottom: 0; width: auto; flex: 0 0 auto; }
+  .filtre-grid button { width: auto; padding: 10px 16px; background: #6b7280; }
+  .filtre-grid .total-mois {
+    margin-left: auto;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+  }
+  @media (max-width: 700px) {
+    .filtre-grid .total-mois { margin-left: 0; width: 100%; text-align: center; }
+  }
+
+  .bilan {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .bilan .solde {
+    font-size: 22px;
+    font-weight: 700;
+    color: #059669;
+    margin: 0;
+  }
+
+  .table-wrap {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  tr.paye { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+  tr.paye td { color: #9ca3af; }
+  tr.paye .actions button { opacity: 0.5; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.jason  { background: #dbeafe; color: #2563eb; }
+  .badge.aurore { background: #fce7f3; color: #db2777; }
+
+  .comment-line {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .remb-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .remb-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
+
+  .montant-remb { color: #059669; font-weight: 700; }
+  .badge.remb {
+    background: #d1fae5;
+    color: #059669;
+    margin-left: 4px;
+  }
+
+  .actions button {
+    width: auto;
+    padding: 6px 10px;
+    margin-right: 4px;
+    font-size: 14px;
+    background: #e5e7eb;
+    color: #111827;
+  }
+  .actions button.delete { background: #fee2e2; color: #dc2626; }
+
+  input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+  .empty { text-align: center; padding: 30px; color: #9ca3af; }
+  .config-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* Écran de connexion */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #2563eb 0%, #db2777 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  #login-box {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  #login-box h2 { margin: 0 0 8px 0; color: #111827; }
+  #login-box p { color: #6b7280; margin: 0 0 20px 0; font-size: 14px; }
+  #login-error { color: #dc2626; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  #app-content { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN DE CONNEXION -->
+<div id="login-overlay">
+  <div id="login-box">
+    <h2>🔒 Connexion</h2>
+    <p>Accès réservé à Jason & Aurore</p>
+    <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+    <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+    <button id="login-btn">Se connecter</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<div class="container" id="app-content">
+  <h1>💰 Gestion des Comptes
+    <button id="logout-btn" style="width:auto; padding:6px 12px; font-size:13px; background:#6b7280; margin-left:12px;">Déconnexion</button>
+  </h1>
+
+  <div id="warning" class="config-warning">
+    ⚠️ Configure d'abord ton Firebase dans le code (cherche <code>firebaseConfig</code>).
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="factures">🏠 Factures de la maison</button>
+    <button class="tab" data-tab="depenses">💸 Dépenses</button>
+  </div>
+
+  <!-- ============== ONGLET FACTURES MAISON (70/30) ============== -->
+  <div class="tab-content active" id="tab-factures">
+
+    <!-- LIBELLÉS RAPIDES (factures) -->
+    <div class="libelles-box">
+      <h3>🏷️ Enseignes à choix rapide (clique pour pré-remplir)</h3>
+      <div class="libelles-list" id="libelles-list-factures">
+        <span class="empty-libelles">Aucune enseigne. Ajoute "EDF", "Free", "Veolia"…</span>
+      </div>
+      <div class="add-libelle">
+        <input type="text" id="new-libelle-factures" placeholder="Nouvelle enseigne" maxlength="30">
+        <button id="btn-add-libelle-factures">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason (paye 70%)</h2>
+        <input type="text" id="desc-jason" placeholder="Facture pour ?">
+        <input type="number" id="montant-jason" placeholder="Montant €" step="0.01" min="0">
+        <textarea id="comm-jason" placeholder="Commentaire (optionnel)"></textarea>
+        <label class="remb-label">
+          <input type="checkbox" id="remb-jason"> 💶 Remboursement reçu (avoir, retour magasin…)
+        </label>
+        <button id="btn-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore (paye 30%)</h2>
+        <input type="text" id="desc-aurore" placeholder="Facture pour ?">
+        <input type="number" id="montant-aurore" placeholder="Montant €" step="0.01" min="0">
+        <textarea id="comm-aurore" placeholder="Commentaire (optionnel)"></textarea>
+        <label class="remb-label">
+          <input type="checkbox" id="remb-aurore"> 💶 Remboursement reçu (avoir, retour magasin…)
+        </label>
+        <button id="btn-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-factures">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-factures">
+          <tr><td colspan="7" class="empty">Aucune facture pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== ONGLET DÉPENSES (prorata salaires) ============== -->
+  <div class="tab-content" id="tab-depenses">
+
+    <div class="salaires-box">
+      <h3>💼 Salaires (base du calcul au prorata)</h3>
+      <div class="salaires-grid">
+        <div>
+          <label>Salaire Jason (€/mois)</label>
+          <input type="number" id="sal-jason" placeholder="Ex: 2000" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Salaire Aurore (€/mois)</label>
+          <input type="number" id="sal-aurore" placeholder="Ex: 1500" step="0.01" min="0">
+        </div>
+        <button id="btn-salaires">Enregistrer</button>
+      </div>
+      <p class="ratio-info" id="ratio-info">Renseigne les salaires pour activer le calcul au prorata.</p>
+    </div>
+
+    <!-- LIBELLÉS RAPIDES (dépenses) -->
+    <div class="libelles-box">
+      <h3>🏷️ Enseignes à choix rapide (clique pour pré-remplir)</h3>
+      <div class="libelles-list" id="libelles-list-depenses">
+        <span class="empty-libelles">Aucune enseigne. Ajoute "Lidl", "SuperU", "Engie"…</span>
+      </div>
+      <div class="add-libelle">
+        <input type="text" id="new-libelle-depenses" placeholder="Nouvelle enseigne" maxlength="30">
+        <button id="btn-add-libelle-depenses">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason a payé</h2>
+        <input type="text" id="desc-dep-jason" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-jason" placeholder="Montant €" step="0.01" min="0">
+        <input type="date" id="date-dep-jason">
+        <textarea id="comm-dep-jason" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-dep-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore a payé</h2>
+        <input type="text" id="desc-dep-aurore" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-aurore" placeholder="Montant €" step="0.01" min="0">
+        <input type="date" id="date-dep-aurore">
+        <textarea id="comm-dep-aurore" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-dep-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <!-- FILTRE PAR MOIS -->
+    <div class="filtre-box">
+      <h3>📅 Filtrer par mois</h3>
+      <div class="filtre-grid">
+        <input type="month" id="filtre-mois">
+        <button id="btn-mois-tous">Tous les mois</button>
+        <div class="total-mois" id="total-mois"></div>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-depenses">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-depenses">
+          <tr><td colspan="7" class="empty">Aucune dépense pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import {
+    getDatabase, ref, push, onValue, update, remove, set
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+  import {
+    getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+  // ============================================================
+  // 🔧 CONFIG FIREBASE
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1ZbLM6whPsKCzfnNzo8tVgEkTHHU-kSY",
+    authDomain: "perso-4fdd3.firebaseapp.com",
+    databaseURL: "https://perso-4fdd3-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "perso-4fdd3",
+    storageBucket: "perso-4fdd3.firebasestorage.app",
+    messagingSenderId: "197036607768",
+    appId: "1:197036607768:web:a07e4d9dd03300c736f66d"
+  };
+  // ============================================================
+
+  if (firebaseConfig.apiKey === "TON_API_KEY") {
+    document.getElementById('warning').style.display = 'block';
+  }
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
+
+  const facturesRef         = ref(db, 'factures');
+  const depensesRef         = ref(db, 'depenses');
+  const salairesRef         = ref(db, 'salaires');
+  const libellesFacturesRef = ref(db, 'libellesFactures');
+  const libellesDepensesRef = ref(db, 'libellesDepenses');
+
+  let facturesCache = {};
+  let depensesCache = {};
+  let libellesFacturesCache = {};
+  let libellesDepensesCache = {};
+  let salaires = { jason: 0, aurore: 0 };
+  let moisFiltre = todayMonthISO();
+  let unsubFact = null, unsubDep = null, unsubSal = null,
+      unsubLibFact = null, unsubLibDep = null;
+
+  // ===== Helpers =====
+  function todayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function todayMonthISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function dateISOtoTimestamp(dateStr) {
+    if (!dateStr) return Date.now();
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const now = new Date();
+    return new Date(y, m-1, d, now.getHours(), now.getMinutes(), now.getSeconds()).getTime();
+  }
+  function tsToDateISO(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function tsToMonthISO(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  // ===== ONGLETS =====
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ===== AUTHENTIFICATION =====
+  const loginOverlay = document.getElementById('login-overlay');
+  const appContent   = document.getElementById('app-content');
+  const emailInput   = document.getElementById('login-email');
+  const passwordInput= document.getElementById('login-password');
+  const loginError   = document.getElementById('login-error');
+
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+  emailInput.addEventListener('keydown',    e => { if (e.key === 'Enter') passwordInput.focus(); });
+
+  async function tryLogin() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) { loginError.textContent = 'Renseigne email et mot de passe'; return; }
+    loginError.textContent = '';
+    try { await signInWithEmailAndPassword(auth, email, password); }
+    catch (err) {
+      console.error(err);
+      if (['auth/invalid-credential','auth/wrong-password','auth/user-not-found'].includes(err.code))
+        loginError.textContent = 'Email ou mot de passe incorrect';
+      else if (err.code === 'auth/too-many-requests')
+        loginError.textContent = 'Trop de tentatives, réessaie plus tard';
+      else loginError.textContent = 'Erreur : ' + err.message;
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginOverlay.style.display = 'none';
+      appContent.style.display = 'block';
+      passwordInput.value = '';
+      document.getElementById('date-dep-jason').value  = todayISO();
+      document.getElementById('date-dep-aurore').value = todayISO();
+      document.getElementById('filtre-mois').value = moisFiltre;
+      demarrerEcoutes();
+    } else {
+      loginOverlay.style.display = 'flex';
+      appContent.style.display = 'none';
+      [unsubFact, unsubDep, unsubSal, unsubLibFact, unsubLibDep].forEach(u => u && u());
+      unsubFact = unsubDep = unsubSal = unsubLibFact = unsubLibDep = null;
+    }
+  });
+
+  // ===== AJOUT FACTURES MAISON (70/30) =====
+  function ajouterFacture(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-jason' : 'desc-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-jason' : 'montant-aurore');
+    const commEl = document.getElementById(isJ ? 'comm-jason' : 'comm-aurore');
+    const rembEl = document.getElementById(isJ ? 'remb-jason' : 'remb-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    const commentaire = commEl.value.trim();
+    const remboursement = rembEl.checked;
+    if (!description) { alert('Indique pour quoi est la facture.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    push(facturesRef, {
+      payeur: personne, description, montant,
+      commentaire: commentaire || null,
+      remboursement,
+      date: Date.now(), paye: false
+    });
+    descEl.value = ''; montEl.value = ''; commEl.value = '';
+    rembEl.checked = false;
+    descEl.focus();
+  }
+  document.getElementById('btn-jason').addEventListener('click',  () => ajouterFacture('Jason'));
+  document.getElementById('btn-aurore').addEventListener('click', () => ajouterFacture('Aurore'));
+
+  // ===== AJOUT DÉPENSES (prorata + date + commentaire) =====
+  function ajouterDepense(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-dep-jason' : 'desc-dep-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-dep-jason' : 'montant-dep-aurore');
+    const dateEl = document.getElementById(isJ ? 'date-dep-jason' : 'date-dep-aurore');
+    const commEl = document.getElementById(isJ ? 'comm-dep-jason' : 'comm-dep-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    const dateStr = dateEl.value;
+    const commentaire = commEl.value.trim();
+    if (!description) { alert('Indique pour quoi est la dépense.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    const ts = dateISOtoTimestamp(dateStr);
+    push(depensesRef, {
+      payeur: personne, description, montant,
+      commentaire: commentaire || null,
+      date: ts, paye: false
+    });
+    descEl.value = ''; montEl.value = ''; commEl.value = '';
+    dateEl.value = todayISO();
+    descEl.focus();
+  }
+  document.getElementById('btn-dep-jason').addEventListener('click',  () => ajouterDepense('Jason'));
+  document.getElementById('btn-dep-aurore').addEventListener('click', () => ajouterDepense('Aurore'));
+
+  // ===== SALAIRES =====
+  document.getElementById('btn-salaires').addEventListener('click', () => {
+    const sj = parseFloat(document.getElementById('sal-jason').value);
+    const sa = parseFloat(document.getElementById('sal-aurore').value);
+    if (isNaN(sj) || sj < 0 || isNaN(sa) || sa < 0) { alert('Salaires invalides'); return; }
+    set(salairesRef, { jason: sj, aurore: sa });
+  });
+
+  // ===== LIBELLÉS RAPIDES (2 listes séparées) =====
+  function setupAddLibelle(inputId, btnId, dbRef, getCache) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
+    btn.addEventListener('click', () => {
+      const nom = input.value.trim();
+      if (!nom) return;
+      const existe = Object.values(getCache()).some(l => (l.nom || '').toLowerCase() === nom.toLowerCase());
+      if (existe) { alert('Cette enseigne existe déjà dans cet onglet.'); return; }
+      push(dbRef, { nom });
+      input.value = '';
+    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+  }
+  setupAddLibelle('new-libelle-factures', 'btn-add-libelle-factures', libellesFacturesRef, () => libellesFacturesCache);
+  setupAddLibelle('new-libelle-depenses', 'btn-add-libelle-depenses', libellesDepensesRef, () => libellesDepensesCache);
+
+  function rendreListeLibelles(cache, containerId, descJasonId, descAuroreId, dbPath, emptyMsg) {
+    const items = Object.entries(cache).map(([id, l]) => ({ id, nom: l.nom || '' }));
+    items.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+    const list = document.getElementById(containerId);
+    if (items.length === 0) {
+      list.innerHTML = `<span class="empty-libelles">${emptyMsg}</span>`;
+      return;
+    }
+    list.innerHTML = '';
+    items.forEach(l => {
+      const chip = document.createElement('div');
+      chip.className = 'libelle-chip';
+      chip.innerHTML = `<span class="lib-name">${escapeHtml(l.nom)}</span><button class="lib-remove" title="Supprimer">×</button>`;
+      chip.querySelector('.lib-name').addEventListener('click', () => {
+        document.getElementById(descJasonId).value = l.nom;
+        document.getElementById(descAuroreId).value = l.nom;
+      });
+      chip.querySelector('.lib-remove').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Supprimer "${l.nom}" ?`)) remove(ref(db, dbPath + '/' + l.id));
+      });
+      list.appendChild(chip);
+    });
+  }
+
+  function rendreLibellesFactures() {
+    rendreListeLibelles(
+      libellesFacturesCache, 'libelles-list-factures',
+      'desc-jason', 'desc-aurore', 'libellesFactures',
+      'Aucune enseigne. Ajoute "EDF", "Free", "Veolia"…'
+    );
+  }
+  function rendreLibellesDepenses() {
+    rendreListeLibelles(
+      libellesDepensesCache, 'libelles-list-depenses',
+      'desc-dep-jason', 'desc-dep-aurore', 'libellesDepenses',
+      'Aucune enseigne. Ajoute "Lidl", "SuperU", "Engie"…'
+    );
+  }
+
+  // ===== FILTRE PAR MOIS =====
+  document.getElementById('filtre-mois').addEventListener('change', (e) => {
+    moisFiltre = e.target.value;
+    rendreDepenses();
+  });
+  document.getElementById('btn-mois-tous').addEventListener('click', () => {
+    moisFiltre = '';
+    document.getElementById('filtre-mois').value = '';
+    rendreDepenses();
+  });
+
+  // ===== ACTIONS sur les 2 tableaux =====
+  function setupTableActions(tbodyId, dbPath, cache) {
+    const tbody = document.getElementById(tbodyId);
+    tbody.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"][data-id]')) {
+        update(ref(db, dbPath + '/' + e.target.dataset.id), { paye: e.target.checked });
+      }
+    });
+    tbody.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const item = cache()[id];
+      if (!item) return;
+      if (btn.dataset.action === 'edit') {
+        const nd = prompt('Description :', item.description);
+        if (nd === null) return;
+        const nm = prompt('Montant € :', item.montant);
+        if (nm === null) return;
+        const m = parseFloat(nm);
+        if (isNaN(m) || m <= 0) { alert('Montant invalide'); return; }
+        const nc = prompt('Commentaire (laisse vide pour aucun) :', item.commentaire || '');
+        if (nc === null) return;
+        const updateObj = {
+          description: nd.trim() || item.description,
+          montant: m,
+          commentaire: nc.trim() || null
+        };
+        if (dbPath === 'factures') {
+          const estRemb = !!item.remboursement;
+          const rep = confirm(
+            estRemb
+              ? 'Cette ligne est un REMBOURSEMENT.\n\nOK = garder en remboursement\nAnnuler = transformer en facture normale'
+              : 'Cette ligne est une FACTURE normale.\n\nOK = garder en facture\nAnnuler = transformer en remboursement'
+          );
+          updateObj.remboursement = estRemb ? rep : !rep;
+        }
+        if (dbPath === 'depenses') {
+          const currentDateISO = tsToDateISO(item.date);
+          const ndate = prompt('Date (AAAA-MM-JJ) :', currentDateISO);
+          if (ndate === null) return;
+          const trimmed = ndate.trim();
+          if (trimmed && /^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+            updateObj.date = dateISOtoTimestamp(trimmed);
+          } else if (trimmed) {
+            alert('Date au mauvais format, conservée à l\'identique.');
+          }
+        }
+        update(ref(db, dbPath + '/' + id), updateObj);
+      } else if (btn.dataset.action === 'delete') {
+        if (confirm('Supprimer définitivement ?')) remove(ref(db, dbPath + '/' + id));
+      }
+    });
+  }
+  setupTableActions('tbody-factures', 'factures', () => facturesCache);
+  setupTableActions('tbody-depenses', 'depenses', () => depensesCache);
+
+  // ===== RENDU TABLEAU =====
+  function rendreTableau(items, tbodyId, soldeId, partJasonFn) {
+    const tbody = document.getElementById(tbodyId);
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">Rien pour cette période</td></tr>`;
+      const soldeEl = document.getElementById(soldeId);
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+      return { jasonDoit: 0, auroreDoit: 0, totalDepense: 0 };
+    }
+
+    let jasonDoit = 0, auroreDoit = 0, totalDepense = 0;
+    tbody.innerHTML = '';
+
+    items.forEach(f => {
+      const tr = document.createElement('tr');
+      if (f.paye) tr.classList.add('paye');
+
+      const date = new Date(f.date).toLocaleDateString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+
+      const partJ = partJasonFn();
+      const partA = 1 - partJ;
+      const isRemb = !!f.remboursement;
+
+      let doitA, montantDu;
+      if (f.payeur === 'Jason') {
+        if (isRemb) {
+          // Jason a reçu un remboursement : il doit reverser sa part à Aurore
+          doitA = 'Jason → Aurore';
+          montantDu = f.montant * partA;
+          if (!f.paye) jasonDoit += montantDu;
+        } else {
+          doitA = 'Aurore → Jason';
+          montantDu = f.montant * partA;
+          if (!f.paye) auroreDoit += montantDu;
+        }
+      } else {
+        if (isRemb) {
+          // Aurore a reçu un remboursement : elle doit reverser sa part à Jason
+          doitA = 'Aurore → Jason';
+          montantDu = f.montant * partJ;
+          if (!f.paye) auroreDoit += montantDu;
+        } else {
+          doitA = 'Jason → Aurore';
+          montantDu = f.montant * partJ;
+          if (!f.paye) jasonDoit += montantDu;
+        }
+      }
+      totalDepense += isRemb ? -f.montant : f.montant;
+
+      const badgeClass = f.payeur === 'Jason' ? 'jason' : 'aurore';
+      const tdDate = document.createElement('td'); tdDate.textContent = date;
+      const tdPay = document.createElement('td');
+      tdPay.innerHTML = `<span class="badge ${badgeClass}">${f.payeur}</span>` +
+        (isRemb ? `<span class="badge remb">💶 Remb.</span>` : '');
+      const tdDesc = document.createElement('td');
+      tdDesc.innerHTML = escapeHtml(f.description) +
+        (f.commentaire ? `<span class="comment-line">💬 ${escapeHtml(f.commentaire)}</span>` : '');
+      const tdMont = document.createElement('td');
+      if (isRemb) {
+        tdMont.innerHTML = `<span class="montant-remb">+${f.montant.toFixed(2)} €</span>`;
+      } else {
+        tdMont.textContent = f.montant.toFixed(2) + ' €';
+      }
+      const tdDoit = document.createElement('td');
+      tdDoit.innerHTML = `${doitA}<br><small><strong>${montantDu.toFixed(2)} €</strong></small>`;
+      const tdChk = document.createElement('td');
+      tdChk.innerHTML = `<input type="checkbox" data-id="${f.id}" ${f.paye ? 'checked' : ''}>`;
+      const tdAct = document.createElement('td');
+      tdAct.className = 'actions';
+      tdAct.innerHTML = `
+        <button data-action="edit" data-id="${f.id}" title="Modifier">✏️</button>
+        <button data-action="delete" data-id="${f.id}" class="delete" title="Supprimer">🗑️</button>
+      `;
+      tr.append(tdDate, tdPay, tdDesc, tdMont, tdDoit, tdChk, tdAct);
+      tbody.appendChild(tr);
+    });
+
+    const net = auroreDoit - jasonDoit;
+    const soldeEl = document.getElementById(soldeId);
+    if (Math.abs(net) < 0.01) {
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+    } else if (net > 0) {
+      soldeEl.textContent = `Aurore doit ${net.toFixed(2)} € à Jason`;
+      soldeEl.style.color = '#2563eb';
+    } else {
+      soldeEl.textContent = `Jason doit ${(-net).toFixed(2)} € à Aurore`;
+      soldeEl.style.color = '#db2777';
+    }
+    return { jasonDoit, auroreDoit, totalDepense };
+  }
+
+  // ===== ÉCOUTES TEMPS RÉEL =====
+  function demarrerEcoutes() {
+    if (unsubFact) return;
+
+    unsubSal = onValue(salairesRef, (snap) => {
+      const data = snap.val();
+      if (data) {
+        salaires = { jason: data.jason || 0, aurore: data.aurore || 0 };
+        document.getElementById('sal-jason').value = salaires.jason || '';
+        document.getElementById('sal-aurore').value = salaires.aurore || '';
+        const total = salaires.jason + salaires.aurore;
+        const info = document.getElementById('ratio-info');
+        if (total > 0) {
+          const pj = (salaires.jason / total * 100).toFixed(1);
+          const pa = (salaires.aurore / total * 100).toFixed(1);
+          info.innerHTML = `Ratio : Jason <strong>${pj}%</strong> / Aurore <strong>${pa}%</strong> des dépenses`;
+        } else {
+          info.textContent = 'Renseigne les salaires pour activer le calcul au prorata.';
+        }
+      }
+      rendreDepenses();
+    });
+
+    unsubFact = onValue(facturesRef, (snap) => {
+      const data = snap.val() || {};
+      facturesCache = data;
+      const items = Object.entries(data).map(([id, f]) => ({ id, ...f }));
+      items.sort((a, b) => b.date - a.date);
+      rendreTableau(items, 'tbody-factures', 'solde-factures', () => 0.70);
+    });
+
+    unsubDep = onValue(depensesRef, (snap) => {
+      depensesCache = snap.val() || {};
+      rendreDepenses();
+    });
+
+    unsubLibFact = onValue(libellesFacturesRef, (snap) => {
+      libellesFacturesCache = snap.val() || {};
+      rendreLibellesFactures();
+    });
+    unsubLibDep = onValue(libellesDepensesRef, (snap) => {
+      libellesDepensesCache = snap.val() || {};
+      rendreLibellesDepenses();
+    });
+  }
+
+  function rendreDepenses() {
+    let items = Object.entries(depensesCache).map(([id, f]) => ({ id, ...f }));
+    if (moisFiltre) {
+      items = items.filter(f => tsToMonthISO(f.date) === moisFiltre);
+    }
+    items.sort((a, b) => b.date - a.date);
+
+    const partJ = () => {
+      const total = salaires.jason + salaires.aurore;
+      if (total <= 0) return 0.5;
+      return salaires.jason / total;
+    };
+
+    const stats = rendreTableau(items, 'tbody-depenses', 'solde-depenses', partJ);
+
+    const totalEl = document.getElementById('total-mois');
+    if (moisFiltre) totalEl.textContent = `Total du mois : ${stats.totalDepense.toFixed(2)} €`;
+    else totalEl.textContent = `Total global : ${stats.totalDepense.toFixed(2)} €`;
+  }
+</script>
+</body>
+</html>
