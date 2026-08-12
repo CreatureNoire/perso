@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comptes Jason & Aurore — Cyan Glass</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+    color: #1f2937;
+  }
+  h1 {
+    text-align: center;
+    color: #111827;
+    margin-bottom: 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Onglets */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .tab {
+    padding: 12px 20px;
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    width: auto;
+    margin-bottom: -2px;
+  }
+  .tab.active {
+    color: #111827;
+    border-bottom-color: #2563eb;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .forms { grid-template-columns: 1fr; } }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card.jason   { border-top: 4px solid #2563eb; }
+  .card.aurore  { border-top: 4px solid #db2777; }
+  .card h2 { margin: 0 0 12px 0; font-size: 18px; }
+  .card.jason h2  { color: #2563eb; }
+  .card.aurore h2 { color: #db2777; }
+
+  input[type="text"], input[type="number"], input[type="email"],
+  input[type="password"], input[type="date"], input[type="month"],
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, textarea:focus { outline: none; border-color: #6366f1; }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button:hover { opacity: 0.9; }
+  .card.jason button  { background: #2563eb; }
+  .card.aurore button { background: #db2777; }
+
+  /* Bloc salaires / libellés / filtre */
+  .salaires-box, .libelles-box, .filtre-box {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .salaires-box h3, .libelles-box h3, .filtre-box h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+  }
+  .salaires-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  @media (max-width: 700px) { .salaires-grid { grid-template-columns: 1fr; } }
+  .salaires-grid label {
+    font-size: 13px;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .salaires-grid input { margin-bottom: 0; }
+  .salaires-grid button { width: auto; padding: 10px 20px; }
+  .ratio-info {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  /* Libellés rapides */
+  .libelles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    min-height: 36px;
+  }
+  .libelle-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    padding: 0;
+    font-size: 13px;
+    overflow: hidden;
+    transition: all 0.15s;
+  }
+  .libelle-chip:hover { background: #e0e7ff; border-color: #6366f1; }
+  .libelle-chip .lib-name {
+    padding: 6px 4px 6px 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .libelle-chip .lib-remove {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    padding: 6px 10px 6px 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: auto;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .libelle-chip .lib-remove:hover { color: #dc2626; }
+  .empty-libelles {
+    color: #9ca3af;
+    font-size: 13px;
+    font-style: italic;
+    padding: 8px 0;
+  }
+  .add-libelle {
+    display: flex;
+    gap: 8px;
+  }
+  .add-libelle input { margin-bottom: 0; flex: 1; }
+  .add-libelle button { width: auto; padding: 10px 16px; }
+
+  /* Filtre par mois */
+  .filtre-grid {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filtre-grid input { margin-bottom: 0; width: auto; flex: 0 0 auto; }
+  .filtre-grid button { width: auto; padding: 10px 16px; background: #6b7280; }
+  .filtre-grid .total-mois {
+    margin-left: auto;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+  }
+  @media (max-width: 700px) {
+    .filtre-grid .total-mois { margin-left: 0; width: 100%; text-align: center; }
+  }
+
+  .bilan {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .bilan .solde {
+    font-size: 22px;
+    font-weight: 700;
+    color: #059669;
+    margin: 0;
+  }
+
+  .table-wrap {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  tr.paye { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+  tr.paye td { color: #9ca3af; }
+  tr.paye .actions button { opacity: 0.5; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.jason  { background: #dbeafe; color: #2563eb; }
+  .badge.aurore { background: #fce7f3; color: #db2777; }
+
+  .comment-line {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .remb-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .remb-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
+
+  .montant-remb { color: #059669; font-weight: 700; }
+  .badge.remb {
+    background: #d1fae5;
+    color: #059669;
+    margin-left: 4px;
+  }
+
+  .badge.pret {
+    background: #ede9fe;
+    color: #6d28d9;
+    margin-left: 4px;
+  }
+
+  .pret-info {
+    background: #f5f3ff;
+    border: 1px solid #c4b5fd;
+    color: #4c1d95;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .pret-info strong { color: #5b21b6; }
+  .pourcentage-label {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 2px 0 5px;
+  }
+
+  .actions button {
+    width: auto;
+    padding: 6px 10px;
+    margin-right: 4px;
+    font-size: 14px;
+    background: #e5e7eb;
+    color: #111827;
+  }
+  .actions button.delete { background: #fee2e2; color: #dc2626; }
+
+  input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+  .empty { text-align: center; padding: 30px; color: #9ca3af; }
+  .config-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* Écran de connexion */
+  #login-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #2563eb 0%, #db2777 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  #login-box {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  #login-box h2 { margin: 0 0 8px 0; color: #111827; }
+  #login-box p { color: #6b7280; margin: 0 0 20px 0; font-size: 14px; }
+  #login-error { color: #dc2626; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  #app-content { display: none; }
+</style>
+
+<style id="modern-redesign">
+  :root{
+    --bg:#07111f;
+    --bg2:#0b1729;
+    --panel:#101f34;
+    --panel2:#132640;
+    --line:rgba(255,255,255,.09);
+    --text:#f4f8ff;
+    --muted:#93a4bd;
+    --blue:#5aa2ff;
+    --blue2:#2563eb;
+    --pink:#ff78b5;
+    --pink2:#db2777;
+    --green:#4ee0a4;
+    --violet:#a78bfa;
+    --gold:#ffd66b;
+    --shadow:0 18px 55px rgba(0,0,0,.28);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(circle at 10% -10%,rgba(90,162,255,.24),transparent 34rem),
+      radial-gradient(circle at 95% 4%,rgba(255,120,181,.17),transparent 32rem),
+      linear-gradient(180deg,#06101d 0%,#0a1729 45%,#07111f 100%);
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:-1;
+    background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    background-size:28px 28px;
+    mask-image:linear-gradient(to bottom,black,transparent 80%);
+  }
+
+  .container{max-width:1120px;margin:0 auto;padding:16px 14px 90px}
+
+  /* En-tête */
+  .app-header{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:14px 15px;
+    margin:4px 0 14px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:linear-gradient(145deg,rgba(20,42,70,.90),rgba(9,24,43,.92));
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(16px);
+  }
+  .app-brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .app-mark{
+    width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
+    font-size:1.45rem;flex:0 0 auto;
+    background:linear-gradient(135deg,rgba(90,162,255,.30),rgba(255,120,181,.25));
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:inset 0 1px rgba(255,255,255,.08);
+  }
+  .app-brand h1{margin:0;text-align:left;color:var(--text);font-size:1.22rem;line-height:1.1}
+  .app-brand p{margin:4px 0 0;color:var(--muted);font-size:.73rem}
+  .header-actions{display:flex;align-items:center;gap:8px}
+  .local-status{
+    display:none;
+    padding:7px 9px;border-radius:999px;
+    background:rgba(167,139,250,.13);border:1px solid rgba(167,139,250,.30);
+    color:#ddd2ff;font-size:.68rem;font-weight:800;white-space:nowrap
+  }
+  body.local-mode .local-status{display:inline-flex}
+  #logout-btn{
+    width:auto!important;margin:0!important;padding:8px 10px!important;
+    border-radius:11px!important;background:rgba(255,255,255,.07)!important;
+    color:var(--text)!important;border:1px solid var(--line)!important;
+    font-size:.75rem!important
+  }
+
+  /* Navigation */
+  .tabs{
+    position:sticky;top:8px;z-index:30;
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:8px;margin:0 0 16px;padding:7px;
+    border:1px solid var(--line);border-radius:18px;
+    background:rgba(7,17,31,.88);
+    backdrop-filter:blur(18px);
+    box-shadow:0 12px 35px rgba(0,0,0,.22);
+  }
+  .tab{
+    width:100%;margin:0;padding:11px 8px;
+    border:1px solid transparent!important;border-radius:13px!important;
+    background:transparent!important;color:var(--muted)!important;
+    font-size:.78rem;font-weight:850;line-height:1.2;
+    transition:.16s ease;
+  }
+  .tab:hover{background:rgba(255,255,255,.05)!important;color:var(--text)!important}
+  .tab.active{
+    color:#fff!important;
+    background:linear-gradient(135deg,rgba(90,162,255,.20),rgba(167,139,250,.17))!important;
+    border-color:rgba(90,162,255,.27)!important;
+    box-shadow:inset 0 1px rgba(255,255,255,.06),0 7px 18px rgba(0,0,0,.12)
+  }
+  .tab-content{animation:pageIn .18s ease}
+  @keyframes pageIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+  /* Cartes / blocs */
+  .card,.salaires-box,.libelles-box,.filtre-box,.bilan,.table-wrap,.pret-info{
+    background:linear-gradient(180deg,rgba(17,34,57,.96),rgba(11,26,45,.96))!important;
+    border:1px solid var(--line)!important;
+    color:var(--text)!important;
+    border-radius:20px!important;
+    box-shadow:0 14px 38px rgba(0,0,0,.18)!important;
+  }
+  .card{padding:17px!important;position:relative;overflow:hidden}
+  .card::after{
+    content:"";position:absolute;right:-35px;top:-35px;width:115px;height:115px;border-radius:50%;
+    opacity:.18;filter:blur(1px);pointer-events:none
+  }
+  .card.jason{border-top:1px solid rgba(90,162,255,.45)!important}
+  .card.aurore{border-top:1px solid rgba(255,120,181,.45)!important}
+  .card.jason::after{background:var(--blue)}
+  .card.aurore::after{background:var(--pink)}
+  .card h2{position:relative;z-index:1;margin:0 0 13px!important;font-size:1rem!important;color:var(--text)!important}
+  .card.jason h2::before{content:"🔵 ";font-size:.85rem}
+  .card.aurore h2::before{content:"🌸 ";font-size:.85rem}
+
+  .forms{gap:12px!important;margin-bottom:16px!important}
+  .salaires-box,.libelles-box,.filtre-box{padding:17px!important;margin-bottom:16px!important}
+  .salaires-box h3,.libelles-box h3,.filtre-box h3{color:var(--text)!important;font-size:.94rem!important}
+  .salaires-grid label,.pourcentage-label{color:var(--muted)!important}
+  .ratio-info{color:var(--muted)!important}
+
+  /* Champs */
+  input[type="text"],input[type="number"],input[type="email"],input[type="password"],
+  input[type="date"],input[type="month"],textarea{
+    width:100%;
+    color:var(--text)!important;
+    background:rgba(4,14,27,.72)!important;
+    border:1px solid rgba(255,255,255,.10)!important;
+    border-radius:13px!important;
+    padding:11px 12px!important;
+    margin-bottom:9px!important;
+    outline:none!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+  }
+  input::placeholder,textarea::placeholder{color:#6f819b!important}
+  input:focus,textarea:focus{
+    border-color:rgba(90,162,255,.70)!important;
+    box-shadow:0 0 0 3px rgba(90,162,255,.11)!important
+  }
+  input[type="date"],input[type="month"]{color-scheme:dark}
+
+  button{
+    border:none;border-radius:12px;
+    transition:transform .13s ease,opacity .13s ease,filter .13s ease
+  }
+  button:active{transform:scale(.985)}
+  .card.jason button{
+    background:linear-gradient(135deg,#2f7be8,#5aa2ff)!important;
+    box-shadow:0 8px 20px rgba(37,99,235,.20)
+  }
+  .card.aurore button{
+    background:linear-gradient(135deg,#c72d78,#ff78b5)!important;
+    box-shadow:0 8px 20px rgba(219,39,119,.17)
+  }
+
+  /* Libellés */
+  .libelle-chip{
+    background:rgba(255,255,255,.055)!important;
+    border:1px solid var(--line)!important;
+    color:var(--text)!important
+  }
+  .libelle-chip:hover{background:rgba(90,162,255,.10)!important;border-color:rgba(90,162,255,.28)!important}
+  .libelle-chip .lib-remove{color:var(--muted)!important}
+  .empty-libelles,.comment-line{color:var(--muted)!important}
+
+  /* Prêts */
+  .pret-info{
+    padding:15px 16px!important;
+    background:linear-gradient(135deg,rgba(92,56,170,.18),rgba(17,34,57,.96))!important;
+    border-color:rgba(167,139,250,.26)!important;
+    line-height:1.55!important;color:#d6cafa!important
+  }
+  .pret-info strong{color:#fff!important}
+  .badge.pret{background:rgba(167,139,250,.16)!important;color:#ddd2ff!important}
+
+  /* Bilans */
+  .bilan{
+    padding:18px!important;margin-bottom:16px!important;text-align:center!important;
+    background:linear-gradient(135deg,rgba(78,224,164,.09),rgba(17,34,57,.96))!important
+  }
+  .bilan .solde{font-size:1.08rem!important;letter-spacing:-.01em}
+  .filtre-grid .total-mois{color:#dce8f8!important}
+
+  /* Tableaux */
+  .table-wrap{overflow:auto!important;margin-bottom:16px}
+  table{min-width:760px;color:var(--text)!important}
+  th{
+    position:sticky;top:0;
+    background:#11233b!important;color:#91a6c2!important;
+    border-bottom:1px solid var(--line)!important;
+    font-size:.68rem!important;letter-spacing:.05em
+  }
+  td{border-bottom:1px solid rgba(255,255,255,.06)!important;color:#e8f0fb!important}
+  tbody tr:hover{background:rgba(255,255,255,.025)}
+  tr.paye{background:rgba(255,255,255,.025)!important;color:#708096!important}
+  tr.paye td{color:#708096!important}
+  .badge{border-radius:999px!important;padding:4px 8px!important}
+  .badge.jason{background:rgba(90,162,255,.14)!important;color:#94c4ff!important}
+  .badge.aurore{background:rgba(255,120,181,.14)!important;color:#ffadd2!important}
+  .badge.remb{background:rgba(78,224,164,.12)!important;color:#7ef0c2!important}
+  .actions button{
+    background:rgba(255,255,255,.07)!important;color:#d9e5f5!important;
+    border:1px solid var(--line)!important
+  }
+  .actions button.delete{background:rgba(239,68,68,.11)!important;color:#ff9a9a!important}
+  .montant-remb{color:#75ebbb!important}
+
+  /* Login */
+  #login-overlay{
+    background:
+      radial-gradient(circle at 15% 15%,rgba(90,162,255,.28),transparent 28rem),
+      radial-gradient(circle at 90% 5%,rgba(255,120,181,.22),transparent 28rem),
+      linear-gradient(180deg,#07111f,#0c1a2e)!important;
+    padding:18px!important
+  }
+  #login-box{
+    max-width:390px!important;
+    padding:25px!important;
+    border-radius:25px!important;
+    background:linear-gradient(180deg,rgba(19,38,64,.97),rgba(10,25,44,.98))!important;
+    border:1px solid rgba(255,255,255,.10)!important;
+    box-shadow:0 28px 80px rgba(0,0,0,.40)!important;
+    color:var(--text)!important
+  }
+  .login-mark{
+    width:58px;height:58px;margin:0 auto 13px;border-radius:19px;display:grid;place-items:center;
+    font-size:1.8rem;background:linear-gradient(135deg,rgba(90,162,255,.25),rgba(255,120,181,.20));
+    border:1px solid var(--line)
+  }
+  #login-box h2{color:var(--text)!important;font-size:1.35rem!important}
+  #login-box p{color:var(--muted)!important;line-height:1.45}
+  #login-btn{
+    background:linear-gradient(135deg,#2f7be8,#7c6cf2)!important;
+    box-shadow:0 10px 24px rgba(47,123,232,.24)!important
+  }
+  #login-error{color:#ff9999!important}
+  body.local-mode
+
+  .config-warning{
+    background:rgba(255,214,107,.10)!important;border:1px solid rgba(255,214,107,.24)!important;color:#ffe39a!important
+  }
+
+  @media(max-width:700px){
+    .container{padding:10px 10px 80px}
+    .app-header{border-radius:18px;padding:11px}
+    .app-mark{width:42px;height:42px;border-radius:14px}
+    .app-brand h1{font-size:1.03rem}
+    .app-brand p{display:none}
+    .local-status{display:none!important}
+    #logout-btn{font-size:0!important;width:38px!important;height:38px;padding:0!important}
+    #logout-btn::after{content:"↪";font-size:1rem}
+    .tabs{top:5px;border-radius:16px;gap:5px;padding:5px}
+    .tab{font-size:.68rem;padding:10px 5px}
+    .forms{grid-template-columns:1fr!important}
+    .card,.salaires-box,.libelles-box,.filtre-box,.bilan,.pret-info{border-radius:17px!important}
+    .add-libelle{gap:6px}
+    .add-libelle button{padding:10px 11px}
+    .filtre-grid input{width:100%!important}
+    .filtre-grid button{width:100%!important}
+    .filtre-grid .total-mois{width:100%;text-align:center}
+  }
+
+  @media(max-width:390px){
+    .tab{font-size:.61rem}
+    .app-brand h1{font-size:.96rem}
+  }
+</style>
+
+
+<style>
+</style>
+
+
+<style id="cyan-glass-refresh">
+  :root{
+    --cyan-main:#59f2ff;
+    --cyan-strong:#18d9eb;
+    --cyan-soft:rgba(89,242,255,.16);
+    --blue-accent:#6aa9ff;
+    --violet-accent:#ad8cff;
+    --pink-accent:#ff75b9;
+    --green-accent:#55e6aa;
+    --gold-accent:#ffd369;
+    --red-accent:#ff7b86;
+    --glass-bg:rgba(10,28,48,.72);
+    --glass-bg-strong:rgba(12,35,60,.84);
+    --glass-line:rgba(89,242,255,.22);
+    --glass-line-soft:rgba(255,255,255,.10);
+    --glass-shadow:0 20px 55px rgba(0,0,0,.34);
+  }
+
+  /* Fond plus cyan tout en restant sombre */
+  body{
+    background:
+      radial-gradient(circle at 12% -5%,rgba(24,217,235,.24),transparent 30rem),
+      radial-gradient(circle at 90% 0%,rgba(106,169,255,.16),transparent 26rem),
+      radial-gradient(circle at 72% 72%,rgba(173,140,255,.10),transparent 28rem),
+      linear-gradient(180deg,#04111f 0%,#071827 48%,#06131f 100%)!important;
+  }
+
+  body::before{
+    background-image:
+      linear-gradient(rgba(89,242,255,.022) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(89,242,255,.022) 1px,transparent 1px)!important;
+  }
+
+  /* Header */
+  .app-header{
+    background:
+      linear-gradient(145deg,rgba(12,43,68,.78),rgba(8,27,48,.74))!important;
+    border:1px solid rgba(89,242,255,.24)!important;
+    box-shadow:
+      0 18px 55px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.08)!important;
+    backdrop-filter:blur(22px) saturate(135%)!important;
+  }
+
+  .app-mark{
+    background:
+      linear-gradient(135deg,rgba(89,242,255,.34),rgba(106,169,255,.24),rgba(173,140,255,.20))!important;
+    border-color:rgba(89,242,255,.36)!important;
+    box-shadow:
+      inset 0 1px rgba(255,255,255,.12),
+      0 0 24px rgba(89,242,255,.15)!important;
+  }
+
+  .app-brand h1{
+    color:#f8fdff!important;
+    text-shadow:0 0 16px rgba(89,242,255,.10);
+  }
+
+  /* Navigation davantage cyan */
+  .tabs{
+    background:rgba(5,20,34,.72)!important;
+    border-color:rgba(89,242,255,.20)!important;
+    backdrop-filter:blur(24px) saturate(140%)!important;
+  }
+
+  .tab{
+    color:#9eb4c9!important;
+    border:1px solid transparent!important;
+  }
+
+  .tab:hover{
+    background:rgba(89,242,255,.08)!important;
+    color:#eaffff!important;
+  }
+
+  .tab.active{
+    color:#f7ffff!important;
+    background:
+      linear-gradient(135deg,rgba(89,242,255,.24),rgba(106,169,255,.13))!important;
+    border-color:rgba(89,242,255,.36)!important;
+    box-shadow:
+      inset 0 1px rgba(255,255,255,.08),
+      0 0 18px rgba(89,242,255,.10)!important;
+  }
+
+  /* Panneaux transparents / glass */
+  .card,.salaires-box,.libelles-box,.filtre-box,.bilan,.table-wrap,.pret-info{
+    background:
+      linear-gradient(180deg,rgba(13,39,64,.76),rgba(7,25,43,.68))!important;
+    border:1px solid rgba(89,242,255,.16)!important;
+    box-shadow:
+      0 16px 45px rgba(0,0,0,.24),
+      inset 0 1px 0 rgba(255,255,255,.035)!important;
+    backdrop-filter:blur(20px) saturate(130%)!important;
+  }
+
+  /* Contrastes par catégorie */
+  .card.jason{
+    border-color:rgba(89,242,255,.34)!important;
+    box-shadow:
+      0 16px 45px rgba(0,0,0,.24),
+      inset 4px 0 0 rgba(89,242,255,.55)!important;
+  }
+
+  .card.aurore{
+    border-color:rgba(255,117,185,.30)!important;
+    box-shadow:
+      0 16px 45px rgba(0,0,0,.24),
+      inset 4px 0 0 rgba(255,117,185,.50)!important;
+  }
+
+  .card.jason::after{
+    background:radial-gradient(circle,var(--cyan-main),transparent 66%)!important;
+    opacity:.16!important;
+  }
+
+  .card.aurore::after{
+    background:radial-gradient(circle,var(--pink-accent),transparent 66%)!important;
+    opacity:.15!important;
+  }
+
+  .card.jason h2{color:#bffbff!important}
+  .card.aurore h2{color:#ffd2e8!important}
+
+  /* Bloc salaires = bleu/violet */
+  .salaires-box{
+    background:
+      linear-gradient(135deg,rgba(49,95,145,.18),rgba(83,56,150,.10)),
+      rgba(8,27,46,.70)!important;
+    border-color:rgba(106,169,255,.28)!important;
+  }
+
+  .salaires-box h3{color:#cde3ff!important}
+
+  /* Enseignes = cyan/vert */
+  .libelles-box{
+    background:
+      linear-gradient(135deg,rgba(24,217,235,.10),rgba(85,230,170,.055)),
+      rgba(8,27,46,.70)!important;
+    border-color:rgba(89,242,255,.24)!important;
+  }
+
+  .libelles-box h3{color:#c9fbff!important}
+
+  /* Filtre = violet */
+  .filtre-box{
+    background:
+      linear-gradient(135deg,rgba(173,140,255,.11),rgba(106,169,255,.05)),
+      rgba(8,27,46,.70)!important;
+    border-color:rgba(173,140,255,.24)!important;
+  }
+
+  .filtre-box h3{color:#e2d9ff!important}
+
+  /* Prêts = violet + cyan */
+  .pret-info{
+    background:
+      linear-gradient(135deg,rgba(173,140,255,.16),rgba(89,242,255,.075)),
+      rgba(8,27,46,.72)!important;
+    border-color:rgba(173,140,255,.34)!important;
+    color:#e6ddff!important;
+  }
+
+  .pret-info strong{color:#ffffff!important}
+
+  /* Bilan = vert/cyan très visible */
+  .bilan{
+    background:
+      linear-gradient(135deg,rgba(85,230,170,.14),rgba(89,242,255,.075)),
+      rgba(8,27,46,.72)!important;
+    border-color:rgba(85,230,170,.30)!important;
+  }
+
+  .bilan .solde{
+    color:#91ffd0!important;
+    text-shadow:0 0 14px rgba(85,230,170,.12);
+  }
+
+  /* Champs transparents mais plus contrastés */
+  input[type="text"],input[type="number"],input[type="email"],input[type="password"],
+  input[type="date"],input[type="month"],textarea{
+    background:rgba(2,14,26,.66)!important;
+    border:1px solid rgba(89,242,255,.14)!important;
+    color:#f6fbff!important;
+    backdrop-filter:blur(10px)!important;
+  }
+
+  input:focus,textarea:focus{
+    border-color:rgba(89,242,255,.70)!important;
+    box-shadow:
+      0 0 0 3px rgba(89,242,255,.11),
+      0 0 20px rgba(89,242,255,.07)!important;
+  }
+
+  input::placeholder,textarea::placeholder{
+    color:#748ea8!important;
+  }
+
+  /* Boutons */
+  .card.jason button{
+    background:linear-gradient(135deg,#12c8dc,#4d9fff)!important;
+    color:#031520!important;
+    box-shadow:0 8px 24px rgba(24,217,235,.18)!important;
+  }
+
+  .card.aurore button{
+    background:linear-gradient(135deg,#ff65af,#b77bff)!important;
+    color:#24101c!important;
+    box-shadow:0 8px 24px rgba(255,117,185,.17)!important;
+  }
+
+  .salaires-box button{
+    background:linear-gradient(135deg,#4f8cff,#8878ff)!important;
+  }
+
+  .libelles-box button{
+    background:linear-gradient(135deg,#16c8d7,#43d69d)!important;
+    color:#04211e!important;
+  }
+
+  .filtre-box button{
+    background:linear-gradient(135deg,#7d6aff,#ac7fff)!important;
+  }
+
+  /* Chips / badges plus colorés */
+  .libelle-chip{
+    background:rgba(89,242,255,.055)!important;
+    border-color:rgba(89,242,255,.18)!important;
+  }
+
+  .libelle-chip:hover{
+    background:rgba(89,242,255,.12)!important;
+    border-color:rgba(89,242,255,.38)!important;
+  }
+
+  .badge.jason{
+    background:rgba(89,242,255,.14)!important;
+    color:#b9faff!important;
+    border:1px solid rgba(89,242,255,.20);
+  }
+
+  .badge.aurore{
+    background:rgba(255,117,185,.14)!important;
+    color:#ffc6e1!important;
+    border:1px solid rgba(255,117,185,.20);
+  }
+
+  .badge.pret{
+    background:rgba(173,140,255,.16)!important;
+    color:#e3d8ff!important;
+    border:1px solid rgba(173,140,255,.24);
+  }
+
+  .badge.remb{
+    background:rgba(85,230,170,.14)!important;
+    color:#a6ffd9!important;
+    border:1px solid rgba(85,230,170,.22);
+  }
+
+  /* Tableau plus lisible */
+  .table-wrap{
+    border-color:rgba(89,242,255,.20)!important;
+    background:
+      linear-gradient(180deg,rgba(11,32,54,.76),rgba(6,22,38,.70))!important;
+  }
+
+  th{
+    background:rgba(13,43,70,.92)!important;
+    color:#b9f7ff!important;
+    border-bottom:1px solid rgba(89,242,255,.20)!important;
+    backdrop-filter:blur(14px)!important;
+  }
+
+  td{
+    color:#eef7ff!important;
+    border-bottom-color:rgba(255,255,255,.055)!important;
+  }
+
+  tbody tr:hover{
+    background:rgba(89,242,255,.035)!important;
+  }
+
+  .actions button{
+    background:rgba(89,242,255,.07)!important;
+    border-color:rgba(89,242,255,.15)!important;
+    color:#d6fbff!important;
+  }
+
+  .actions button.delete{
+    background:rgba(255,123,134,.10)!important;
+    border-color:rgba(255,123,134,.18)!important;
+    color:#ffb7be!important;
+  }
+
+  /* Login : vraie modal verre + contraste */
+  #login-overlay{
+    background:
+      radial-gradient(circle at 12% 5%,rgba(24,217,235,.30),transparent 30rem),
+      radial-gradient(circle at 88% 12%,rgba(106,169,255,.18),transparent 28rem),
+      radial-gradient(circle at 65% 88%,rgba(173,140,255,.12),transparent 26rem),
+      linear-gradient(180deg,#03101b,#071a2b)!important;
+  }
+
+  #login-box{
+    background:
+      linear-gradient(160deg,rgba(16,48,77,.78),rgba(8,28,48,.72))!important;
+    border:1px solid rgba(89,242,255,.26)!important;
+    box-shadow:
+      0 28px 80px rgba(0,0,0,.44),
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 0 35px rgba(89,242,255,.07)!important;
+    backdrop-filter:blur(26px) saturate(145%)!important;
+  }
+
+  .login-mark{
+    background:
+      linear-gradient(135deg,rgba(89,242,255,.32),rgba(106,169,255,.22),rgba(173,140,255,.18))!important;
+    border-color:rgba(89,242,255,.34)!important;
+    box-shadow:0 0 24px rgba(89,242,255,.12)!important;
+  }
+
+  #login-btn{
+    background:linear-gradient(135deg,#17cfe0,#4e9df5)!important;
+    color:#03151f!important;
+    box-shadow:0 10px 28px rgba(24,217,235,.18)!important;
+  }
+
+  /* Accent local */
+  body.local-mode
+
+  /* Responsive : contraste renforcé */
+  @media(max-width:700px){
+    .tabs{
+      box-shadow:0 12px 34px rgba(0,0,0,.30)!important;
+    }
+    .card,.salaires-box,.libelles-box,.filtre-box,.bilan,.table-wrap,.pret-info{
+      box-shadow:
+        0 13px 34px rgba(0,0,0,.23),
+        inset 0 1px 0 rgba(255,255,255,.025)!important;
+    }
+  }
+</style>
+
+
+<style id="contrast-sizing-fix">
+  /* Textes secondaires : plus lisibles sur le verre sombre */
+  .remb-label{
+    color:#dcecff!important;
+    font-weight:650;
+    line-height:1.35;
+    padding:9px 10px;
+    margin:1px 0 12px!important;
+    border-radius:12px;
+    background:rgba(89,242,255,.055);
+    border:1px solid rgba(89,242,255,.12);
+  }
+
+  .remb-label input[type="checkbox"]{
+    flex:0 0 auto;
+    accent-color:#59f2ff;
+  }
+
+  .pourcentage-label,
+  .salaires-grid label{
+    color:#c4d6e9!important;
+    font-weight:700!important;
+  }
+
+  .ratio-info{
+    color:#b5c8db!important;
+  }
+
+  .empty-libelles{
+    color:#aebfd1!important;
+  }
+
+  .comment-line{
+    color:#aebfd1!important;
+  }
+
+  .firebase-login-note,
+
+  .pret-info{
+    color:#eee8ff!important;
+  }
+
+  /* Ligne "Nouvelle enseigne" + bouton parfaitement alignés */
+  .add-libelle{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:8px!important;
+    align-items:stretch!important;
+  }
+
+  .add-libelle input{
+    margin:0!important;
+    min-height:46px!important;
+    height:46px!important;
+  }
+
+  .add-libelle button{
+    width:auto!important;
+    min-width:112px!important;
+    min-height:46px!important;
+    height:46px!important;
+    margin:0!important;
+    padding:0 16px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    white-space:nowrap!important;
+    border-radius:13px!important;
+  }
+
+  /* Même logique d'alignement pour les zones à bouton latéral */
+  .salaires-grid{
+    align-items:end!important;
+  }
+
+  .salaires-grid input{
+    min-height:46px!important;
+    height:46px!important;
+    margin-bottom:0!important;
+  }
+
+  .salaires-grid button{
+    min-height:46px!important;
+    height:46px!important;
+    padding:0 18px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  .filtre-grid input,
+  .filtre-grid button{
+    min-height:44px!important;
+  }
+
+  /* Contraste des textes généraux dans les cartes */
+  .card p,
+  .bilan p,
+  .libelles-box p,
+  .salaires-box p,
+  .filtre-box p{
+    color:#c0d1e3;
+  }
+
+  @media(max-width:700px){
+    .add-libelle{
+      grid-template-columns:minmax(0,1fr) 108px!important;
+    }
+    .add-libelle button{
+      min-width:108px!important;
+      padding:0 10px!important;
+      font-size:.78rem!important;
+    }
+  }
+
+  @media(max-width:370px){
+    .add-libelle{
+      grid-template-columns:1fr!important;
+    }
+    .add-libelle button{
+      width:100%!important;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- ÉCRAN DE CONNEXION -->
+<div id="login-overlay">
+  <div id="login-box">
+    <div class="login-mark">💰</div>
+    <h2>Connexion</h2>
+    <p>Accès privé à vos comptes partagés.</p>
+    <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+    <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+    <button id="login-btn">🔐 Se connecter</button>
+<div id="login-error"></div>
+  </div>
+</div>
+
+<div class="container" id="app-content">
+  <header class="app-header">
+    <div class="app-brand">
+      <div class="app-mark">💰</div>
+      <div>
+        <h1>Comptes Jason & Aurore</h1>
+        <p>Factures · prêts · dépenses partagées</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="local-status">👀 Local</span>
+      <button id="logout-btn">Déconnexion</button>
+    </div>
+  </header>
+<div id="warning" class="config-warning">
+    ⚠️ Configure d'abord ton Firebase dans le code (cherche <code>firebaseConfig</code>).
+  </div>
+
+  <!-- ONGLETS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="factures">🏠 Factures de la maison</button>
+    <button class="tab" data-tab="prets">🤝 Prêt d'argent</button>
+    <button class="tab" data-tab="depenses">💸 Dépenses</button>
+  </div>
+
+  <!-- ============== ONGLET FACTURES MAISON (70/30) ============== -->
+  <div class="tab-content active" id="tab-factures">
+
+    <!-- LIBELLÉS RAPIDES (factures) -->
+    <div class="libelles-box">
+      <h3>🏷️ Enseignes à choix rapide (clique pour pré-remplir)</h3>
+      <div class="libelles-list" id="libelles-list-factures">
+        <span class="empty-libelles">Aucune enseigne. Ajoute "EDF", "Free", "Veolia"…</span>
+      </div>
+      <div class="add-libelle">
+        <input type="text" id="new-libelle-factures" placeholder="Nouvelle enseigne" maxlength="30">
+        <button id="btn-add-libelle-factures">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason (paye 70%)</h2>
+        <input type="text" id="desc-jason" placeholder="Facture pour ?">
+        <input type="number" id="montant-jason" placeholder="Montant €" step="0.01" min="0">
+        <textarea id="comm-jason" placeholder="Commentaire (optionnel)"></textarea>
+        <label class="remb-label">
+          <input type="checkbox" id="remb-jason"> 💶 Remboursement reçu (avoir, retour magasin…)
+        </label>
+        <button id="btn-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore (paye 30%)</h2>
+        <input type="text" id="desc-aurore" placeholder="Facture pour ?">
+        <input type="number" id="montant-aurore" placeholder="Montant €" step="0.01" min="0">
+        <textarea id="comm-aurore" placeholder="Commentaire (optionnel)"></textarea>
+        <label class="remb-label">
+          <input type="checkbox" id="remb-aurore"> 💶 Remboursement reçu (avoir, retour magasin…)
+        </label>
+        <button id="btn-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-factures">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur / prêteur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-factures">
+          <tr><td colspan="7" class="empty">Aucune facture pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============== ONGLET PRÊT D'ARGENT ============== -->
+  <div class="tab-content" id="tab-prets">
+    <div class="pret-info">
+      <strong>🤝 Principe :</strong> un prêt est ajouté directement aux <strong>Factures de la maison</strong>
+      et participe au même solde à rembourser. Le pourcentage indique la part du montant qui doit être
+      remboursée : <strong>100 % par défaut</strong>. Exemple : Jason prête 200 € à Aurore à 75 % →
+      Aurore doit 150 € à Jason.
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason prête à Aurore</h2>
+        <input type="text" id="desc-pret-jason" placeholder="Motif du prêt">
+        <input type="number" id="montant-pret-jason" placeholder="Montant prêté €" step="0.01" min="0">
+        <label class="pourcentage-label" for="pct-pret-jason">Pourcentage à rembourser</label>
+        <input type="number" id="pct-pret-jason" value="100" step="1" min="1" max="100">
+        <textarea id="comm-pret-jason" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-pret-jason">+ Ajouter le prêt</button>
+      </div>
+
+      <div class="card aurore">
+        <h2>Aurore prête à Jason</h2>
+        <input type="text" id="desc-pret-aurore" placeholder="Motif du prêt">
+        <input type="number" id="montant-pret-aurore" placeholder="Montant prêté €" step="0.01" min="0">
+        <label class="pourcentage-label" for="pct-pret-aurore">Pourcentage à rembourser</label>
+        <input type="number" id="pct-pret-aurore" value="100" step="1" min="1" max="100">
+        <textarea id="comm-pret-aurore" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-pret-aurore">+ Ajouter le prêt</button>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p style="margin:0; color:#6b7280; font-size:14px;">
+        Les prêts apparaissent dans <strong>🏠 Factures de la maison</strong>, avec un badge 🤝 Prêt
+        et sont intégrés au solde global jusqu'à ce que la case <strong>Payé</strong> soit cochée.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============== ONGLET DÉPENSES (prorata salaires) ============== -->
+  <div class="tab-content" id="tab-depenses">
+
+    <div class="salaires-box">
+      <h3>💼 Salaires (base du calcul au prorata)</h3>
+      <div class="salaires-grid">
+        <div>
+          <label>Salaire Jason (€/mois)</label>
+          <input type="number" id="sal-jason" placeholder="Ex: 2000" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Salaire Aurore (€/mois)</label>
+          <input type="number" id="sal-aurore" placeholder="Ex: 1500" step="0.01" min="0">
+        </div>
+        <button id="btn-salaires">Enregistrer</button>
+      </div>
+      <p class="ratio-info" id="ratio-info">Renseigne les salaires pour activer le calcul au prorata.</p>
+    </div>
+
+    <!-- LIBELLÉS RAPIDES (dépenses) -->
+    <div class="libelles-box">
+      <h3>🏷️ Enseignes à choix rapide (clique pour pré-remplir)</h3>
+      <div class="libelles-list" id="libelles-list-depenses">
+        <span class="empty-libelles">Aucune enseigne. Ajoute "Lidl", "SuperU", "Engie"…</span>
+      </div>
+      <div class="add-libelle">
+        <input type="text" id="new-libelle-depenses" placeholder="Nouvelle enseigne" maxlength="30">
+        <button id="btn-add-libelle-depenses">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="forms">
+      <div class="card jason">
+        <h2>Jason a payé</h2>
+        <input type="text" id="desc-dep-jason" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-jason" placeholder="Montant €" step="0.01" min="0">
+        <input type="date" id="date-dep-jason">
+        <textarea id="comm-dep-jason" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-dep-jason">+ Ajouter</button>
+      </div>
+      <div class="card aurore">
+        <h2>Aurore a payé</h2>
+        <input type="text" id="desc-dep-aurore" placeholder="Dépense pour ?">
+        <input type="number" id="montant-dep-aurore" placeholder="Montant €" step="0.01" min="0">
+        <input type="date" id="date-dep-aurore">
+        <textarea id="comm-dep-aurore" placeholder="Commentaire (optionnel)"></textarea>
+        <button id="btn-dep-aurore">+ Ajouter</button>
+      </div>
+    </div>
+
+    <!-- FILTRE PAR MOIS -->
+    <div class="filtre-box">
+      <h3>📅 Filtrer par mois</h3>
+      <div class="filtre-grid">
+        <input type="month" id="filtre-mois">
+        <button id="btn-mois-tous">Tous les mois</button>
+        <div class="total-mois" id="total-mois"></div>
+      </div>
+    </div>
+
+    <div class="bilan">
+      <p class="solde" id="solde-depenses">✅ Tout est équilibré</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Payeur</th><th>Description</th>
+            <th>Montant</th><th>Qui doit à qui</th><th>Payé</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-depenses">
+          <tr><td colspan="7" class="empty">Aucune dépense pour l'instant</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import {
+    getDatabase, ref, push, onValue, update, remove, set
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+  import {
+    getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+  // ============================================================
+  // 🔧 CONFIG FIREBASE
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1ZbLM6whPsKCzfnNzo8tVgEkTHHU-kSY",
+    authDomain: "perso-4fdd3.firebaseapp.com",
+    databaseURL: "https://perso-4fdd3-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "perso-4fdd3",
+    storageBucket: "perso-4fdd3.firebasestorage.app",
+    messagingSenderId: "197036607768",
+    appId: "1:197036607768:web:a07e4d9dd03300c736f66d"
+  };
+  // ============================================================
+
+  if (firebaseConfig.apiKey === "TON_API_KEY") {
+    document.getElementById('warning').style.display = 'block';
+  }
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
+
+  const facturesRef         = ref(db, 'factures');
+  const depensesRef         = ref(db, 'depenses');
+  const salairesRef         = ref(db, 'salaires');
+  const libellesFacturesRef = ref(db, 'libellesFactures');
+  const libellesDepensesRef = ref(db, 'libellesDepenses');
+
+  let facturesCache = {};
+  let depensesCache = {};
+  let libellesFacturesCache = {};
+  let libellesDepensesCache = {};
+  let salaires = { jason: 0, aurore: 0 };
+  let moisFiltre = todayMonthISO();
+  let unsubFact = null, unsubDep = null, unsubSal = null,
+      unsubLibFact = null, unsubLibDep = null;
+
+  // ===== Helpers =====
+  function todayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function todayMonthISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function dateISOtoTimestamp(dateStr) {
+    if (!dateStr) return Date.now();
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const now = new Date();
+    return new Date(y, m-1, d, now.getHours(), now.getMinutes(), now.getSeconds()).getTime();
+  }
+  function tsToDateISO(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function tsToMonthISO(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  // ===== ONGLETS =====
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ===== AUTHENTIFICATION =====
+  const loginOverlay = document.getElementById('login-overlay');
+  const appContent   = document.getElementById('app-content');
+  const emailInput   = document.getElementById('login-email');
+  const passwordInput= document.getElementById('login-password');
+  const loginError   = document.getElementById('login-error');
+
+
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+  emailInput.addEventListener('keydown',    e => { if (e.key === 'Enter') passwordInput.focus(); });
+
+  async function tryLogin() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    if (!email || !password) { loginError.textContent = 'Renseigne email et mot de passe'; return; }
+    loginError.textContent = '';
+    try { await signInWithEmailAndPassword(auth, email, password); }
+    catch (err) {
+      console.error(err);
+      if (['auth/invalid-credential','auth/wrong-password','auth/user-not-found'].includes(err.code))
+        loginError.textContent = 'Email ou mot de passe incorrect';
+      else if (err.code === 'auth/too-many-requests')
+        loginError.textContent = 'Trop de tentatives, réessaie plus tard';
+      else loginError.textContent = 'Erreur : ' + err.message;
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginOverlay.style.display = 'none';
+      appContent.style.display = 'block';
+      passwordInput.value = '';
+      document.getElementById('date-dep-jason').value  = todayISO();
+      document.getElementById('date-dep-aurore').value = todayISO();
+      document.getElementById('filtre-mois').value = moisFiltre;
+      demarrerEcoutes();
+    } else {
+      loginOverlay.style.display = 'flex';
+      appContent.style.display = 'none';
+      [unsubFact, unsubDep, unsubSal, unsubLibFact, unsubLibDep].forEach(u => u && u());
+      unsubFact = unsubDep = unsubSal = unsubLibFact = unsubLibDep = null;
+    }
+  });
+
+  // ===== AJOUT FACTURES MAISON (70/30) =====
+  function ajouterFacture(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-jason' : 'desc-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-jason' : 'montant-aurore');
+    const commEl = document.getElementById(isJ ? 'comm-jason' : 'comm-aurore');
+    const rembEl = document.getElementById(isJ ? 'remb-jason' : 'remb-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    const commentaire = commEl.value.trim();
+    const remboursement = rembEl.checked;
+    if (!description) { alert('Indique pour quoi est la facture.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    push(facturesRef, {
+      payeur: personne, description, montant,
+      commentaire: commentaire || null,
+      remboursement,
+      date: Date.now(), paye: false
+    });
+    descEl.value = ''; montEl.value = ''; commEl.value = '';
+    rembEl.checked = false;
+    descEl.focus();
+  }
+  document.getElementById('btn-jason').addEventListener('click',  () => ajouterFacture('Jason'));
+  document.getElementById('btn-aurore').addEventListener('click', () => ajouterFacture('Aurore'));
+
+  // ===== AJOUT PRÊT D'ARGENT (intégré aux factures maison) =====
+  function ajouterPret(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-pret-jason' : 'desc-pret-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-pret-jason' : 'montant-pret-aurore');
+    const pctEl  = document.getElementById(isJ ? 'pct-pret-jason' : 'pct-pret-aurore');
+    const commEl = document.getElementById(isJ ? 'comm-pret-jason' : 'comm-pret-aurore');
+
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    const pourcentage = parseFloat(pctEl.value);
+    const commentaire = commEl.value.trim();
+
+    if (!description) { alert('Indique le motif du prêt.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    if (isNaN(pourcentage) || pourcentage <= 0 || pourcentage > 100) {
+      alert('Le pourcentage doit être compris entre 1 et 100 %.');
+      return;
+    }
+
+    push(facturesRef, {
+      type: 'pret',
+      payeur: personne,
+      description,
+      montant,
+      pourcentage,
+      commentaire: commentaire || null,
+      remboursement: false,
+      date: Date.now(),
+      paye: false
+    });
+
+    descEl.value = '';
+    montEl.value = '';
+    pctEl.value = '100';
+    commEl.value = '';
+    descEl.focus();
+  }
+
+  document.getElementById('btn-pret-jason').addEventListener('click',  () => ajouterPret('Jason'));
+  document.getElementById('btn-pret-aurore').addEventListener('click', () => ajouterPret('Aurore'));
+
+  // ===== AJOUT DÉPENSES (prorata + date + commentaire) =====
+  function ajouterDepense(personne) {
+    const isJ = personne === 'Jason';
+    const descEl = document.getElementById(isJ ? 'desc-dep-jason' : 'desc-dep-aurore');
+    const montEl = document.getElementById(isJ ? 'montant-dep-jason' : 'montant-dep-aurore');
+    const dateEl = document.getElementById(isJ ? 'date-dep-jason' : 'date-dep-aurore');
+    const commEl = document.getElementById(isJ ? 'comm-dep-jason' : 'comm-dep-aurore');
+    const description = descEl.value.trim();
+    const montant = parseFloat(montEl.value);
+    const dateStr = dateEl.value;
+    const commentaire = commEl.value.trim();
+    if (!description) { alert('Indique pour quoi est la dépense.'); return; }
+    if (isNaN(montant) || montant <= 0) { alert('Montant invalide.'); return; }
+    const ts = dateISOtoTimestamp(dateStr);
+    push(depensesRef, {
+      payeur: personne, description, montant,
+      commentaire: commentaire || null,
+      date: ts, paye: false
+    });
+    descEl.value = ''; montEl.value = ''; commEl.value = '';
+    dateEl.value = todayISO();
+    descEl.focus();
+  }
+  document.getElementById('btn-dep-jason').addEventListener('click',  () => ajouterDepense('Jason'));
+  document.getElementById('btn-dep-aurore').addEventListener('click', () => ajouterDepense('Aurore'));
+
+  // ===== SALAIRES =====
+  document.getElementById('btn-salaires').addEventListener('click', () => {
+    const sj = parseFloat(document.getElementById('sal-jason').value);
+    const sa = parseFloat(document.getElementById('sal-aurore').value);
+    if (isNaN(sj) || sj < 0 || isNaN(sa) || sa < 0) { alert('Salaires invalides'); return; }
+    set(salairesRef, { jason: sj, aurore: sa });
+  });
+
+  // ===== LIBELLÉS RAPIDES (2 listes séparées) =====
+  function setupAddLibelle(inputId, btnId, dbRef, getCache) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
+    btn.addEventListener('click', () => {
+      const nom = input.value.trim();
+      if (!nom) return;
+      const existe = Object.values(getCache()).some(l => (l.nom || '').toLowerCase() === nom.toLowerCase());
+      if (existe) { alert('Cette enseigne existe déjà dans cet onglet.'); return; }
+      push(dbRef, { nom });
+      input.value = '';
+    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+  }
+  setupAddLibelle('new-libelle-factures', 'btn-add-libelle-factures', libellesFacturesRef, () => libellesFacturesCache);
+  setupAddLibelle('new-libelle-depenses', 'btn-add-libelle-depenses', libellesDepensesRef, () => libellesDepensesCache);
+
+  function rendreListeLibelles(cache, containerId, descJasonId, descAuroreId, dbPath, emptyMsg) {
+    const items = Object.entries(cache).map(([id, l]) => ({ id, nom: l.nom || '' }));
+    items.sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+    const list = document.getElementById(containerId);
+    if (items.length === 0) {
+      list.innerHTML = `<span class="empty-libelles">${emptyMsg}</span>`;
+      return;
+    }
+    list.innerHTML = '';
+    items.forEach(l => {
+      const chip = document.createElement('div');
+      chip.className = 'libelle-chip';
+      chip.innerHTML = `<span class="lib-name">${escapeHtml(l.nom)}</span><button class="lib-remove" title="Supprimer">×</button>`;
+      chip.querySelector('.lib-name').addEventListener('click', () => {
+        document.getElementById(descJasonId).value = l.nom;
+        document.getElementById(descAuroreId).value = l.nom;
+      });
+      chip.querySelector('.lib-remove').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Supprimer "${l.nom}" ?`)) remove(ref(db, dbPath + '/' + l.id));
+      });
+      list.appendChild(chip);
+    });
+  }
+
+  function rendreLibellesFactures() {
+    rendreListeLibelles(
+      libellesFacturesCache, 'libelles-list-factures',
+      'desc-jason', 'desc-aurore', 'libellesFactures',
+      'Aucune enseigne. Ajoute "EDF", "Free", "Veolia"…'
+    );
+  }
+  function rendreLibellesDepenses() {
+    rendreListeLibelles(
+      libellesDepensesCache, 'libelles-list-depenses',
+      'desc-dep-jason', 'desc-dep-aurore', 'libellesDepenses',
+      'Aucune enseigne. Ajoute "Lidl", "SuperU", "Engie"…'
+    );
+  }
+
+  // ===== FILTRE PAR MOIS =====
+  document.getElementById('filtre-mois').addEventListener('change', (e) => {
+    moisFiltre = e.target.value;
+    rendreDepenses();
+  });
+  document.getElementById('btn-mois-tous').addEventListener('click', () => {
+    moisFiltre = '';
+    document.getElementById('filtre-mois').value = '';
+    rendreDepenses();
+  });
+
+  // ===== ACTIONS sur les 2 tableaux =====
+  function setupTableActions(tbodyId, dbPath, cache) {
+    const tbody = document.getElementById(tbodyId);
+    tbody.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"][data-id]')) {
+        update(ref(db, dbPath + '/' + e.target.dataset.id), { paye: e.target.checked });
+      }
+    });
+    tbody.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const item = cache()[id];
+      if (!item) return;
+      if (btn.dataset.action === 'edit') {
+        const nd = prompt('Description :', item.description);
+        if (nd === null) return;
+        const nm = prompt('Montant € :', item.montant);
+        if (nm === null) return;
+        const m = parseFloat(nm);
+        if (isNaN(m) || m <= 0) { alert('Montant invalide'); return; }
+        const nc = prompt('Commentaire (laisse vide pour aucun) :', item.commentaire || '');
+        if (nc === null) return;
+        const updateObj = {
+          description: nd.trim() || item.description,
+          montant: m,
+          commentaire: nc.trim() || null
+        };
+        if (dbPath === 'factures') {
+          if (item.type === 'pret') {
+            const currentPct = Number(item.pourcentage) || 100;
+            const np = prompt('Pourcentage du prêt à rembourser (1 à 100) :', currentPct);
+            if (np === null) return;
+            const pct = parseFloat(np);
+            if (isNaN(pct) || pct <= 0 || pct > 100) {
+              alert('Pourcentage invalide : indique une valeur entre 1 et 100.');
+              return;
+            }
+            updateObj.type = 'pret';
+            updateObj.pourcentage = pct;
+            updateObj.remboursement = false;
+          } else {
+            const estRemb = !!item.remboursement;
+            const rep = confirm(
+              estRemb
+                ? 'Cette ligne est un REMBOURSEMENT.\n\nOK = garder en remboursement\nAnnuler = transformer en facture normale'
+                : 'Cette ligne est une FACTURE normale.\n\nOK = garder en facture\nAnnuler = transformer en remboursement'
+            );
+            updateObj.remboursement = estRemb ? rep : !rep;
+          }
+        }
+        if (dbPath === 'depenses') {
+          const currentDateISO = tsToDateISO(item.date);
+          const ndate = prompt('Date (AAAA-MM-JJ) :', currentDateISO);
+          if (ndate === null) return;
+          const trimmed = ndate.trim();
+          if (trimmed && /^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+            updateObj.date = dateISOtoTimestamp(trimmed);
+          } else if (trimmed) {
+            alert('Date au mauvais format, conservée à l\'identique.');
+          }
+        }
+        update(ref(db, dbPath + '/' + id), updateObj);
+      } else if (btn.dataset.action === 'delete') {
+        if (confirm('Supprimer définitivement ?')) remove(ref(db, dbPath + '/' + id));
+      }
+    });
+  }
+  setupTableActions('tbody-factures', 'factures', () => facturesCache);
+  setupTableActions('tbody-depenses', 'depenses', () => depensesCache);
+
+  // ===== RENDU TABLEAU =====
+  function rendreTableau(items, tbodyId, soldeId, partJasonFn) {
+    const tbody = document.getElementById(tbodyId);
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">Rien pour cette période</td></tr>`;
+      const soldeEl = document.getElementById(soldeId);
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+      return { jasonDoit: 0, auroreDoit: 0, totalDepense: 0 };
+    }
+
+    let jasonDoit = 0, auroreDoit = 0, totalDepense = 0;
+    tbody.innerHTML = '';
+
+    items.forEach(f => {
+      const tr = document.createElement('tr');
+      if (f.paye) tr.classList.add('paye');
+
+      const date = new Date(f.date).toLocaleDateString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+
+      const partJ = partJasonFn();
+      const partA = 1 - partJ;
+      const isPret = f.type === 'pret';
+      const isRemb = !isPret && !!f.remboursement;
+
+      let doitA, montantDu;
+
+      if (isPret) {
+        // Un prêt n'utilise pas le 70/30 : le prêteur récupère le pourcentage choisi.
+        const pct = Math.min(100, Math.max(1, Number(f.pourcentage) || 100)) / 100;
+        montantDu = f.montant * pct;
+
+        if (f.payeur === 'Jason') {
+          doitA = 'Aurore → Jason';
+          if (!f.paye) auroreDoit += montantDu;
+        } else {
+          doitA = 'Jason → Aurore';
+          if (!f.paye) jasonDoit += montantDu;
+        }
+        // Le prêt influe sur le solde entre les deux personnes, mais n'est pas une dépense du foyer.
+      } else if (f.payeur === 'Jason') {
+        if (isRemb) {
+          // Jason a reçu un remboursement : il doit reverser sa part à Aurore
+          doitA = 'Jason → Aurore';
+          montantDu = f.montant * partA;
+          if (!f.paye) jasonDoit += montantDu;
+        } else {
+          doitA = 'Aurore → Jason';
+          montantDu = f.montant * partA;
+          if (!f.paye) auroreDoit += montantDu;
+        }
+      } else {
+        if (isRemb) {
+          // Aurore a reçu un remboursement : elle doit reverser sa part à Jason
+          doitA = 'Aurore → Jason';
+          montantDu = f.montant * partJ;
+          if (!f.paye) auroreDoit += montantDu;
+        } else {
+          doitA = 'Jason → Aurore';
+          montantDu = f.montant * partJ;
+          if (!f.paye) jasonDoit += montantDu;
+        }
+      }
+
+      if (!isPret) totalDepense += isRemb ? -f.montant : f.montant;
+
+      const badgeClass = f.payeur === 'Jason' ? 'jason' : 'aurore';
+      const tdDate = document.createElement('td'); tdDate.textContent = date;
+      const tdPay = document.createElement('td');
+      const pctPret = isPret ? Math.min(100, Math.max(1, Number(f.pourcentage) || 100)) : 100;
+      tdPay.innerHTML = `<span class="badge ${badgeClass}">${isPret ? 'Prêteur : ' : ''}${f.payeur}</span>` +
+        (isPret
+          ? `<span class="badge pret">🤝 Prêt ${pctPret.toFixed(pctPret % 1 ? 1 : 0)}%</span>`
+          : (isRemb ? `<span class="badge remb">💶 Remb.</span>` : ''));
+      const tdDesc = document.createElement('td');
+      tdDesc.innerHTML = escapeHtml(f.description) +
+        (isPret ? `<span class="comment-line">🤝 Prêt d'argent · ${pctPret.toFixed(pctPret % 1 ? 1 : 0)}% à rembourser</span>` : '') +
+        (f.commentaire ? `<span class="comment-line">💬 ${escapeHtml(f.commentaire)}</span>` : '');
+      const tdMont = document.createElement('td');
+      if (isRemb) {
+        tdMont.innerHTML = `<span class="montant-remb">+${f.montant.toFixed(2)} €</span>`;
+      } else {
+        tdMont.textContent = f.montant.toFixed(2) + ' €';
+      }
+      const tdDoit = document.createElement('td');
+      tdDoit.innerHTML = `${doitA}<br><small><strong>${montantDu.toFixed(2)} €</strong></small>`;
+      const tdChk = document.createElement('td');
+      tdChk.innerHTML = `<input type="checkbox" data-id="${f.id}" ${f.paye ? 'checked' : ''}>`;
+      const tdAct = document.createElement('td');
+      tdAct.className = 'actions';
+      tdAct.innerHTML = `
+        <button data-action="edit" data-id="${f.id}" title="Modifier">✏️</button>
+        <button data-action="delete" data-id="${f.id}" class="delete" title="Supprimer">🗑️</button>
+      `;
+      tr.append(tdDate, tdPay, tdDesc, tdMont, tdDoit, tdChk, tdAct);
+      tbody.appendChild(tr);
+    });
+
+    const net = auroreDoit - jasonDoit;
+    const soldeEl = document.getElementById(soldeId);
+    if (Math.abs(net) < 0.01) {
+      soldeEl.textContent = '✅ Tout est équilibré';
+      soldeEl.style.color = '#059669';
+    } else if (net > 0) {
+      soldeEl.textContent = `Aurore doit ${net.toFixed(2)} € à Jason`;
+      soldeEl.style.color = '#2563eb';
+    } else {
+      soldeEl.textContent = `Jason doit ${(-net).toFixed(2)} € à Aurore`;
+      soldeEl.style.color = '#db2777';
+    }
+    return { jasonDoit, auroreDoit, totalDepense };
+  }
+
+  // ===== ÉCOUTES TEMPS RÉEL =====
+  function demarrerEcoutes() {
+    if (unsubFact) return;
+
+    unsubSal = onValue(salairesRef, (snap) => {
+      const data = snap.val();
+      if (data) {
+        salaires = { jason: data.jason || 0, aurore: data.aurore || 0 };
+        document.getElementById('sal-jason').value = salaires.jason || '';
+        document.getElementById('sal-aurore').value = salaires.aurore || '';
+        const total = salaires.jason + salaires.aurore;
+        const info = document.getElementById('ratio-info');
+        if (total > 0) {
+          const pj = (salaires.jason / total * 100).toFixed(1);
+          const pa = (salaires.aurore / total * 100).toFixed(1);
+          info.innerHTML = `Ratio : Jason <strong>${pj}%</strong> / Aurore <strong>${pa}%</strong> des dépenses`;
+        } else {
+          info.textContent = 'Renseigne les salaires pour activer le calcul au prorata.';
+        }
+      }
+      rendreDepenses();
+    });
+
+    unsubFact = onValue(facturesRef, (snap) => {
+      const data = snap.val() || {};
+      facturesCache = data;
+      const items = Object.entries(data).map(([id, f]) => ({ id, ...f }));
+      items.sort((a, b) => b.date - a.date);
+      rendreTableau(items, 'tbody-factures', 'solde-factures', () => 0.70);
+    });
+
+    unsubDep = onValue(depensesRef, (snap) => {
+      depensesCache = snap.val() || {};
+      rendreDepenses();
+    });
+
+    unsubLibFact = onValue(libellesFacturesRef, (snap) => {
+      libellesFacturesCache = snap.val() || {};
+      rendreLibellesFactures();
+    });
+    unsubLibDep = onValue(libellesDepensesRef, (snap) => {
+      libellesDepensesCache = snap.val() || {};
+      rendreLibellesDepenses();
+    });
+  }
+
+  function rendreDepenses() {
+    let items = Object.entries(depensesCache).map(([id, f]) => ({ id, ...f }));
+    if (moisFiltre) {
+      items = items.filter(f => tsToMonthISO(f.date) === moisFiltre);
+    }
+    items.sort((a, b) => b.date - a.date);
+
+    const partJ = () => {
+      const total = salaires.jason + salaires.aurore;
+      if (total <= 0) return 0.5;
+      return salaires.jason / total;
+    };
+
+    const stats = rendreTableau(items, 'tbody-depenses', 'solde-depenses', partJ);
+
+    const totalEl = document.getElementById('total-mois');
+    if (moisFiltre) totalEl.textContent = `Total du mois : ${stats.totalDepense.toFixed(2)} €`;
+    else totalEl.textContent = `Total global : ${stats.totalDepense.toFixed(2)} €`;
+  }
+</script>
+</body>
+</html>
