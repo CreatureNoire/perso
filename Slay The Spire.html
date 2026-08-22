@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111018">
+<meta name="application-name" content="Slay The Spire">
+<meta name="description" content="Guide de règles interactif et gestionnaire de partie pour Slay the Spire : le jeu de plateau.">
+<title>Slay the Spire — Guide de règles interactif</title>
+<style>
+:root{
+  --bg:#0b0b10; --bg2:#14131b; --glass:rgba(25,23,34,.88);
+  --line:rgba(255,255,255,.09); --text:#f5f1ea; --muted:#aaa5b3;
+  --gold:#e5b94d; --red:#d85f56; --green:#5fbd7a; --blue:#5d91d7; --purple:#9b72d2;
+  --danger:#ef756b; --cyan:#6ed6d9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+background:
+radial-gradient(circle at 12% -5%,rgba(216,95,86,.13),transparent 30rem),
+radial-gradient(circle at 88% 0%,rgba(155,114,210,.12),transparent 28rem),
+linear-gradient(180deg,#09090e,#11101a 50%,#0a0a10);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:30px 30px}
+a{color:inherit}
+.app{max-width:1220px;margin:auto;padding:12px 12px 90px}
+.hero{padding:26px 20px;border:1px solid var(--line);border-radius:24px;
+background:linear-gradient(145deg,rgba(39,31,39,.92),rgba(18,18,27,.88));box-shadow:0 22px 70px rgba(0,0,0,.35)}
+.kicker{color:var(--gold);font-size:.72rem;font-weight:900;letter-spacing:.17em;text-transform:uppercase}
+h1{font-size:clamp(1.8rem,7vw,3.3rem);letter-spacing:-.045em;margin:6px 0}
+.hero p{color:var(--muted);max-width:900px;line-height:1.55;margin:7px 0}
+.hero-badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.pill{padding:6px 9px;border-radius:999px;background:rgba(229,185,77,.08);border:1px solid rgba(229,185,77,.18);font-size:.68rem;color:#f3d78e;font-weight:750}
+.copyright-note{margin-top:13px;padding:10px 12px;border-radius:13px;background:rgba(110,214,217,.055);
+border:1px solid rgba(110,214,217,.14);font-size:.7rem;color:#b7dfe1;line-height:1.45}
+.toolbar{position:sticky;top:6px;z-index:50;margin:12px 0;display:flex;gap:7px;padding:7px;
+background:rgba(11,11,16,.90);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(18px)}
+.search{flex:1;min-width:0;border:1px solid rgba(255,255,255,.1);background:#15141c;color:#fff;border-radius:11px;
+padding:10px 12px;outline:none}.search:focus{border-color:rgba(229,185,77,.45)}
+.toolbtn{border:1px solid var(--line);background:#191821;color:#ddd;border-radius:11px;padding:9px 11px;font-weight:800;cursor:pointer}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px}
+.sidebar{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 84px);overflow:auto;padding:12px;
+border:1px solid var(--line);border-radius:18px;background:rgba(20,19,27,.84);backdrop-filter:blur(15px)}
+.sidebar h3{font-size:.72rem;color:#8f8a98;text-transform:uppercase;letter-spacing:.12em;margin:5px 7px 9px}
+.nav a{display:flex;gap:8px;align-items:center;text-decoration:none;padding:8px 9px;border-radius:10px;color:#b9b4bf;font-size:.75rem}
+.nav a:hover,.nav a.active{background:rgba(229,185,77,.08);color:#f6df9f}
+.nav .sub{padding-left:25px;font-size:.7rem}
+.content{min-width:0}
+.chapter{margin-bottom:12px;padding:18px;border:1px solid var(--line);border-radius:20px;
+background:linear-gradient(180deg,rgba(25,23,34,.91),rgba(16,16,23,.91));box-shadow:0 14px 42px rgba(0,0,0,.19)}
+.chapter.hide{display:none}
+.ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:11px;margin-bottom:13px}
+.ch-num{font-size:.65rem;text-transform:uppercase;letter-spacing:.13em;color:var(--gold);font-weight:900}
+h2{font-size:1.3rem;margin:3px 0 0;letter-spacing:-.02em}
+h3{font-size:.95rem;margin:18px 0 7px}
+h4{font-size:.78rem;margin:12px 0 5px;color:#e6d18e}
+p,li{font-size:.78rem;line-height:1.58;color:#cfccd2}
+ul,ol{padding-left:20px;margin:7px 0}
+li{margin:4px 0}
+strong{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.box{padding:11px;border-radius:14px;background:rgba(255,255,255,.026);border:1px solid rgba(255,255,255,.065)}
+.box h3,.box h4{margin-top:0}
+.callout{padding:11px 12px;border-radius:14px;margin:9px 0;font-size:.75rem;line-height:1.5}
+.tip{background:rgba(95,189,122,.07);border:1px solid rgba(95,189,122,.17);color:#ccebd5}
+.warn{background:rgba(239,117,107,.07);border:1px solid rgba(239,117,107,.17);color:#f5c3bf}
+.rule{background:rgba(229,185,77,.07);border:1px solid rgba(229,185,77,.17);color:#ecd99e}
+.info{background:rgba(93,145,215,.07);border:1px solid rgba(93,145,215,.17);color:#c6d6ec}
+.steps{counter-reset:step;display:grid;gap:8px}
+.step{position:relative;padding:11px 11px 11px 45px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025);font-size:.76rem;line-height:1.5;color:#cfccd2}
+.step:before{counter-increment:step;content:counter(step);position:absolute;left:10px;top:10px;width:25px;height:25px;display:grid;place-items:center;border-radius:9px;background:rgba(229,185,77,.12);color:var(--gold);font-weight:950}
+.char{border-left:4px solid var(--accent)}
+.tag{display:inline-flex;padding:3px 6px;border-radius:7px;font-size:.62rem;font-weight:900;background:rgba(255,255,255,.06);color:#d9d6dd;margin:2px}
+table{width:100%;border-collapse:collapse;margin:8px 0;min-width:650px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+th,td{padding:9px;border-bottom:1px solid rgba(255,255,255,.055);text-align:left;font-size:.72rem;vertical-align:top}
+th{background:#24212a;color:#ead590;font-size:.63rem;text-transform:uppercase;letter-spacing:.05em}
+td{color:#ccc8d0}
+details{margin:7px 0;border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.022);overflow:hidden}
+summary{cursor:pointer;padding:10px 11px;font-size:.75rem;font-weight:850;color:#eee}
+details>div{padding:0 11px 10px}
+.keyword-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.keyword{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025)}
+.keyword b{display:block;color:#efd987;font-size:.73rem;margin-bottom:3px}
+.keyword span{color:#bbb6c1;font-size:.7rem;line-height:1.45}
+.quickbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:11px 0}
+.quick{padding:10px;border:1px solid var(--line);border-radius:13px;text-align:center;background:rgba(255,255,255,.025)}
+.quick b{display:block;font-size:1.05rem;color:#fff}.quick span{font-size:.62rem;color:var(--muted)}
+mark{background:#755b18;color:#fff;border-radius:3px;padding:0 2px}
+#noResults{display:none;padding:28px;text-align:center;color:var(--muted)}
+.compact .chapter p,.compact .chapter li{font-size:.72rem;line-height:1.4}
+.compact .chapter{padding:14px}.compact h3{margin-top:12px}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}.sidebar{position:relative;top:0;max-height:none}.nav{display:grid;grid-template-columns:repeat(2,1fr)}
+ .nav .sub{display:none}.grid,.grid3,.keyword-grid{grid-template-columns:1fr}.quickbar{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+ .app{padding:8px 8px 70px}.hero{padding:18px 14px;border-radius:18px}.chapter{padding:14px;border-radius:17px}
+ .sidebar{display:none}.toolbar{top:4px}.toolbtn{font-size:.68rem;padding:8px}.grid{grid-template-columns:1fr}
+}
+
+
+
+
+
+.game-home{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bigaction{border:1px solid rgba(229,185,77,.25);background:linear-gradient(145deg,#282431,#1b1920);color:#fff;
+border-radius:15px;padding:18px;text-align:left;font-weight:900;font-size:1rem;cursor:pointer}
+.bigaction small{display:block;color:var(--muted);font-weight:500;margin-top:7px;line-height:1.4}
+.game-panel{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+.gm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.gm-input,.gm-select,.gm-textarea{background:#17151c;border:1px solid var(--line);color:#fff;border-radius:9px;padding:9px}
+.gm-input{min-width:120px}.gm-textarea{width:100%;min-height:70px;resize:vertical}
+.gm-btn{border:1px solid rgba(229,185,77,.28);background:#2a2630;color:#fff;border-radius:9px;padding:9px 12px;font-weight:800;cursor:pointer}
+.gm-btn.danger{border-color:rgba(220,80,80,.35)}
+.save-card,.player-card,.progress-card{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:13px;padding:12px;margin:9px 0}
+.player-card h4{margin:0 0 8px;color:var(--gold)}
+.item-list{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}
+.item-chip{background:#26222c;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:.72rem}
+.item-chip.upgraded{border-color:rgba(229,185,77,.55);box-shadow:inset 0 0 0 1px rgba(229,185,77,.12)}
+.item-chip button{border:0;background:none;color:#d98b8b;cursor:pointer;margin-left:5px}
+.gm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.gm-tab{border:1px solid var(--line);background:#201d25;color:#ddd;border-radius:9px;padding:8px 10px;cursor:pointer}
+.gm-tab.active{border-color:var(--gold);color:#f6df9f}
+.checkrow{display:flex;gap:8px;align-items:flex-start;padding:7px;border-bottom:1px solid rgba(255,255,255,.05)}
+@media(max-width:800px){.game-home{grid-template-columns:1fr}.bigaction{padding:14px}}
+
+
+.catalog-wrap{margin-top:8px}
+.catalog-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.catalog-search{flex:1;min-width:180px;background:#17151c;border:1px solid var(--line);color:#fff;border-radius:9px;padding:9px}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;max-height:460px;overflow:auto;padding:2px}
+.catalog-item{position:relative;border:1px solid rgba(255,255,255,.08);background:linear-gradient(145deg,#1d1b24,#14131a);
+border-radius:12px;padding:11px;min-height:92px;cursor:pointer;transition:.16s ease;opacity:.42;filter:grayscale(.72)}
+.catalog-item:hover{opacity:.72;filter:grayscale(.25)}
+.catalog-item.selected{opacity:1;filter:none;border-color:rgba(229,185,77,.45);box-shadow:0 0 0 1px rgba(229,185,77,.08)}
+.catalog-item .cat-name{font-weight:850;font-size:.75rem;line-height:1.25;padding-right:24px}
+.catalog-item .cat-sub{font-size:.61rem;color:var(--muted);margin-top:5px}
+.catalog-item .cat-check{position:absolute;right:8px;top:8px;width:20px;height:20px;border-radius:7px;border:1px solid rgba(255,255,255,.18);
+display:grid;place-items:center;color:transparent;background:rgba(255,255,255,.03);font-size:.7rem}
+.catalog-item.selected .cat-check{background:rgba(95,189,122,.16);border-color:rgba(95,189,122,.45);color:#b8efc7}
+.upgrade-badge{display:inline-flex;margin-top:7px;padding:4px 6px;border-radius:7px;border:1px solid rgba(229,185,77,.2);font-size:.61rem;color:#c7b679}
+.catalog-item.selected .upgrade-badge{cursor:pointer}
+.catalog-item.selected.upgraded{border-color:rgba(229,185,77,.75);background:linear-gradient(145deg,rgba(78,61,26,.45),#17151c)}
+.catalog-item.selected.upgraded .upgrade-badge{color:#ffe69a;background:rgba(229,185,77,.12)}
+.catalog-count{font-size:.67rem;color:var(--muted)}
+.catalog-character{border-left:4px solid var(--char-color,#777)}
+.manual-add{margin-top:10px;padding-top:9px;border-top:1px dashed rgba(255,255,255,.08)}
+@media(max-width:520px){.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:520px}.catalog-item{min-height:86px}}
+
+
+.catalog-item{min-height:190px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+.catalog-imgbox{height:105px;background:linear-gradient(135deg,#292532,#111018);display:grid;place-items:center;overflow:hidden}
+.catalog-imgbox img{width:100%;height:100%;object-fit:cover;display:block}
+.catalog-body{padding:9px;display:flex;flex-direction:column;gap:4px;flex:1}
+.cat-en{font-size:.57rem;color:#7f7985}
+.qty-row{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-top:auto}
+.qty-controls{display:flex;align-items:center;gap:4px}
+.qty-btn{width:25px;height:25px;border-radius:7px;border:1px solid var(--line);background:#25212b;color:#fff;font-weight:900;cursor:pointer}
+.qty-num{min-width:22px;text-align:center;font-weight:900;color:#fff}
+.up-controls{display:flex;align-items:center;gap:4px;font-size:.6rem;color:#e7d18c}
+.deck-summary{margin:8px 0;padding:10px;border:1px solid rgba(229,185,77,.18);background:rgba(229,185,77,.045);border-radius:12px}
+.deck-summary b{color:#f4d985}.deck-summary-list{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.deck-chip{font-size:.64rem;padding:5px 7px;border-radius:999px;background:#29252e;border:1px solid var(--line)}
+.relic-item{min-height:155px}
+.relic-item .catalog-imgbox{height:88px}
+.starting-tag{font-size:.55rem;color:#8fe2aa;font-weight:800}
+@media(max-width:520px){.catalog-item{min-height:175px}.catalog-imgbox{height:92px}}
+
+
+.character-picker{display:flex;gap:8px;flex-wrap:wrap;margin:7px 0 12px}
+.character-option{width:78px;height:78px;border-radius:15px;border:2px solid transparent;background:#17151d;
+padding:0;overflow:hidden;cursor:pointer;opacity:.5;filter:grayscale(.65);transition:.15s}
+.character-option img{width:100%;height:100%;object-fit:contain;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 68%)}
+.character-option.selected{opacity:1;filter:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(229,185,77,.09)}
+.character-hidden{display:none}
+.energy-panel{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px;padding:11px;border-radius:13px;
+background:linear-gradient(135deg,rgba(93,145,215,.10),rgba(229,185,77,.055));border:1px solid rgba(93,145,215,.2)}
+.energy-orb{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:1.35rem;font-weight:950;color:#fff;
+background:radial-gradient(circle at 35% 30%,#fff4a8,#d59d28 43%,#5d3e12 72%);box-shadow:0 0 22px rgba(229,185,77,.2)}
+.energy-text b{display:block}.energy-text small{display:block;color:var(--muted);margin-top:3px;line-height:1.35}
+.energy-condition{font-size:.62rem;color:#c8d7e8;padding:4px 6px;border-radius:8px;background:rgba(93,145,215,.08);border:1px solid rgba(93,145,215,.14)}
+.potion-item{min-height:155px}.potion-item .catalog-imgbox{height:88px}
+
+
+.main-mode-nav{position:sticky;top:6px;z-index:60;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0 8px;
+padding:7px;border:1px solid var(--line);border-radius:17px;background:rgba(11,11,16,.92);backdrop-filter:blur(18px)}
+.main-mode{border:1px solid transparent;background:transparent;color:#aaa5b3;border-radius:12px;padding:11px;font-weight:900;cursor:pointer}
+.main-mode.active{background:linear-gradient(135deg,rgba(229,185,77,.14),rgba(155,114,210,.09));border-color:rgba(229,185,77,.25);color:#fff}
+body.mode-partie .rules-toolbar,body.mode-partie .sidebar,body.mode-partie .chapter:not(#partie),body.mode-partie #noResults{display:none!important}
+body.mode-partie .layout{grid-template-columns:1fr}
+body.mode-partie #partie{display:block!important}
+body.mode-regles #partie{display:none!important}
+
+.collection-master{position:sticky;top:70px;z-index:14;margin:12px 0;padding:10px;border-radius:15px;
+background:rgba(16,15,22,.95);border:1px solid rgba(229,185,77,.18);backdrop-filter:blur(15px)}
+.collection-search-row{display:flex;gap:10px;align-items:center}
+.master-search{flex:1;min-width:150px;background:#17151c;border:1px solid var(--line);color:#fff;border-radius:10px;padding:10px 12px;outline:none}
+.master-search:focus{border-color:rgba(229,185,77,.42)}
+.zoom-control{display:flex;align-items:center;gap:7px;font-size:.68rem;color:var(--muted);white-space:nowrap}
+.zoom-control input{width:110px}
+.category-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}
+.category-tab{border:1px solid var(--line);background:#201d25;color:#aaa5b3;border-radius:9px;padding:8px 6px;font-weight:850;cursor:pointer}
+.category-tab.active{border-color:rgba(229,185,77,.35);background:rgba(229,185,77,.09);color:#f7dda0}
+
+.category-section{margin:10px 0;padding:10px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.018)}
+.catalog-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.catalog-section-head h4{margin:0}
+.collapse-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#211e27;color:#fff;font-size:1rem;cursor:pointer}
+.category-section.collapsed .catalog-content,.category-section.collapsed .deck-summary{display:none}
+.player-card.catalog-searching .category-section.collapsed:not(.search-no-hit) .catalog-content{display:block}
+.player-card.catalog-searching .category-section.collapsed:not(.search-no-hit) .deck-summary{display:none}
+.player-card.catalog-searching .category-section.search-no-hit{display:none!important}
+.category-filter-hidden{display:none}
+.player-card.catalog-searching .category-section.category-filter-hidden:not(.search-no-hit){display:block}
+
+.catalog-grid{grid-template-columns:repeat(auto-fill,minmax(var(--catalog-size,145px),1fr))}
+.catalog-item{min-width:0}
+@media(max-width:560px){
+ .collection-search-row{flex-direction:column;align-items:stretch}
+ .zoom-control{justify-content:space-between}.zoom-control input{width:60%}
+ .category-tabs{grid-template-columns:repeat(2,1fr)}
+ .collection-master{top:66px}
+}
+
+
+/* v8 — cartes compactes mais lisibles */
+.player-card{--catalog-size:105px!important}
+.catalog-grid{grid-template-columns:repeat(auto-fill,minmax(var(--catalog-size),1fr))!important;gap:6px!important}
+.catalog-item{
+  opacity:1!important;filter:none!important;
+  min-height:160px!important;
+  background:linear-gradient(145deg,#201e27,#15141a)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+}
+.catalog-item:hover{opacity:1!important;filter:none!important;border-color:rgba(255,255,255,.20)!important}
+.catalog-item.selected{
+  opacity:1!important;filter:none!important;
+  border:2px solid rgba(95,189,122,.78)!important;
+  background:linear-gradient(145deg,rgba(39,78,53,.55),#17161d)!important;
+  box-shadow:0 0 0 2px rgba(95,189,122,.09),0 8px 22px rgba(0,0,0,.22)!important;
+}
+.catalog-item.selected.upgraded{
+  border-color:rgba(229,185,77,.92)!important;
+  background:linear-gradient(145deg,rgba(90,70,25,.58),#18161c)!important;
+}
+.catalog-imgbox{height:72px!important}
+.catalog-body{padding:7px!important;gap:3px!important}
+.cat-name{font-size:.66rem!important;padding-right:20px!important;line-height:1.15!important}
+.cat-en{font-size:.49rem!important;line-height:1.1!important}
+.cat-sub{font-size:.51rem!important}
+.starting-tag{font-size:.48rem!important}
+.qty-row{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:5px!important;
+  margin-top:auto!important;
+}
+.qty-controls,.up-controls{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:25px 1fr 25px!important;
+  align-items:center!important;
+  gap:3px!important;
+}
+.up-controls{font-size:0!important}
+.up-controls::before{content:"★";font-size:.62rem;color:#e7d18c;position:absolute}
+.qty-btn{width:25px!important;height:25px!important;min-width:25px!important;padding:0!important}
+.qty-num,.up-num{text-align:center!important;font-size:.68rem!important}
+.catalog-item .cat-check{width:18px!important;height:18px!important;right:6px!important;top:6px!important}
+.catalog-item:not(.selected) .cat-check{color:transparent!important;background:rgba(255,255,255,.04)!important}
+.catalog-item.selected .cat-check{color:#d8ffe2!important;background:rgba(95,189,122,.26)!important}
+.category-section{padding:8px!important}
+.collection-master{top:66px}
+.zoom-control{display:none!important}
+.manual-add{display:none!important}
+@media(max-width:520px){
+ .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))!important}
+ .catalog-item{min-height:155px!important}
+ .catalog-imgbox{height:68px!important}
+}
+
+
+/* v9 — navigation Partie / Sommaire robuste */
+body.mode-partie .rules-toolbar,
+body.mode-partie .sidebar,
+body.mode-partie .chapter:not(#partie),
+body.mode-partie #noResults{display:none!important}
+
+body.mode-regles #partie{display:none!important}
+body.mode-regles .rules-toolbar{display:flex!important}
+body.mode-regles .sidebar{display:block!important}
+
+@media(max-width:900px){
+ body.mode-regles .layout{grid-template-columns:1fr!important}
+ body.mode-regles .sidebar{
+   position:relative!important;
+   top:auto!important;
+   max-height:none!important;
+   display:block!important;
+   margin-bottom:10px!important;
+ }
+ body.mode-regles .nav{
+   display:grid!important;
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ body.mode-regles .nav .sub{display:none!important}
+}
+@media(max-width:520px){
+ body.mode-regles .sidebar{display:block!important}
+ body.mode-regles .nav{grid-template-columns:1fr 1fr!important}
+ body.mode-regles .nav a{font-size:.68rem!important;padding:8px!important}
+}
+
+
+/* v10 — sélection simple des reliques */
+.catalog-wrap[data-key="relics"] .catalog-item{cursor:pointer}
+.catalog-wrap[data-key="relics"] .catalog-item .qty-row{display:none!important}
+.catalog-wrap[data-key="relics"] .catalog-item.selected{
+  border:2px solid rgba(95,189,122,.82)!important;
+  box-shadow:0 0 0 2px rgba(95,189,122,.10),0 8px 22px rgba(0,0,0,.22)!important;
+}
+
+
+/* v14 — images officielles : noms de fichiers exacts + fallback sûr */
+.image-placeholder{
+  font-size:2rem;
+  line-height:1;
+  opacity:.42;
+}
+.catalog-wrap[data-key="cards"] .catalog-imgbox{
+  overflow:hidden!important;
+}
+.catalog-wrap[data-key="cards"] .catalog-imgbox img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 32%!important;
+  display:block!important;
+}
+.catalog-wrap[data-key="relics"] .catalog-imgbox img,
+.catalog-wrap[data-key="potions"] .catalog-imgbox img{
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.catalog-imgbox img[alt=""]{
+  font-size:0!important;
+  color:transparent!important;
+}
+
+/* v15 — sources d’images fiables et proportions « objet » de la v9 */
+.catalog-wrap[data-key="relics"] .catalog-imgbox,
+.catalog-wrap[data-key="potions"] .catalog-imgbox{
+  height:72px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  background:radial-gradient(circle,rgba(255,255,255,.07),transparent 68%),linear-gradient(135deg,#292532,#111018)!important;
+}
+.catalog-wrap[data-key="relics"] .catalog-imgbox img.object-art,
+.catalog-wrap[data-key="potions"] .catalog-imgbox img.object-art{
+  width:auto!important;
+  height:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  padding:0!important;
+  margin:auto!important;
+}
+.catalog-wrap[data-key="relics"] .catalog-imgbox img.object-art{
+  max-width:52%!important;
+  max-height:60%!important;
+}
+.catalog-wrap[data-key="potions"] .catalog-imgbox img.object-art{
+  max-width:42%!important;
+  max-height:64%!important;
+}
+.fallback-visual{
+  width:100%;height:100%;display:grid;place-items:center;
+  color:#d8c47d;text-align:center;font-size:.62rem;padding:5px;
+}
+.fallback-die{
+  width:34px;height:34px;border:2px solid #d8c47d;border-radius:7px;
+  display:grid;place-items:center;font-size:1rem;box-shadow:inset 0 0 10px rgba(229,185,77,.18);
+}
+@media(max-width:520px){
+  .catalog-wrap[data-key="relics"] .catalog-imgbox,
+  .catalog-wrap[data-key="potions"] .catalog-imgbox{height:68px!important}
+}
+
+@media print{.toolbar,.sidebar{display:none!important}.layout{display:block}.chapter{break-inside:avoid;background:white;color:black}.chapter p,.chapter li,td{color:#222}body{background:white}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="hero">
+ <div class="kicker">Guide interactif non officiel · règles v2.30 · vérifié le 21/08/2026</div>
+ <h1>SLAY THE SPIRE<br><span style="color:#e5b94d">Le guide de règles</span></h1>
+ <p>Une reformulation complète et structurée du livret de règles du jeu de société, pensée pour apprendre le jeu puis retrouver une règle en quelques secondes pendant une partie.</p>
+ <div class="hero-badges">
+  <span class="pill">👥 1–4 joueurs</span><span class="pill">🤝 Coopératif</span><span class="pill">🃏 Deck-building</span>
+  <span class="pill">🏰 Actes I–IV</span><span class="pill">⏱️ ~60–90 min / acte</span>
+ </div>
+ <div class="copyright-note">Cette page est une <strong>reformulation pédagogique</strong> du fonctionnement du jeu : elle ne reproduit pas le livret officiel mot pour mot et ne le remplace pas. Les noms de jeu et éléments associés appartiennent à leurs ayants droit.</div>
+</header>
+
+<nav class="main-mode-nav">
+ <button class="main-mode active" data-mode="partie">🎮 Partie</button>
+ <button class="main-mode" data-mode="regles">☰ Sommaire</button>
+</nav>
+
+<div class="toolbar rules-toolbar">
+ <input class="search" id="search" placeholder="🔎 Rechercher uniquement dans les règles : poison, marchand, bloc, Acte IV…">
+</div>
+<div class="layout">
+<aside class="sidebar">
+ <h3>Sommaire</h3>
+ <nav class="nav" id="nav">
+  <a href="#objectif">🎯 Vue d’ensemble</a>
+  <a href="#materiel">📦 Matériel</a>
+  <a href="#setup">🧩 Mise en place</a>
+  <a href="#sauvegarde">💾 Sauvegarder / reprendre</a>
+  <a href="#zone">🗂️ Zone joueur</a>
+  <a href="#deck">🃏 Cartes & deck</a>
+  <a href="#recompenses">🎁 Récompenses</a>
+  <a href="#carte">🗺️ Carte & salles</a>
+  <a href="#combat">⚔️ Combat</a>
+  <a class="sub" href="#tourjoueur">↳ Tour des joueurs</a>
+  <a class="sub" href="#tourennemi">↳ Tour ennemi</a>
+  <a href="#ciblage">🎯 Ciblage & effets</a>
+  <a href="#personnages">🧙 Personnages</a>
+  <a href="#faq">❓ FAQ & interactions</a>
+  <a href="#progression">🔓 Déblocages</a>
+  <a href="#ascension">🔥 Ascension</a>
+  <a href="#defis">🏆 Défis & Daily Climb</a>
+  <a href="#act4">❤️ Acte IV</a>
+  <a href="#quick">⏩ Démarrage rapide</a>
+  <a href="#fin">🔄 Fin / remise à zéro</a>
+  <a href="#optionnelles">⚙️ Règles optionnelles</a>
+  <a href="#traductions">🇫🇷 Traductions</a>
+  <a href="#motscles">📖 Mots-clés</a>
+ </nav>
+</aside>
+
+<main class="content" id="content">
+
+<section class="chapter" id="objectif" data-search="objectif victoire défaite actes roguelike deckbuilding">
+ <div class="ch-head"><div><div class="ch-num">01 · Commencer ici</div><h2>🎯 Vue d’ensemble</h2></div></div>
+ <p><strong>Slay the Spire : le jeu de société</strong> est une aventure coopérative de deck-building. Chaque joueur commence avec un petit deck propre à son personnage, puis améliore progressivement ce deck en ajoutant, améliorant, transformant ou retirant des cartes.</p>
+ <div class="quickbar">
+  <div class="quick"><b>1–4</b><span>joueurs</span></div><div class="quick"><b>3</b><span>actes principaux</span></div>
+  <div class="quick"><b>5</b><span>cartes piochées / tour</span></div><div class="quick"><b>3</b><span>énergie de base</span></div>
+ </div>
+ <div class="grid">
+  <div class="box"><h3>✅ Victoire</h3><p>Le groupe gagne lorsqu’il bat le Boss considéré comme final pour la partie choisie. Vous pouvez arrêter l’aventure après n’importe quel Acte.</p></div>
+  <div class="box"><h3>💀 Défaite</h3><p>Dans les règles normales, dès qu’un joueur tombe à <strong>0 PV</strong>, le groupe perd immédiatement la partie.</p></div>
+ </div>
+ <div class="callout info"><strong>Durée :</strong> comptez environ 60–90 minutes par Acte, davantage pour une première partie. À la fin d’un Acte, vous pouvez continuer, arrêter, ou sauvegarder pour reprendre plus tard.</div>
+ <div class="callout tip"><strong>Premier personnage :</strong> l’Ironclad et la Silent sont les plus accessibles ; le Defect demande davantage de gestion et la Watcher est la plus technique.</div>
+</section>
+
+<section class="chapter" id="materiel" data-search="matériel composants cartes figurines cubes tokens">
+ <div class="ch-head"><div><div class="ch-num">02 · Boîte de jeu</div><h2>📦 Matériel principal</h2></div></div>
+ <div class="grid3">
+  <div class="box"><h3>🃏 Cartes joueurs</h3><p>381 cartes joueurs avec les quatre personnages, les cartes incolores et le contenu à débloquer.</p></div>
+  <div class="box"><h3>👹 Spire</h3><p>Rencontres, invocations, Élites, Boss, Événements, États, Dazes, Malédictions et bénédictions de Neow.</p></div>
+  <div class="box"><h3>💎 Objets</h3><p>Reliques, reliques de Boss, potions et objets spéciaux.</p></div>
+  <div class="box"><h3>🗺️ Plateaux</h3><p>2 plateaux principaux, plateaux joueurs, plateau PV et plateau Marchand / aide de jeu.</p></div>
+  <div class="box"><h3>🎲 Marqueurs</h3><p>Dé, meeple botte, cubes plastiques et plus d’une centaine de jetons.</p></div>
+  <div class="box"><h3>🧍 Personnages</h3><p>4 figurines : Ironclad, Silent, Defect et Watcher.</p></div>
+ </div>
+ <p class="note">Les cartes d’Ascension et certains contenus commencent verrouillés : ne les mélangez pas aux decks tant qu’une règle de progression ne vous demande pas de le faire.</p>
+</section>
+
+
+<section class="chapter" id="partie" data-search="nouvelle partie charger sauvegarde joueurs deck cartes améliorées reliques potions ascension déblocages">
+ <div class="ch-head"><div><div class="ch-num">Gestionnaire</div><h2>🎮 Partie & progression</h2></div></div>
+ <div class="callout tip"><strong>Tout est enregistré localement dans ce navigateur.</strong> Les illustrations des cartes, reliques, potions et personnages sont chargées depuis le wiki en ligne : il faut une connexion Internet pour les voir.  Tu peux fermer le fichier puis le rouvrir plus tard. Utilise aussi « Exporter » pour créer une sauvegarde de secours.</div>
+
+ <div class="game-home" id="gameHome">
+  <button class="bigaction" id="newGameBtn">✨ Nouvelle partie<small>Choisir le nombre de joueurs et préparer les personnages</small></button>
+  <button class="bigaction" id="loadGameBtn">📂 Charger une partie<small>Retrouver une sauvegarde existante</small></button>
+  <button class="bigaction" id="progressBtn">🏆 Ascensions & déblocages<small>Suivre la progression permanente du jeu</small></button>
+ </div>
+
+ <div id="gamePanel" class="game-panel" hidden></div>
+</section>
+
+<section class="chapter" id="setup" data-search="mise en place setup acte 1 neow boss carte tokens premier combat solo">
+ <div class="ch-head"><div><div class="ch-num">03 · Avant la partie</div><h2>🧩 Mise en place</h2></div></div>
+ <div class="steps">
+  <div class="step"><strong>Choisir les personnages.</strong> Chaque joueur prend son plateau, sa figurine, son deck de départ, son deck de récompenses et son deck de récompenses rares. Mélangez les decks appropriés.</div>
+  <div class="step"><strong>Installer le plateau joueur.</strong> Placez l’Énergie à 3, le Bloc à 0 et les PV sur la valeur maximale indiquée.</div>
+  <div class="step"><strong>Préparer les decks de l’Acte I.</strong> Rencontre « 1st Encounter! », Rencontres, Élites, Invocations, Événements, Reliques, Potions, Malédictions, États/Daze et reliques de Boss. Les Invocations, Dazes et États ne sont pas mélangés comme les autres decks.</div>
+  <div class="step"><strong>Préparer la carte de l’Acte I.</strong> Choisissez aléatoirement un tracé, mélangez les jetons de carte face cachée, placez-les sur les emplacements de couleur correspondante puis révélez-les.</div>
+  <div class="step"><strong>Placer les figurines</strong> sur l’emplacement libre le plus bas de la carte.</div>
+  <div class="step"><strong>Choisir le Boss.</strong> Vous pouvez utiliser le dé pour sélectionner le Boss correspondant à son résultat, puis le placer face cachée au sommet de la carte.</div>
+  <div class="step"><strong>Placer la botte</strong> au bas de la carte, près de la première Rencontre.</div>
+  <div class="step"><strong>Préparer l’aide de jeu / Marchand.</strong> Gardez ce plateau accessible ; retournez-le sur sa face Marchand lorsqu’une salle Marchand est atteinte.</div>
+  <div class="step"><strong>Bénédiction de Neow.</strong> Chaque joueur pioche une bénédiction, obtient la récompense rouge puis choisit une des trois options bleues. Rangez ensuite ces cartes.</div>
+  <div class="step"><strong>Solo.</strong> Ajoutez la relique solo <em>Loaded Die</em> et les éléments solo indiqués par le jeu.</div>
+  <div class="step"><strong>Premier combat.</strong> Installez les cartes « 1st Encounter! » et commencez.</div>
+ </div>
+ <h3>Passage aux Actes II et III</h3>
+ <p>Remplacez les decks Rencontre / Élite / Invocation / Événement par ceux du nouvel Acte, refaites la carte et choisissez le Boss. Au début des Actes II et suivants, les joueurs guérissent normalement jusqu’à leurs PV maximum, sauf si un niveau d’Ascension modifie cette règle. Remélangez les récompenses de cartes en réintégrant les cartes précédemment ignorées ; ne mélangez pas le deck Rare de la même manière.</p>
+</section>
+
+<section class="chapter" id="sauvegarde" data-search="sauvegarder sauvegarde reprendre plus tard acte run conserver cartes reliques potions or améliorations deck">
+ <div class="ch-head"><div><div class="ch-num">Entre deux Actes</div><h2>💾 Sauvegarder et reprendre une partie</h2></div></div>
+ <div class="callout tip"><strong>Important :</strong> battre le Boss de l’Acte I puis ranger le jeu pour reprendre plus tard <strong>ne termine pas ta run</strong>. Tu reprends l’Acte II avec tout ce que ton personnage a acquis.</div>
+ <h3>Ce que tu conserves</h3>
+ <div class="grid">
+  <div class="box"><h4>🃏 Deck actuel</h4><p>Toutes les cartes gagnées restent dans ton deck ; les cartes retirées restent retirées et les transformations sont conservées.</p></div>
+  <div class="box"><h4>⬆️ Améliorations</h4><p>Les cartes améliorées restent sur leur face améliorée. Ne les retourne pas lors d’une simple sauvegarde.</p></div>
+  <div class="box"><h4>💎 Reliques</h4><p>Tu conserves tes reliques et reliques de Boss.</p></div>
+  <div class="box"><h4>🧪 Potions</h4><p>Les potions non utilisées restent avec le personnage.</p></div>
+  <div class="box"><h4>🪙 Or</h4><p>L’or restant est conservé.</p></div>
+  <div class="box"><h4>🏰 Progression</h4><p>Tu reprends au début de l’Acte suivant, pas au début d’une nouvelle run.</p></div>
+ </div>
+ <h3>Quand sauvegarder ?</h3>
+ <p>Après avoir vaincu le Boss d’un Acte et reçu ses récompenses, le groupe peut continuer immédiatement, sauvegarder pour reprendre plus tard, ou décider que l’aventure s’arrête ici.</p>
+ <h3>Rangement pratique</h3>
+ <div class="steps">
+  <div class="step"><strong>Deck :</strong> garde ensemble le deck actuel de chaque personnage, avec ses cartes gagnées et améliorées.</div>
+  <div class="step"><strong>Reliques / potions :</strong> range-les avec le personnage correspondant au lieu de les remettre dans leurs piles générales.</div>
+  <div class="step"><strong>Or :</strong> conserve séparément l’or de chaque joueur.</div>
+  <div class="step"><strong>Reprise :</strong> prépare la carte et les decks du nouvel Acte puis reprends avec tout ce qui a été sauvegardé.</div>
+ </div>
+ <div class="callout warn"><strong>Ne pas confondre sauvegarde et fin de partie.</strong> Le reset complet ne s’applique que lorsque la run est réellement terminée : victoire finale, défaite, ou décision de mettre fin à l’aventure.</div>
+ <h3>Pourquoi est-ce quand même un rogue-like ?</h3>
+ <p>Les gains d’une <strong>même run</strong> restent avec toi entre les Actes. En revanche, quand cette run est terminée, la prochaine repart d’un deck de départ. La progression permanente vient surtout des déblocages et des niveaux d’Ascension.</p>
+</section>
+
+<section class="chapter" id="zone" data-search="zone joueur pioche défausse exhaust pouvoirs objets cubes pv">
+ <div class="ch-head"><div><div class="ch-num">04 · Organisation</div><h2>🗂️ Zone de jeu d’un joueur</h2></div></div>
+ <div class="grid">
+  <div class="box"><h3>📚 Pioche</h3><p>Au début d’un combat, mélangez votre deck pour créer votre pioche.</p></div>
+  <div class="box"><h3>🗑️ Défausse</h3><p>La plupart des cartes jouées terminent dans la défausse.</p></div>
+  <div class="box"><h3>🔥 Exhaust</h3><p>Les cartes épuisées sont placées à part et ne reviennent pas pendant ce combat.</p></div>
+  <div class="box"><h3>⚡ Pouvoirs</h3><p>Les cartes Power restent devant vous après avoir été jouées et retournent dans votre deck à la fin du combat.</p></div>
+  <div class="box"><h3>💎 Objets</h3><p>Reliques et potions restent visibles devant vous pour que leurs capacités puissent être consultées.</p></div>
+  <div class="box"><h3>❤️ PV & jetons</h3><p>Suivez vos PV avec le cube rouge et conservez vos marqueurs d’or, buffs et debuffs près du plateau ou de la figurine.</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="deck" data-search="deck attaque skill power curse status daze energie x coût rareté commune uncommon rare">
+ <div class="ch-head"><div><div class="ch-num">05 · Cartes</div><h2>🃏 Comprendre son deck</h2></div></div>
+ <div class="grid">
+  <div class="box"><h3>⚔️ Attack</h3><p>Inflige principalement des dégâts.</p></div>
+  <div class="box"><h3>🛡️ Skill</h3><p>Produit du Bloc ou d’autres effets utilitaires.</p></div>
+  <div class="box"><h3>✨ Power</h3><p>Reste en jeu et fournit une capacité pour le reste du combat.</p></div>
+  <div class="box"><h3>☠️ Curse</h3><p>Carte négative pouvant être ajoutée au deck. Une Malédiction ne peut pas être Transformée.</p></div>
+  <div class="box"><h3>🌀 Status / Daze</h3><p>Cartes temporaires ajoutées par les ennemis. Elles sont retirées du deck à la fin du combat.</p></div>
+  <div class="box"><h3>⚡ Énergie</h3><p>Maximum normal : <strong>6</strong>. Les symboles d’Énergie propres aux personnages sont équivalents.</p></div>
+ </div>
+ <h3>Cartes de coût X</h3><p>Vous choisissez combien d’Énergie dépenser, y compris 0. L’effet dépend alors de X selon le texte de la carte.</p>
+ <h3>Rareté</h3><p><span class="tag">GRIS · Commune</span> <span class="tag">BLEU · Peu commune</span> <span class="tag">JAUNE · Rare</span>. Les cartes du deck de départ ont aussi une bordure grise.</p>
+</section>
+
+<section class="chapter" id="recompenses" data-search="récompense carte golden ticket rare potion relique boss gold or remove upgrade transform">
+ <div class="ch-head"><div><div class="ch-num">06 · Progression du deck</div><h2>🎁 Récompenses</h2></div></div>
+ <div class="callout rule"><strong>Principes :</strong> les récompenses peuvent être prises dans l’ordre que vous voulez et peuvent généralement être ignorées. Après révélation, vous pouvez examiner les autres récompenses disponibles avant de faire votre choix définitif. Seules les <strong>potions</strong> peuvent être données à un autre joueur hors combat.</div>
+ <div class="grid">
+  <div class="box"><h3>🃏 Récompense de carte</h3><p>Révélez 3 cartes du deck de récompenses. Prenez-en au maximum une ; replacez les autres sous le deck.</p></div>
+  <div class="box"><h3>🎫 Golden Ticket</h3><p>Ajoutez temporairement une carte du deck Rare aux choix disponibles. Si elle n’est pas choisie, elle retourne sous le deck Rare.</p></div>
+  <div class="box"><h3>⬆️ Carte améliorée</h3><p>Comme une récompense normale, mais la carte choisie est immédiatement améliorée.</p></div>
+  <div class="box"><h3>🌟 Récompense Rare</h3><p>Révélez 3 rares, choisissez-en jusqu’à une et replacez les autres sous leur deck.</p></div>
+  <div class="box"><h3>🧪 Potion</h3><p>Piochez une potion et choisissez de la conserver ou non. Limite normale : <strong>3 potions</strong>. Elles sont à usage unique.</p></div>
+  <div class="box"><h3>💎 Relique</h3><p>Piochez une relique ; si elle est prise, elle reste face visible devant le joueur.</p></div>
+  <div class="box"><h3>👑 Relique de Boss</h3><p>En groupe, révélez normalement un nombre égal au nombre de joueurs + 1 ; en solo, révélez 3. Chaque joueur peut en prendre une ou passer.</p></div>
+  <div class="box"><h3>🪙 Or</h3><p>L’or sert surtout chez le Marchand et lors de certains Événements. Vous pouvez contribuer à l’achat d’un autre joueur.</p></div>
+ </div>
+ <h3>Modifier son deck</h3>
+ <div class="grid3">
+  <div class="box"><h4>Remove</h4><p>Retirez définitivement une carte de votre deck pour cette partie.</p></div>
+  <div class="box"><h4>Upgrade</h4><p>Sortez la carte de sa sleeve puis retournez-la sur sa face améliorée (texte vert).</p></div>
+  <div class="box"><h4>Transform</h4><p>Retirez une carte non-Malédiction et remplacez-la aléatoirement par la carte du dessus de vos récompenses ; un Golden Ticket produit une Rare.</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="carte" data-search="map carte rencontre elite event feu camp treasure trésor marchand boss rest smith heal">
+ <div class="ch-head"><div><div class="ch-num">07 · Explorer la Spire</div><h2>🗺️ Carte & types de salles</h2></div></div>
+ <p>Vous commencez par la Rencontre tout en bas. Après avoir résolu une salle, déplacez la botte le long d’un chemin connecté vers la salle suivante.</p>
+ <div class="grid">
+  <div class="box"><h3>⚔️ Rencontre</h3><p>Au tout premier combat, utilisez les cartes « 1st Encounter! ». Ensuite, piochez une carte Rencontre par joueur.</p></div>
+  <div class="box"><h3>💀 Élite</h3><p>Piochez une carte du deck Élite de l’Acte et préparez le combat selon ses invocations éventuelles.</p></div>
+  <div class="box"><h3>❓ Événement</h3><p>Piochez un Événement. Lorsque plusieurs options sont proposées, chacun choisit et résout sa propre option dans l’ordre voulu. Il faut pouvoir payer/donner ce qui est demandé.</p></div>
+  <div class="box"><h3>🔥 Feu de camp</h3><p>Chaque joueur choisit : <strong>Rest</strong> (soigner 3 PV) ou <strong>Smith</strong> (améliorer une carte).</p></div>
+  <div class="box"><h3>🎁 Trésor</h3><p>Chaque joueur obtient une récompense Relique.</p></div>
+  <div class="box"><h3>🛒 Marchand</h3><p>Exposez 3 reliques, 3 potions et 3 cartes de récompense par joueur. Achetez des objets/cartes, ou payez pour retirer une carte. Une seule suppression par joueur et par Marchand.</p></div>
+  <div class="box"><h3>👑 Boss</h3><p>Combattez le Boss placé au sommet de la carte. Sa défaite termine l’Acte ; obtenez les récompenses puis décidez de continuer, sauvegarder ou arrêter.</p></div>
+ </div>
+ <div class="callout info"><strong>Or partagé :</strong> un joueur peut utiliser son propre or pour participer au paiement d’un achat ou de certaines dépenses d’Événement d’un autre joueur.</div>
+</section>
+
+<section class="chapter" id="combat" data-search="combat rows rangées summons invocations elite boss hp setup">
+ <div class="ch-head"><div><div class="ch-num">08 · Cœur du jeu</div><h2>⚔️ Combat</h2></div></div>
+ <h3>Installation des ennemis</h3>
+ <p>Chaque joueur possède une <strong>rangée</strong>. Les rencontres normales placent généralement un ennemi dans chaque rangée. Les invocations sont placées dans la rangée de l’ennemi qui les a invoquées. Un Boss est considéré comme présent dans <strong>toutes les rangées</strong>.</p>
+ <div class="grid">
+  <div class="box"><h4>Rencontre</h4><p>Un ennemi par rangée ; les Summons correspondants se placent à droite de leur invocateur.</p></div>
+  <div class="box"><h4>Élite</h4><p>L’Élite est placé dans la rangée du bas. Ses invocations peuvent apparaître dans les rangées des joueurs.</p></div>
+  <div class="box"><h4>Boss</h4><p>Il cible/interagit comme s’il se trouvait dans chaque rangée. Certaines grosses créatures utilisent le plateau de PV séparé.</p></div>
+  <div class="box"><h4>Invocations aléatoires</h4><p>Lorsque plusieurs Summons ont le même nom, choisissez-en une sans examiner son pouvoir, par exemple en les mélangeant face cachée.</p></div>
+ </div>
+ <div class="callout warn">Les capacités spéciales d’ennemis imprimées en jaune sont généralement actives en permanence, sauf lorsqu’un déclencheur ou une indication de tour précise le contraire.</div>
+
+ <h3 id="tourjoueur">Tour des joueurs</h3>
+ <p>Chaque round contient un <strong>Player Turn</strong> commun à tous les joueurs, puis un <strong>Enemy Turn</strong>. Les joueurs effectuent leurs phases simultanément et peuvent coordonner leur stratégie.</p>
+ <div class="steps">
+  <div class="step"><strong>Reset :</strong> remettez l’Énergie à 3 et le Bloc à 0.</div>
+  <div class="step"><strong>Pioche :</strong> piochez 5 cartes. Il n’existe pas de taille de main maximale. Quand la pioche est vide, mélangez la défausse pour former une nouvelle pioche.</div>
+  <div class="step"><strong>Dé :</strong> lancez-le une seule fois pour le round. Les capacités permettant de modifier le résultat doivent intervenir avant les autres effets liés au dé.</div>
+  <div class="step"><strong>Début de tour :</strong> résolvez dans l’ordre choisi les effets « start of turn / round », « start of combat » lors du premier round et les reliques déclenchées par le résultat du dé.</div>
+  <div class="step"><strong>Phase de jeu :</strong> jouez cartes, potions et capacités dans l’ordre souhaité. Payez l’Énergie, choisissez les cibles, puis appliquez le texte d’une carte de haut en bas avant de résoudre les capacités qu’elle a déclenchées.</div>
+  <div class="step"><strong>Fin de tour :</strong> résolvez les capacités « end of turn », puis défaussez toutes les cartes de la main sauf celles explicitement Retained.</div>
+ </div>
+ <div class="callout tip"><strong>Coopération :</strong> le livret encourage la discussion (« combien de dégâts peux-tu faire ? », « as-tu assez de Bloc ? ») plutôt que de simplement inspecter la main de l’autre joueur.</div>
+
+ <h3 id="tourennemi">Tour ennemi</h3>
+ <div class="steps">
+  <div class="step"><strong>Retirer le Bloc ennemi :</strong> tous les ennemis perdent leur Bloc restant.</div>
+  <div class="step"><strong>Actions :</strong> commencez par la rangée la plus haute, de gauche à droite, puis descendez rangée par rangée. Les Boss agissent après les autres ennemis, sauf règles particulières.</div>
+  <div class="step"><strong>Actions à cube :</strong> après les actions, faites avancer les cubes sur les pistes correspondantes ; les cases grises ne se répètent pas lorsqu’une piste boucle vers une case rouge.</div>
+ </div>
+ <h3>Trois schémas d’action ennemie</h3>
+ <div class="grid3">
+  <div class="box"><h4>Action fixe</h4><p>L’ennemi reproduit la même action chaque round.</p></div>
+  <div class="box"><h4>Action au dé</h4><p>Le résultat du dé commun détermine son action.</p></div>
+  <div class="box"><h4>Action à cube</h4><p>Un cube progresse sur une séquence d’actions au fil des rounds.</p></div>
+ </div>
+ <h3>Fin du combat</h3>
+ <p>Le combat se termine dès qu’il n’existe plus de monstre actif, sauf si une capacité « on death » doit encore invoquer un ennemi. Résolvez ensuite : capacités de fin de combat → récompenses → reconstruction du deck (Powers, défausse et Exhaust) → retrait des Status/Daze → remise à zéro du plateau → rangement des ennemis → possibilité de changer de rangée avant le prochain combat.</p>
+</section>
+
+<section class="chapter" id="ciblage" data-search="ciblage aoe area effect multi hit vulnerable weak modes boss">
+ <div class="ch-head"><div><div class="ch-num">09 · Résoudre les effets</div><h2>🎯 Ciblage, multi-hits & modes</h2></div></div>
+ <div class="grid">
+  <div class="box"><h3>Joueurs</h3><p>Une attaque normale peut cibler n’importe quel ennemi. Un effet de zone / « any row » affecte tous les ennemis d’une rangée choisie et inclut toujours le Boss.</p></div>
+  <div class="box"><h3>Ennemis</h3><p>Une action ordinaire vise le joueur de la même rangée. Les actions globales indiquées par leur symbole touchent tous les joueurs.</p></div>
+ </div>
+ <h3>Multi-hit</h3>
+ <p>Les frappes multiples d’une même attaque gardent normalement la même cible. Les bonus de dégâts comme Strength affectent chaque frappe. Weak et Vulnerable s’appliquent à toutes les frappes de l’attaque, puis un seul jeton concerné est retiré une fois l’ensemble du multi-hit terminé.</p>
+ <h3>Modes</h3>
+ <p>Certains Boss, comme le Guardian, possèdent plusieurs modes. Seules les actions et capacités du mode actuel sont utilisables. Lorsqu’un changement de mode survient, déplacez le cube d’action sur le premier emplacement du nouveau mode.</p>
+</section>
+
+<section class="chapter" id="personnages" data-search="ironclad silent defect watcher strength poison shiv orb channel evoke miracle stance calm wrath">
+ <div class="ch-head"><div><div class="ch-num">10 · Héros</div><h2>🧙 Les quatre personnages</h2></div></div>
+ <div class="grid">
+  <div class="box char" style="--accent:var(--red)"><h3>🔴 Ironclad</h3><p><strong>Strength (max 8)</strong> : chaque jeton ajoute +1 dégât à chacune de vos frappes. Son jeu exploite aussi beaucoup <strong>Exhaust</strong> et il possède davantage de PV de départ que les autres.</p></div>
+  <div class="box char" style="--accent:var(--green)"><h3>🟢 Silent</h3><p><strong>Poison (max global 30)</strong> : à la fin du tour joueur, chaque ennemi empoisonné perd 1 PV par jeton ; cette perte ignore le Bloc et le Poison reste jusqu’à la mort. <strong>Shivs (max 5)</strong> : jetons pouvant infliger une frappe de 1 et comptant chacun comme une attaque séparée.</p></div>
+  <div class="box char" style="--accent:var(--blue)"><h3>🔵 Defect</h3><p><strong>Orbs</strong> Lightning / Frost / Dark. Channel place un Orb dans n’importe quel slot libre ; Evoke retire l’Orb de votre choix et résout son effet. Si les slots sont pleins, Evoke d’abord un Orb puis placez le nouveau. Les Orbs ne tournent pas comme dans le jeu vidéo.</p></div>
+  <div class="box char" style="--accent:var(--purple)"><h3>🟣 Watcher</h3><p><strong>Miracles (max 5)</strong> : dépensez un jeton pour gagner 1 Énergie. Commence en Neutral. Quitter <strong>Calm</strong> donne 2 Énergies. En <strong>Wrath</strong>, chaque frappe gagne +1 dégât, mais terminer le tour dans Wrath vous inflige 1 dégât (bloquable).</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="faq" data-search="faq questions main maximum cartes mémoire summons copies autres personnages prismatic">
+ <div class="ch-head"><div><div class="ch-num">11 · Cas particuliers</div><h2>❓ FAQ & interactions importantes</h2></div></div>
+ <details open><summary>Taille de main, Bloc et jetons</summary><div><p>Il n’y a pas de taille de main maximale. Le Bloc ne protège que contre les dégâts : un effet disant « perdre X PV » le contourne. Si la réserve d’un jeton est épuisée, on ne peut normalement pas en créer davantage.</p></div></details>
+ <details><summary>Les cartes « se souviennent-elles » de leur état ?</summary><div><p>Une carte ne conserve généralement pas la mémoire d’un état précédent après avoir quitté la main (Retain antérieur, changement temporaire de coût, etc.). Les modifications de coût propres au texte de la carte peuvent toutefois rester pertinentes lorsque la carte est en défausse.</p></div></details>
+ <details><summary>Summons</summary><div><p>Les invocations ne quittent pas automatiquement le combat lorsque l’ennemi qui les a appelées est tué : elles doivent être gérées normalement.</p></div></details>
+ <details><summary>Cartes d’autres personnages</summary><div><p>Les jetons d’autres personnages peuvent être employés selon leurs règles habituelles, mais leur limite est partagée. Transformer une carte d’une autre couleur donne une nouvelle carte depuis le deck de récompenses de votre propre personnage. Les Golden Tickets associés à une autre couleur utilisent le deck Rare de cette couleur.</p></div></details>
+ <details><summary>Stances / Orbs obtenus hors personnage</summary><div><p>Si un personnage obtient la capacité d’utiliser des Stances ou Orbs qui ne sont pas naturellement les siens, utilisez la relique spéciale Prismatic Shard selon les instructions du jeu. Les limites propres aux personnages continuent à s’appliquer.</p></div></details>
+ <details><summary>Jouer des copies d’une carte</summary><div><p>Chaque copie est résolue comme une carte distincte sans payer d’Énergie supplémentaire. Les copies d’une carte X reprennent la même valeur de X. Elles peuvent choisir d’autres cibles et subissent séparément les effets à usage unique, Weak ou Vulnerable. Une copie ne peut elle-même être copiée.</p></div></details>
+ <details><summary>Priorité des déclenchements</summary><div><p>Une carte finit de résoudre tout son texte avant que les capacités qu’elle vient de déclencher ne soient résolues. Les déclencheurs usuels sont : on death, start of turn, start of combat, start of next round, end of turn et end of combat.</p></div></details>
+ <details><summary>Once per combat / Once per room</summary><div><p>Après utilisation, retournez généralement l’objet face cachée. « Once per combat » se recharge après le combat ; « once per room » peut aussi s’appliquer à certains Événements puis se recharge après la salle.</p></div></details>
+</section>
+
+<section class="chapter" id="progression" data-search="unlock déblocages boxes boss character colorless acte 4">
+ <div class="ch-head"><div><div class="ch-num">12 · Méta-progression</div><h2>🔓 Déblocages</h2></div></div>
+ <p>À la fin d’une partie, chaque joueur coche des cases de progression : <strong>1 case par Boss vaincu, plus 1 case supplémentaire</strong>. Vous devez d’abord avancer sur la piste de votre personnage. Quand toutes ses cases sont remplies, vous pouvez progresser vers les contenus Incolores ou l’Acte IV. Lorsqu’un cadenas est complété, ajoutez aux decks indiqués les cartes portant son numéro.</p>
+ <div class="grid">
+  <div class="box"><h3>🌈 Cartes Colorless</h3><p>Une fois débloquées, préparez leur deck au début de partie. Le groupe peut notamment en révéler chez le Marchand selon les règles du contenu incolore.</p></div>
+  <div class="box"><h3>❤️ Acte IV</h3><p>Une fois débloqué, il devient accessible après l’Acte III si le groupe a réussi à réunir les trois clés.</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="ascension" data-search="ascension difficulté 1 2 3 4 5 6 7 8 9 10 11 12 13">
+ <div class="ch-head"><div><div class="ch-num">13 · Difficulté</div><h2>🔥 Les 13 Ascensions</h2></div></div>
+ <p>Après avoir vaincu un Boss d’Acte II (Acte III en solo), vous débloquez l’Ascension 1. Pour monter davantage, jouez avec <strong>tous les modificateurs des niveaux précédents</strong> et remplissez à nouveau la condition de victoire requise.</p>
+ <div class="tablewrap"><table><thead><tr><th>Niveau</th><th>Modification</th></tr></thead><tbody>
+ <tr><td>1</td><td>Remplacez les Élites des Actes par les versions d’Ascension 1 plus difficiles.</td></tr>
+ <tr><td>2</td><td>PV maximum réduits de 1.</td></tr>
+ <tr><td>3</td><td>Ajoutez les Événements plus difficiles de l’Ascension 3.</td></tr>
+ <tr><td>4</td><td>Limite de potions réduite de 3 à 2.</td></tr>
+ <tr><td>5</td><td>Ajoutez <em>Ascender’s Bane</em> au deck de départ.</td></tr>
+ <tr><td>6</td><td>Après un Boss, ne guérissez plus à fond : récupérez 4 PV au début des Actes suivants.</td></tr>
+ <tr><td>7</td><td>Remplacez certaines Rencontres et ajoutez les Summons correspondants plus difficiles.</td></tr>
+ <tr><td>8</td><td>Le retrait d’une carte chez le Marchand coûte 4 or.</td></tr>
+ <tr><td>9</td><td>Perdez 1 PV au début de la partie, après la réduction de PV max de l’Ascension 2.</td></tr>
+ <tr><td>10</td><td>Utilisez uniquement les Boss de difficulté Ascension 10.</td></tr>
+ <tr><td>11</td><td>Acte IV renforcé : Corrupt Heart et Élites correspondants en version 11.</td></tr>
+ <tr><td>12</td><td>Remplacez à nouveau les Élites des Actes I–III par les versions Ascension 12.</td></tr>
+ <tr><td>13</td><td>Après avoir battu le Boss de l’Acte III, affrontez immédiatement un autre Boss d’Acte III choisi aléatoirement.</td></tr>
+ </tbody></table></div>
+</section>
+
+<section class="chapter" id="defis" data-search="achievements succès daily climb custom run modifiers all star shiny heirloom transformed vintage terminal insanity">
+ <div class="ch-head"><div><div class="ch-num">14 · Rejouabilité</div><h2>🏆 Succès, Daily Climb & partie personnalisée</h2></div></div>
+ <h3>Exemples de succès officiels</h3>
+ <div class="grid3">
+  <div class="box"><p><strong>Jaxxed</strong> — atteindre 8 Strength.</p><p><strong>Catalyst</strong> — atteindre 30 Poison.</p><p><strong>Ninja</strong> — jouer 7 Shivs en un tour.</p></div>
+  <div class="box"><p><strong>Barricaded</strong> — atteindre la limite de 20 Bloc.</p><p><strong>You Are Nothing</strong> — vaincre un Boss au premier tour.</p><p><strong>Perfect</strong> — vaincre un Boss alors que tous les joueurs sont à PV max.</p></div>
+  <div class="box"><p><strong>Ruby / Emerald / Sapphire / Amethyst</strong> — terminer l’Acte III avec chacun des quatre personnages.</p><p><strong>Minimalist</strong> — terminer l’Acte III avec un deck de 5 cartes ou moins.</p></div>
+ </div>
+ <h3>Daily Climb</h3>
+ <p>Mode optionnel : lancez le dé deux fois et obtenez un modificateur aléatoire dans chacune des sections prévues. Les modificateurs s’appliquent à tout le groupe. En partie personnalisée, vous pouvez simplement choisir les modificateurs.</p>
+ <div class="callout info">Le livret propose notamment des variantes démarrant avec des cartes Colorless, des Rares, une relique de Boss, le Prismatic Shard, des Malédictions, des transformations répétées, l’impossibilité de Rest ou des pertes de PV supplémentaires.</div>
+</section>
+
+<section class="chapter" id="act4" data-search="acte IV clés ruby sapphire emerald burning elite coeur corrupt">
+ <div class="ch-head"><div><div class="ch-num">15 · Fin secrète</div><h2>❤️ Acte IV & les trois clés</h2></div></div>
+ <p>L’Acte IV doit d’abord être débloqué. Pour pouvoir y entrer après l’Acte III, le groupe doit avoir obtenu les <strong>trois clés</strong> avant la fin de l’Acte III. Les joueurs guérissent au début de l’Acte IV selon les mêmes règles que pour les Actes II et III (avec les éventuelles modifications d’Ascension).</p>
+ <div class="grid3">
+  <div class="box"><h3>🔴 Ruby Key</h3><p>Tous les joueurs renoncent simultanément à leur action dans une salle où ce choix est possible ; au feu de camp, cela signifie ne faire ni Rest ni Smith.</p></div>
+  <div class="box"><h3>🔵 Sapphire Key</h3><p>Tout le groupe renonce simultanément à une récompense Relique dans une salle concernée. Vous pouvez révéler la relique avant de décider.</p></div>
+  <div class="box"><h3>🟢 Emerald Key</h3><p>Vainquez le <strong>Burning Elite</strong>. Avant d’installer la carte, remplacez un jeton Rencontre sombre par le jeton Burning Elite conformément aux règles.</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="quick" data-search="quick start démarrage rapide act 2 3 4 catch up rattrapage">
+ <div class="ch-head"><div><div class="ch-num">16 · Partie raccourcie</div><h2>⏩ Démarrage rapide & rattrapage</h2></div></div>
+ <p>Le livret contient une procédure permettant de commencer directement à l’Acte II, III ou IV. Elle attribue une suite calibrée de récompenses — bénédiction de Neow, or, cartes, transformations, potions, reliques, améliorations, rares, reliques de Boss et passage au Marchand — afin d’approcher l’état attendu d’un personnage ayant joué les actes précédents.</p>
+ <div class="callout rule"><strong>Catch Up :</strong> la même logique peut intégrer un nouveau joueur au début d’un Acte. Seuls les joueurs qui rattrapent utilisent cette procédure et leur visite de Marchand dédiée.</div>
+ <p>Les gains sont obtenus <strong>séquentiellement</strong>, sans regarder la récompense suivante avant d’avoir résolu la précédente. Les effets demandant de lancer le dé sont résolus individuellement par chaque joueur.</p>
+</section>
+
+<section class="chapter" id="fin" data-search="fin reset remise zéro victoire défaite nouvelle partie starter deck">
+ <div class="ch-head"><div><div class="ch-num">17 · Après la partie</div><h2>🔄 Fin de partie & remise à zéro</h2></div></div>
+ <div class="callout warn"><strong>Seulement lorsque la run est terminée :</strong> les cartes gagnées, améliorations, reliques, potions, or et autres gains ne sont pas conservés pour une <em>nouvelle</em> run. <strong>Ce reset ne s’applique pas à une sauvegarde entre deux Actes.</strong></div>
+ <div class="steps">
+  <div class="step">Retournez toutes les cartes améliorées sur leur face normale.</div>
+  <div class="step">Reconstituez le deck de départ du personnage avec les cartes à bordure grise.</div>
+  <div class="step">Replacez toutes les autres cartes dans leurs decks d’origine.</div>
+  <div class="step">Rangez jetons et cubes.</div>
+  <div class="step">Une <strong>nouvelle run</strong> recommence normalement à l’Acte I, sauf utilisation des règles de démarrage rapide. Une sauvegarde entre deux Actes reprend simplement l’Acte suivant.</div>
+ </div>
+ <div class="callout rule"><strong>Règle d’or :</strong> si le texte d’une carte contredit une règle générale, le texte de la carte a priorité.</div>
+</section>
+
+<section class="chapter" id="optionnelles" data-search="optional règle optionnelle last stand choose relic mort boss">
+ <div class="ch-head"><div><div class="ch-num">18 · Variantes officielles</div><h2>⚙️ Règles optionnelles</h2></div></div>
+ <div class="grid">
+  <div class="box"><h3>🛡️ The Last Stand</h3><p>Lors d’un combat de Boss, les survivants peuvent continuer après la mort d’un joueur. Les ennemis de sa rangée retargetent la rangée occupée la plus proche selon la priorité indiquée. Si au moins un joueur survit, l’Acte peut être considéré comme vaincu, mais le groupe ne peut pas poursuivre vers l’Acte suivant après la mort d’un joueur.</p></div>
+  <div class="box"><h3>💎 Choose Your Relic</h3><p>En multijoueur, lorsqu’une Relique est gagnée dans une salle Élite ou Trésor, révélez autant de Reliques que de joueurs afin que chacun puisse choisir parmi les options révélées.</p></div>
+ </div>
+</section>
+
+<section class="chapter" id="traductions" data-search="traduction anglais français attack skill power reward rare relic potion encounter elite event campfire merchant exhaust retain">
+ <div class="ch-head"><div><div class="ch-num">Référence FR</div><h2>🇫🇷 Traduction des termes du jeu</h2></div></div>
+ <div class="tablewrap"><table><thead><tr><th>Anglais</th><th>Français</th><th>Rappel</th></tr></thead><tbody>
+ <tr><td>Attack</td><td>Attaque</td><td>Carte destinée principalement aux dégâts.</td></tr>
+ <tr><td>Skill</td><td>Compétence</td><td>Bloc ou effet utilitaire.</td></tr>
+ <tr><td>Power</td><td>Pouvoir</td><td>Reste en jeu pendant le combat.</td></tr>
+ <tr><td>Card Reward</td><td>Récompense de carte</td><td>Révélez 3 cartes et choisissez-en jusqu’à 1.</td></tr>
+ <tr><td>Rare Reward</td><td>Récompense Rare</td><td>Révélez 3 cartes Rares et choisissez-en jusqu’à 1.</td></tr>
+ <tr><td>Relic / Boss Relic</td><td>Relique / Relique de Boss</td><td>Objet conservé pendant la run.</td></tr>
+ <tr><td>Encounter / Elite / Event</td><td>Rencontre / Élite / Événement</td><td>Types de salles.</td></tr>
+ <tr><td>Campfire</td><td>Feu de camp</td><td>Repos ou amélioration.</td></tr>
+ <tr><td>Rest / Smith</td><td>Repos / Améliorer</td><td>Soigner 3 PV / améliorer une carte.</td></tr>
+ <tr><td>Merchant</td><td>Marchand</td><td>Achat et retrait de cartes.</td></tr>
+ <tr><td>Exhaust</td><td>Épuiser</td><td>Sortir une carte du cycle pour ce combat.</td></tr>
+ <tr><td>Retain</td><td>Conserver</td><td>Garder une carte en main à la fin du tour.</td></tr>
+ <tr><td>Weak / Vulnerable</td><td>Faiblesse / Vulnérable</td><td>Modificateurs de dégâts.</td></tr>
+ </tbody></table></div>
+</section>
+
+<section class="chapter" id="motscles" data-search="keywords mots clés block energy ethereal exhaust hit retain scry status strength vulnerable weak aoe all enemies daze">
+ <div class="ch-head"><div><div class="ch-num">19 · Référence rapide</div><h2>📖 Mots-clés essentiels</h2></div></div>
+ <div class="keyword-grid">
+  <div class="keyword"><b>Area of Effect / rangée</b><span>Côté joueur : affecte tous les ennemis d’une rangée choisie et toujours le Boss. Côté ennemi : effet global sur les joueurs lorsqu’indiqué.</span></div>
+  <div class="keyword"><b>ALL Enemies</b><span>Cible tous les ennemis de toutes les rangées et inclut toujours le Boss.</span></div>
+  <div class="keyword"><b>Block · max joueur 20</b><span>Chaque point annule 1 dégât puis est retiré. Ne protège pas contre « Lose X HP ». Le Bloc joueur disparaît au début du Player Turn ; le Bloc ennemi au début de l’Enemy Turn.</span></div>
+  <div class="keyword"><b>Daze</b><span>La carte est placée sur le dessus de votre pioche. Lorsqu’elle est Exhausted, elle retourne dans le deck Daze.</span></div>
+  <div class="keyword"><b>Energy · max 6</b><span>Ressource utilisée pour jouer les cartes. Les différentes icônes de personnage représentent la même ressource.</span></div>
+  <div class="keyword"><b>Ethereal</b><span>Si la carte est encore en main à la fin du tour, elle est Exhausted.</span></div>
+  <div class="keyword"><b>Exhaust</b><span>Carte mise à part pour le reste du combat, puis réintégrée au deck à la fin. Daze / Status retournent plutôt à leurs piles dédiées.</span></div>
+  <div class="keyword"><b>Hit</b><span>Une frappe inflige les dégâts indiqués et est modifiée par Strength, Weak et Vulnerable. Un simple effet « damage » n’est pas forcément un Hit.</span></div>
+  <div class="keyword"><b>Retain</b><span>La carte n’est pas défaussée à la fin du Player Turn. Une fois qu’elle quitte la main, elle ne se « souvient » plus d’avoir été Retained.</span></div>
+  <div class="keyword"><b>Scry X</b><span>Regardez jusqu’à X cartes du dessus de la pioche, défaussez-en autant que voulu, puis replacez le reste dans le même ordre.</span></div>
+  <div class="keyword"><b>Status</b><span>Utilisez la moitié du texte correspondant au symbole de l’ennemi ayant donné le Status. Ces cartes sont temporaires pour le combat.</span></div>
+  <div class="keyword"><b>Strength · max 8</b><span>Chaque jeton ajoute +1 dégât à chacune de vos frappes.</span></div>
+  <div class="keyword"><b>Unplayable</b><span>La carte ne peut pas être jouée et n’a pas de coût d’Énergie. Si un effet tente de la jouer automatiquement, elle n’a pas d’effet et est défaussée.</span></div>
+  <div class="keyword"><b>Vulnerable · max 3</b><span>Lorsqu’une cible Vulnérable est attaquée, chaque Hit de l’attaque inflige le double après application des bonus ; retirez ensuite 1 Vulnerable.</span></div>
+  <div class="keyword"><b>Weak · max 3</b><span>Lorsqu’un attaquant Weak attaque, chaque Hit fait -1 dégât ; retirez ensuite 1 Weak pour l’attaque entière.</span></div>
+  <div class="keyword"><b>Weak + Vulnerable</b><span>Lorsqu’un attaquant Weak frappe une cible Vulnerable, les deux effets s’annulent sur les dégâts de cette attaque ; retirez ensuite les jetons concernés.</span></div>
+ </div>
+</section>
+
+<section class="chapter" id="sources" data-search="sources livret officiel">
+ <div class="ch-head"><div><div class="ch-num">Source & version</div><h2>📚 À propos de ce guide</h2></div></div>
+ <p>Guide construit à partir du <strong>Rulebook v2.30 Reprint</strong> (24 pages) et de la page officielle du jeu. Le contenu a été reformulé, regroupé et réordonné pour favoriser la consultation plutôt que reproduit textuellement.</p>
+ <p class="note">Pour un litige de règle ou un détail de carte précis, le livret officiel et le texte de la carte restent la référence.</p>
+</section>
+
+<div id="noResults">Aucun chapitre ne correspond à cette recherche.</div>
+</main>
+</div>
+</div>
+
+<script>
+const search=document.getElementById('search');
+const chapters=[...document.querySelectorAll('.chapter')];
+const noResults=document.getElementById('noResults');
+
+function normalize(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+search.addEventListener('input',()=>{
+  const q=normalize(search.value.trim());
+  let visible=0;
+  chapters.forEach(ch=>{
+    ch.querySelectorAll('mark').forEach(m=>m.replaceWith(m.textContent));
+    const hay=normalize(ch.textContent+' '+(ch.dataset.search||''));
+    const ok=!q||hay.includes(q);
+    ch.classList.toggle('hide',!ok);
+    if(ok)visible++;
+  });
+  noResults.style.display=visible?'none':'block';
+});
+
+const links=[...document.querySelectorAll('.nav a')];
+const obs=new IntersectionObserver(entries=>{
+ entries.forEach(e=>{
+  if(e.isIntersecting){
+   links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+  }
+ });
+},{rootMargin:'-20% 0px -70% 0px'});
+chapters.forEach(ch=>obs.observe(ch));
+
+
+
+const CARD_CATALOG={"Soldat de fer": ["Bash", "Defend", "Strike", "Anger", "Armaments", "Body Slam", "Clash", "Cleave", "Clothesline", "Headbutt", "Heavy Blade", "Iron Wave", "Perfected Strike", "Pommel Strike", "Shrug It Off", "Sword Boomerang", "Thunderclap", "True Grit", "Twin Strike", "Warcry", "Wild Strike", "Battle Trance", "Blood for Blood", "Bloodletting", "Burning Pact", "Carnage", "Combust", "Dark Embrace", "Disarm", "Dropkick", "Dual Wield", "Entrench", "Evolve", "Feel No Pain", "Fire Breathing", "Flame Barrier", "Flex", "Ghostly Armor", "Havoc", "Hemokinesis", "Infernal Blade", "Inflame", "Intimidate", "Metallicize", "Power Through", "Pummel", "Rage", "Rampage", "Reckless Charge", "Rupture", "Searing Blow", "Second Wind", "Seeing Red", "Sentinel", "Sever Soul", "Shockwave", "Spot Weakness", "Uppercut", "Whirlwind", "Barricade", "Berserk", "Bludgeon", "Brutality", "Corruption", "Demon Form", "Double Tap", "Exhume", "Feed", "Fiend Fire", "Immolate", "Impervious", "Juggernaut", "Limit Break", "Offering", "Reaper"], "La Silencieuse": ["Defend", "Strike", "Neutralize", "Survivor", "Acrobatics", "Backflip", "Bane", "Blade Dance", "Cloak and Dagger", "Dagger Spray", "Dagger Throw", "Deadly Poison", "Deflect", "Dodge and Roll", "Flying Knee", "Outmaneuver", "Piercing Wail", "Poisoned Stab", "Prepared", "Quick Slash", "Slice", "Sucker Punch", "All-Out Attack", "Backstab", "Blur", "Bouncing Flask", "Calculated Gamble", "Catalyst", "Choke", "Concentrate", "Crippling Cloud", "Dash", "Distraction", "Endless Agony", "Escape Plan", "Eviscerate", "Expertise", "Finisher", "Flechettes", "Footwork", "Infinite Blades", "Leg Sweep", "Masterful Stab", "Noxious Fumes", "Predator", "Reflex", "Riddle with Holes", "Setup", "Skewer", "Sneaky Strike", "Tactician", "Terror", "Well-Laid Plans", "A Thousand Cuts", "Adrenaline", "After Image", "Alchemize", "Bullet Time", "Burst", "Corpse Explosion", "Die Die Die", "Doppelganger", "Envenom", "Glass Knife", "Grand Finale", "Malaise", "Nightmare", "Phantasmal Killer", "Storm of Steel", "Tools of the Trade", "Unload", "Wraith Form"], "Le Défectueux": ["Defend", "Strike", "Dualcast", "Zap", "Ball Lightning", "Barrage", "Beam Cell", "Claw", "Cold Snap", "Compile Driver", "Coolheaded", "Go for the Eyes", "Hologram", "Leap", "Rebound", "Recursion", "Stack", "Steam Barrier", "Streamline", "Sweeping Beam", "Turbo", "Aggregate", "Auto-Shields", "Blizzard", "Boot Sequence", "Bullseye", "Capacitor", "Chaos", "Charge Battery", "Chill", "Consume", "Darkness", "Defragment", "Doom and Gloom", "Double Energy", "Equilibrium", "FTL", "Force Field", "Fusion", "Genetic Algorithm", "Glacier", "Heatsinks", "Hello World", "Loop", "Melter", "Overclock", "Recycle", "Reinforced Body", "Reprogram", "Rip and Tear", "Scrape", "Self Repair", "Skim", "Static Discharge", "Storm", "Sunder", "Tempest", "White Noise", "All for One", "Amplify", "Biased Cognition", "Buffer", "Core Surge", "Creative AI", "Echo Form", "Electrodynamics", "Fission", "Hyperbeam", "Machine Learning", "Meteor Strike", "Multi-Cast", "Rainbow", "Reboot", "Seek", "Thunder Strike"], "La Gardienne": ["Defend", "Strike", "Eruption", "Vigilance", "Bowling Bash", "Consecrate", "Crescendo", "Crush Joints", "Cut Through Fate", "Empty Body", "Empty Fist", "Evaluate", "Flurry of Blows", "Flying Sleeves", "Follow-Up", "Halt", "Just Lucky", "Pressure Points", "Prostrate", "Protect", "Sash Whip", "Third Eye", "Tranquility", "Battle Hymn", "Carve Reality", "Collect", "Conclude", "Deceive Reality", "Empty Mind", "Fasting", "Fear No Evil", "Foresight", "Foreign Influence", "Indignation", "Inner Peace", "Like Water", "Meditate", "Mental Fortress", "Nirvana", "Perseverance", "Pray", "Reach Heaven", "Rushdown", "Sanctity", "Sands of Time", "Signature Move", "Simmering Fury", "Study", "Swivel", "Talk to the Hand", "Tantrum", "Wallop", "Wave of the Hand", "Weave", "Wheel Kick", "Windmill Strike", "Worship", "Wreath of Flame", "Alpha", "Blasphemy", "Brilliance", "Conjure Blade", "Deus Ex Machina", "Deva Form", "Devotion", "Establishment", "Judgment", "Lesson Learned", "Master Reality", "Omniscience", "Ragnarok", "Scrawl", "Spirit Shield", "Vault", "Wish"]};
+const RELIC_CATALOG=["Akabeko", "Anchor", "Ancient Tea Set", "Art of War", "Astrolabe", "Bag of Marbles", "Bag of Preparation", "Bird-Faced Urn", "Black Blood", "Black Star", "Blood Vial", "Blue Candle", "Bottled Flame", "Bottled Lightning", "Bottled Tornado", "Bronze Scales", "Burning Blood", "Busted Crown", "Calipers", "Calling Bell", "Captain's Wheel", "Centennial Puzzle", "Ceramic Fish", "Charon's Ashes", "Chemical X", "Clockwork Souvenir", "Coffee Dripper", "Cracked Core", "Cursed Key", "Darkstone Periapt", "Data Disk", "Dead Branch", "Dolly's Mirror", "Dream Catcher", "Du-Vu Doll", "Ectoplasm", "Emotion Chip", "Empty Cage", "Enchiridion", "Eternal Feather", "Fossilized Helix", "Frozen Core", "Frozen Egg", "Frozen Eye", "Fusion Hammer", "Gambling Chip", "Ginger", "Girya", "Gold-Plated Cables", "Golden Eye", "Golden Idol", "Gremlin Horn", "Happy Flower", "Holy Water", "Horn Cleat", "Hovering Kite", "Ice Cream", "Incense Burner", "Ink Bottle", "Inserter", "Juzu Bracelet", "Kunai", "Lantern", "Lee's Waffle", "Letter Opener", "Lizard Tail", "Loaded Die", "Magic Flower", "Mango", "Mark of Pain", "Matryoshka", "Maw Bank", "Meal Ticket", "Meat on the Bone", "Medical Kit", "Membership Card", "Mercury Hourglass", "Molten Egg", "Mummified Hand", "Ninja Scroll", "Nuclear Battery", "Nunchaku", "Oddly Smooth Stone", "Old Coin", "Omamori", "Orange Pellets", "Orichalcum", "Ornamental Fan", "Orrery", "Pandora's Box", "Pantograph", "Paper Krane", "Paper Phrog", "Peace Pipe", "Pear", "Pen Nib", "Philosopher's Stone", "Potion Belt", "Prayer Wheel", "Preserved Insect", "Prismatic Shard", "Pure Water", "Question Card", "Red Mask", "Red Skull", "Regal Pillow", "Ring of the Serpent", "Ring of the Snake", "Runic Capacitor", "Runic Cube", "Runic Dome", "Runic Pyramid", "Sacred Bark", "Self-Forming Clay", "Shovel", "Shuriken", "Singing Bowl", "Slaver's Collar", "Smiling Mask", "Snecko Eye", "Snecko Skull", "Sozu", "Stone Calendar", "Strange Spoon", "Strawberry", "Strike Dummy", "Sundial", "Symbiotic Virus", "Teardrop Locket", "The Abacus", "The Boot", "The Courier", "The Specimen", "Thread and Needle", "Tingsha", "Tiny Chest", "Tiny House", "Toolbox", "Torii", "Tough Bandages", "Toxic Egg", "Toy Ornithopter", "Tungsten Rod", "Turnip", "Twisted Funnel", "Unceasing Top", "Vajra", "Velvet Choker", "Violet Lotus", "War Paint", "Warped Tongs", "Whetstone", "White Beast Statue", "Wing Boots", "Wrist Blade"];
+CARD_CATALOG["La Silencieuse"].push("Accuracy","Caltrops","Heel Hook");
+const CARD_FR={"Strike": "Frappe", "Defend": "Défense", "Bash": "Heurt", "Neutralize": "Neutralisation", "Survivor": "Survivant", "Dualcast": "Activation double", "Zap": "Électrisation", "Eruption": "Éruption", "Vigilance": "Vigilance", "Anger": "Colère", "Armaments": "Armement", "Body Slam": "Plaquage", "Clash": "Conflit", "Cleave": "Enchaînement", "Headbutt": "Coup de boule", "Thunderclap": "Coup de tonnerre", "Warcry": "Cri de guerre", "Twin Strike": "Frappe double", "Acrobatics": "Acrobaties", "Cloak and Dagger": "Cape et épée", "Blade Dance": "Danse des lames", "Bane": "Fléau", "Flying Knee": "Coup de genou", "Dodge and Roll": "Dérobade", "Sucker Punch": "Coup bas", "Steam Barrier": "Barrière de vapeur", "Compile Driver": "Compilateur de pilote", "Barrage": "Déluge", "Sweeping Beam": "Faisceau balayant", "Ball Lightning": "Foudre en boule", "Streamline": "Fuselage", "Claw": "Griffe", "Hologram": "Hologramme", "Stack": "Pile", "Beam Cell": "Rayon cellulaire", "Rebound": "Rebond", "Charge Battery": "Décharger les batteries", "Recursion": "Récursivité", "Coolheaded": "Sang-froid", "Leap": "Saut", "Cold Snap": "Vague de froid", "Go for the Eyes": "Vise les yeux", "Aggregate": "Agglomération", "Genetic Algorithm": "Algorithme génétique", "Self Repair": "Autoréparation", "Loop": "Boucle", "Auto-Shields": "Boucliers automatiques", "White Noise": "Bruit blanc", "Force Field": "Champ de force", "Bullseye": "Cible", "Capacitor": "Condensateur", "Consume": "Consumer", "Heatsinks": "Dissipateur de chaleur", "Static Discharge": "Décharge statique", "Defragment": "Défragmentation", "Boot Sequence": "Démarrage", "Sunder": "Désassemblage", "Equilibrium": "Équilibre", "Melter": "Fondeur", "Chill": "Frisson", "Fusion": "Fusion", "Glacier": "Glacier", "Storm": "Orage", "Skim": "Parcourir", "Recycle": "Recyclage", "Reinforced Body": "Renforcement", "Reprogram": "Reprogrammation", "Doom and Gloom": "Sinistrose", "Tempest": "Tempête", "Darkness": "Ténèbres", "Bowling Bash": "Jeu de quille", "Consecrate": "Consécration", "Crush Joints": "Brise-articulation", "Cut Through Fate": "Changer le destin", "Empty Body": "Corps vide", "Empty Fist": "Poing vide", "Evaluate": "Évaluation", "Flurry of Blows": "Rafale de coups", "Flying Sleeves": "Manches flottantes", "Follow-Up": "Poursuite", "Halt": "Halte", "Just Lucky": "Chanceux", "Pressure Points": "Points vitaux", "Prostrate": "Prosternation", "Protect": "Protection", "Sash Whip": "Fouet", "Third Eye": "Troisième œil", "Tranquility": "Tranquillité", "Signature Move": "Attaque signature", "Foreign Influence": "Influence extérieure", "Fasting": "Jeûne", "Meditate": "Méditation", "Nirvana": "Nirvana", "Inner Peace": "Paix intérieure", "Talk to the Hand": "Parle à ma main", "Perseverance": "Persévérance", "Pray": "Prière", "Rushdown": "Précipitation", "Foresight": "Prévoyance", "Simmering Fury": "Rage bouillonnante", "Wave of the Hand": "Revers de la main", "Sands of Time": "Sables du temps", "Sanctity": "Sainteté", "Fear No Evil": "Sans crainte", "Carve Reality": "Sculpte-réalité", "Weave": "Tissage", "Deceive Reality": "Trompe-réalité", "Worship": "Vénération", "Study": "Étude", "Blasphemy": "Blasphème", "Spirit Shield": "Bouclier spirituel", "Brilliance": "Brillance", "Conjure Blade": "Conjuration de lame", "Devotion": "Dévotion", "Establishment": "Fondation", "Deva Form": "Forme Deva", "Scrawl": "Griffonnage", "Judgment": "Jugement", "Lesson Learned": "Leçon apprise", "Master Reality": "Maîtrise de la réalité", "Vault": "Saut temporel", "Wish": "Vœu"};
+Object.assign(CARD_FR,{"Clothesline": "Manchette", "Heavy Blade": "Lame lourde", "Iron Wave": "Vague de fer", "Perfected Strike": "Frappe perfectionnée", "Pommel Strike": "Coup de pommeau", "Shrug It Off": "Haussement d’épaules", "Sword Boomerang": "Épée boomerang", "True Grit": "Vraie détermination", "Wild Strike": "Frappe sauvage", "Battle Trance": "Transe de combat", "Blood for Blood": "Sang pour sang", "Bloodletting": "Saignée", "Burning Pact": "Pacte ardent", "Carnage": "Carnage", "Combust": "Combustion", "Dark Embrace": "Étreinte sombre", "Disarm": "Désarmement", "Dropkick": "Croc-en-jambe", "Dual Wield": "Ambidextrie", "Entrench": "Fortification", "Evolve": "Évolution", "Feel No Pain": "Sans douleur", "Fire Breathing": "Souffle de feu", "Flame Barrier": "Barrière de flammes", "Flex": "Vantardise", "Ghostly Armor": "Armure fantomatique", "Havoc": "Chaos", "Hemokinesis": "Hémokinésie", "Infernal Blade": "Lame infernale", "Inflame": "Enflammer", "Intimidate": "Intimidation", "Metallicize": "Métallisation", "Power Through": "Passage en force", "Pummel": "Martèlement", "Rage": "Rage", "Rampage": "Déchaînement", "Reckless Charge": "Charge téméraire", "Rupture": "Rupture", "Searing Blow": "Coup brûlant", "Second Wind": "Second souffle", "Seeing Red": "Voir rouge", "Sentinel": "Sentinelle", "Sever Soul": "Section d’âme", "Shockwave": "Onde de choc", "Spot Weakness": "Prescience", "Uppercut": "Uppercut", "Whirlwind": "Tourbillon", "Barricade": "Barricade", "Berserk": "Berserk", "Bludgeon": "Matraquage", "Brutality": "Brutalité", "Corruption": "Corruption", "Demon Form": "Forme démoniaque", "Double Tap": "Double frappe", "Exhume": "Exhumation", "Feed": "Festin", "Fiend Fire": "Feu démoniaque", "Immolate": "Immolation", "Impervious": "Impénétrable", "Juggernaut": "Juggernaut", "Limit Break": "Dépasser les limites", "Offering": "Offrande", "Reaper": "Faucheuse", "Backflip": "Salto", "Dagger Spray": "Pluie de dagues", "Dagger Throw": "Lancer de dague", "Deadly Poison": "Poison mortel", "Deflect": "Déviation", "Outmaneuver": "Manœuvre", "Piercing Wail": "Cri perçant", "Poisoned Stab": "Poignard empoisonné", "Prepared": "Préparatifs", "Quick Slash": "Entaille rapide", "Slice": "Tranche", "All-Out Attack": "Attaque totale", "Backstab": "Attaque sournoise", "Blur": "Flou", "Bouncing Flask": "Fiole rebondissante", "Calculated Gamble": "Coup de poker", "Catalyst": "Catalyseur", "Choke": "Étranglement", "Concentrate": "Concentration", "Crippling Cloud": "Nuage paralysant", "Dash": "Ruée", "Distraction": "Distraction", "Endless Agony": "Agonie sans fin", "Escape Plan": "Plan d’évasion", "Eviscerate": "Éviscération", "Expertise": "Savoir-faire", "Finisher": "Coup de grâce", "Flechettes": "Fléchettes", "Footwork": "Jeu de jambes", "Infinite Blades": "Lames infinies", "Leg Sweep": "Balayage", "Masterful Stab": "Coup magistral", "Noxious Fumes": "Vapeurs toxiques", "Predator": "Prédateur", "Reflex": "Réflexe", "Riddle with Holes": "Criblage", "Setup": "Mise en place", "Skewer": "Brochette", "Sneaky Strike": "Frappe sournoise", "Tactician": "Stratège", "Terror": "Terreur", "Well-Laid Plans": "Plans bien préparés", "A Thousand Cuts": "Mille entailles", "Adrenaline": "Adrénaline", "After Image": "Image rémanente", "Alchemize": "Alchimie", "Bullet Time": "Bullet Time", "Burst": "Rafale", "Corpse Explosion": "Explosion cadavérique", "Die Die Die": "Meurs, meurs, meurs !", "Doppelganger": "Doppelgänger", "Envenom": "Envenimation", "Glass Knife": "Couteau de verre", "Grand Finale": "Grand final", "Malaise": "Malaise", "Nightmare": "Cauchemar", "Phantasmal Killer": "Tueur fantomatique", "Storm of Steel": "Tempête d’acier", "Tools of the Trade": "Outils du métier", "Unload": "Déchargement", "Wraith Form": "Forme spectrale", "Turbo": "Turbo", "Blizzard": "Blizzard", "Chaos": "Chaos", "Double Energy": "Énergie double", "FTL": "FTL", "Hello World": "Bonjour le monde", "Overclock": "Surcadencement", "Rip and Tear": "Déchiquetage", "Scrape": "Éraflure", "All for One": "Tous pour un", "Amplify": "Amplification", "Biased Cognition": "Biais cognitif", "Buffer": "Tampon", "Core Surge": "Surtension nucléique", "Creative AI": "IA créative", "Echo Form": "Forme résonnante", "Electrodynamics": "Électrodynamique", "Fission": "Fission", "Hyperbeam": "Ultralaser", "Machine Learning": "Apprentissage automatique", "Meteor Strike": "Frappe météore", "Multi-Cast": "Activation multiple", "Rainbow": "Arc-en-ciel", "Reboot": "Redémarrage", "Seek": "Recherche", "Thunder Strike": "Frappe kéraunique", "Crescendo": "Crescendo", "Battle Hymn": "Hymne de bataille", "Collect": "Collecte", "Conclude": "Conclusion", "Empty Mind": "Esprit clair", "Indignation": "Indignation", "Like Water": "Fluidité", "Mental Fortress": "Forteresse mentale", "Reach Heaven": "Atteinte du paradis", "Swivel": "Pivot", "Tantrum": "Crise de colère", "Wallop": "Fracas", "Wheel Kick": "Coup de pied tournoyant", "Windmill Strike": "Frappe du moulin", "Wreath of Flame": "Couronne de flammes", "Alpha": "Alpha", "Deus Ex Machina": "Deus Ex Machina", "Omniscience": "Omniscience", "Ragnarok": "Ragnarok"});
+Object.assign(CARD_FR,{"Accuracy":"Précision","Caltrops":"Chausse-trappes","Heel Hook":"Croche-pied"});
+const RELIC_FR={"Akabeko": "Akabeko", "Anchor": "Ancre", "Ancient Tea Set": "Service à thé ancien", "Art of War": "Art de la guerre", "Astrolabe": "Astrolabe", "Bag of Marbles": "Sac de billes", "Bag of Preparation": "Sac de préparation", "Bird-Faced Urn": "Urne à visage d'oiseau", "Black Blood": "Sang noir", "Black Star": "Étoile noire", "Blood Vial": "Fiole de sang", "Blue Candle": "Bougie bleue", "Bottled Flame": "Flamme en bouteille", "Bottled Lightning": "Foudre en bouteille", "Bottled Tornado": "Tornade en bouteille", "Bronze Scales": "Écailles de bronze", "Burning Blood": "Sang ardent", "Busted Crown": "Couronne brisée", "Calipers": "Pied à coulisse", "Calling Bell": "Cloche d'appel", "Captain's Wheel": "Gouvernail du capitaine", "Centennial Puzzle": "Puzzle centenaire", "Ceramic Fish": "Poisson en céramique", "Charon's Ashes": "Cendres de Charon", "Chemical X": "Produit chimique X", "Clockwork Souvenir": "Souvenir mécanique", "Coffee Dripper": "Cafetière goutte-à-goutte", "Cracked Core": "Noyau fissuré", "Cursed Key": "Clé maudite", "Darkstone Periapt": "Périapte de pierre sombre", "Data Disk": "Disque de données", "Dead Branch": "Branche morte", "Dolly's Mirror": "Miroir de Dolly", "Dream Catcher": "Attrape-rêves", "Du-Vu Doll": "Poupée Du-Vu", "Ectoplasm": "Ectoplasme", "Emotion Chip": "Puce émotionnelle", "Empty Cage": "Cage vide", "Enchiridion": "Enchiridion", "Eternal Feather": "Plume éternelle", "Fossilized Helix": "Hélice fossilisée", "Frozen Core": "Noyau gelé", "Frozen Egg": "Œuf gelé", "Frozen Eye": "Œil gelé", "Fusion Hammer": "Marteau de fusion", "Gambling Chip": "Jeton de jeu", "Ginger": "Gingembre", "Girya": "Girya", "Gold-Plated Cables": "Câbles plaqués or", "Golden Eye": "Œil doré", "Gremlin Horn": "Corne de gremlin", "Happy Flower": "Fleur heureuse", "Holy Water": "Eau bénite", "Horn Cleat": "Taquet de corne", "Hovering Kite": "Cerf-volant flottant", "Ice Cream": "Glace", "Incense Burner": "Brûleur d'encens", "Ink Bottle": "Bouteille d'encre", "Inserter": "Inséreur", "Juzu Bracelet": "Bracelet Juzu", "Kunai": "Kunai", "Lantern": "Lanterne", "Lee's Waffle": "Gaufre de Lee", "Letter Opener": "Coupe-papier", "Lizard Tail": "Queue de lézard", "Magic Flower": "Fleur magique", "Mango": "Mangue", "Mark of Pain": "Marque de douleur", "Matryoshka": "Matriochka", "Maw Bank": "Tirelire Gueule", "Meal Ticket": "Ticket restaurant", "Meat on the Bone": "Viande sur l'os", "Medical Kit": "Trousse médicale", "Membership Card": "Carte d'adhérent", "Mercury Hourglass": "Sablier de mercure", "Molten Egg": "Œuf en fusion", "Mummified Hand": "Main momifiée", "Ninja Scroll": "Parchemin ninja", "Nuclear Battery": "Batterie nucléaire", "Nunchaku": "Nunchaku", "Oddly Smooth Stone": "Pierre étrangement lisse", "Old Coin": "Vieille pièce", "Omamori": "Omamori", "Orange Pellets": "Granulés orange", "Orichalcum": "Orichalque", "Ornamental Fan": "Éventail ornemental", "Orrery": "Planétaire", "Pandora's Box": "Boîte de Pandore", "Pantograph": "Pantographe", "Paper Krane": "Grue en papier", "Paper Phrog": "Grenouille en papier", "Peace Pipe": "Calumet de paix", "Pear": "Poire", "Pen Nib": "Plume", "Philosopher's Stone": "Pierre philosophale", "Potion Belt": "Ceinture à potions", "Prayer Wheel": "Moulin à prières", "Preserved Insect": "Insecte préservé", "Prismatic Shard": "Éclat prismatique", "Pure Water": "Eau pure", "Question Card": "Carte question", "Red Mask": "Masque rouge", "Red Skull": "Crâne rouge", "Regal Pillow": "Oreiller royal", "Ring of the Serpent": "Anneau du serpent", "Ring of the Snake": "Anneau du serpent", "Runic Capacitor": "Condensateur runique", "Runic Cube": "Cube runique", "Runic Dome": "Dôme runique", "Runic Pyramid": "Pyramide runique", "Sacred Bark": "Écorce sacrée", "Self-Forming Clay": "Argile autoformante", "Shovel": "Pelle", "Shuriken": "Shuriken", "Singing Bowl": "Bol chantant", "Slaver's Collar": "Collier d'esclavagiste", "Smiling Mask": "Masque souriant", "Snecko Eye": "Œil de Snecko", "Snecko Skull": "Crâne de Snecko", "Sozu": "Sozu", "Stone Calendar": "Calendrier de pierre", "Strange Spoon": "Cuillère étrange", "Strawberry": "Fraise", "Strike Dummy": "Mannequin de frappe", "Sundial": "Cadran solaire", "Symbiotic Virus": "Virus symbiotique", "Teardrop Locket": "Médaillon en larme", "The Abacus": "Abaque", "The Boot": "La Botte", "The Courier": "Le Coursier", "The Specimen": "Le Spécimen", "Thread and Needle": "Fil et aiguille", "Tingsha": "Tingsha", "Tiny Chest": "Petit coffre", "Tiny House": "Petite maison", "Toolbox": "Boîte à outils", "Torii": "Torii", "Tough Bandages": "Bandages rugueux", "Toxic Egg": "Œuf toxique", "Toy Ornithopter": "Ornithoptère jouet", "Tungsten Rod": "Tige de tungstène", "Turnip": "Navet", "Twisted Funnel": "Entonnoir tordu", "Unceasing Top": "Toupie incessante", "Vajra": "Vajra", "Velvet Choker": "Étrangleur de velours", "Violet Lotus": "Lotus violet", "War Paint": "Peinture de guerre", "Warped Tongs": "Pinces déformées", "Whetstone": "Pierre à aiguiser", "White Beast Statue": "Statue de bête blanche", "Wing Boots": "Bottes ailées", "Wrist Blade": "Lame de poignet"};
+Object.assign(RELIC_FR,{"Ring of the Snake": "Anneau du serpent (départ)", "Ring of the Serpent": "Anneau du serpent renforcé"});
+Object.assign(RELIC_FR,{"Busted Crown": "Couronne brisée", "Coffee Dripper": "Cafetière", "Cursed Key": "Clé maudite", "Ectoplasm": "Ectoplasme", "Fusion Hammer": "Marteau de fusion", "Mark of Pain": "Marque de douleur", "Philosopher's Stone": "Pierre philosophale", "Runic Dome": "Dôme runique", "Sozu": "Sozu", "Velvet Choker": "Collier de velours", "Slaver's Collar": "Collier d’esclavagiste", "Hovering Kite": "Cerf-volant flottant", "Violet Lotus": "Lotus violet", "Nuclear Battery": "Batterie nucléaire"});
+Object.assign(RELIC_FR,{"Calipers":"Compas","Golden Idol":"Idole dorée"});
+Object.assign(RELIC_FR,{"Loaded Die":"Dé pipé"});
+const IMAGE_HOSTS={catalogue:"https://slaythespire.gg",reliques:"https://slaythespire.org"};
+const CARD_IMAGE_GROUP={"Soldat de fer":"ironclad","La Silencieuse":"silent","Le Défectueux":"defect","La Gardienne":"watcher"};
+const CARD_IMAGE_FILE_OVERRIDES={"Shrug It Off":"Shrug it Off","Cloak and Dagger":"Cloak And Dagger","Riddle with Holes":"Riddle With Holes","Turbo":"TURBO","Flurry of Blows":"Flurry Of Blows"};
+const POTION_IMAGE_FILE={"Ancient Potion":"AncientPotion","Attack Potion":"AttackPotion","Blessing of the Forge":"BlessingOfTheForge","Block Potion":"BlockPotion","Blood Potion":"BloodPotion","Bottled Miracle":"BottledMiracle","Colorless Potion":"Colorless Potion","Cultist Potion":"CultistPotion","Cunning Potion":"CunningPotion","Dexterity Potion":"DexterityPotion","Distilled Chaos":"DistilledChaos_Potion","Duplication Potion":"Duplication_Potion","Elixir":"Elixir","Energy Potion":"EnergyPotion","Entropic Brew":"EntropicBrew_Potion","Essence of Darkness":"EssenceOfDarkness","Essence of Steel":"EssenceOfSteel","Explosive Potion":"ExplosivePotion","Fairy in a Bottle":"FairyinaBottle","Fear Potion":"FearPotion","Fire Potion":"FirePotion","Flex Potion":"SteroidPotion","Focus Potion":"FocusPotion","Fruit Juice":"FruitJuice","Gambler's Brew":"GamblersBrew","Ghost in a Jar":"GhostInAJar","Heart of Iron":"HeartofIron","Liquid Bronze":"LiquidBronze","Liquid Memories":"LiquidMemories","Power Potion":"PowerPotion","Potion of Capacity":"PotionofCapacity","Poison Potion":"PoisonPotion","Regen Potion":"RegenPotion","Skill Potion":"SkillPotion","Smoke Bomb":"SmokeBomb","Snecko Oil":"SneckoOil","Speed Potion":"SpeedPotion","Strength Potion":"StrengthPotion","Swift Potion":"SwiftPotion","Weak Potion":"WeakPotion"};
+const RELIC_IMAGE_PATH={"Akabeko":"/api/media/file/relics-69a1ef4f8127613d6d111d96-1772223975473.png","Anchor":"/api/media/file/relics-69a1ef4f8127613d6d111d99-1772223976558.png","Ancient Tea Set":"/api/media/file/relics-69a1ef4f8127613d6d111d9c-1772223977652.png","Art of War":"/api/media/file/relics-69a1ef4f8127613d6d111d9f-1772223978735.png","Astrolabe":"/api/media/file/relics-69a1efc68127613d6d111f3b-1772223990068.png","Bag of Marbles":"/api/media/file/relics-69a1ef4f8127613d6d111da2-1772223991151.png","Bag of Preparation":"/api/media/file/relics-69a1ef4f8127613d6d111da5-1772223992250.png","Bird-Faced Urn":"/api/media/file/relics-69a1ef878127613d6d111e86-1772223993340.png","Black Blood":"/api/media/file/relics-69a1efbe8127613d6d111f1e-1772223994436.png","Black Star":"/api/media/file/relics-69a1efc78127613d6d111f3e-1772223995529.png","Blood Vial":"/api/media/file/relics-69a1ef528127613d6d111da8-1772224091058.png","Blue Candle":"/api/media/file/relics-69a1ef6a8127613d6d111e0a-1772224093640.png","Bottled Flame":"/api/media/file/relics-69a1ef6b8127613d6d111e0d-1772224094932.png","Bottled Lightning":"/api/media/file/relics-69a1ef6c8127613d6d111e10-1772224096230.png","Bottled Tornado":"/api/media/file/relics-69a1ef6c8127613d6d111e13-1772224097519.png","Bronze Scales":"/api/media/file/relics-69a1ef528127613d6d111dab-1772224100109.png","Burning Blood":"/api/media/file/relics-69a1ef288127613d6d111d6a-1772224101407.png","Busted Crown":"/api/media/file/relics-69a1efb68127613d6d111efb-1772224102705.png","Calipers":"/api/media/file/relics-69a1ef878127613d6d111e89-1772224104005.png","Calling Bell":"/api/media/file/relics-69a1efca8127613d6d111f41-1772224105353.png","Captain's Wheel":"/api/media/file/relics-69a1ef888127613d6d111e8c-1772224364189.png","Centennial Puzzle":"/api/media/file/relics-69a1ef538127613d6d111dae-1772224366784.png","Ceramic Fish":"/api/media/file/relics-69a1ef548127613d6d111db1-1772224368078.png","Charon's Ashes":"/api/media/file/relics-69a1ef8a8127613d6d111e94-1772224370642.png","Chemical X":"/api/media/file/relics-69a1efe18127613d6d111f73-1772224371932.png","Clockwork Souvenir":"/api/media/file/relics-69a1efe28127613d6d111f76-1772224375806.png","Coffee Dripper":"/api/media/file/relics-69a1efb78127613d6d111efe-1772224377090.png","Cracked Core":"/api/media/file/relics-69a1ef298127613d6d111d72-1772224378377.png","Cursed Key":"/api/media/file/relics-69a1efb88127613d6d111f01-1772224379663.png","Darkstone Periapt":"/api/media/file/relics-69a1ef6d8127613d6d111e16-1772224382234.png","Data Disk":"/api/media/file/relics-69a1ef568127613d6d111db9-1772224383527.png","Dead Branch":"/api/media/file/relics-69a1ef8d8127613d6d111e9e-1772224384806.png","Dolly's Mirror":"/api/media/file/relics-69a1efe48127613d6d111f79-1772224386092.png","Dream Catcher":"/api/media/file/relics-69a1ef578127613d6d111dbe-1772224387377.png","Du-Vu Doll":"/api/media/file/relics-69a1ef8e8127613d6d111ea1-1772224684859.png","Ectoplasm":"/api/media/file/relics-69a1efb88127613d6d111f04-1772224388653.png","Emotion Chip":"/api/media/file/relics-69a1ef8f8127613d6d111ea4-1772224389934.png","Empty Cage":"/api/media/file/relics-69a1efcc8127613d6d111f44-1772224391221.png","Enchiridion":"/api/media/file/relics-69a1eff58127613d6d111fb5-1772224392506.png","Eternal Feather":"/api/media/file/relics-69a1ef6f8127613d6d111e1e-1772224393795.png","Fossilized Helix":"/api/media/file/relics-69a1ef9a8127613d6d111ea9-1772224395072.png","Frozen Core":"/api/media/file/relics-69a1efc18127613d6d111f28-1772224396351.png","Frozen Egg":"/api/media/file/relics-69a1ef6f8127613d6d111e21-1772224609181.png","Frozen Eye":"/api/media/file/relics-69a1efe68127613d6d111f7c-1772224397642.png","Fusion Hammer":"/api/media/file/relics-69a1efb98127613d6d111f07-1772224398931.png","Gambling Chip":"/api/media/file/relics-69a1ef9c8127613d6d111eac-1772224400214.png","Ginger":"/api/media/file/relics-69a1ef9e8127613d6d111eaf-1772224401503.png","Girya":"/api/media/file/relics-69a1ef9f8127613d6d111eb2-1772224402792.png","Gold-Plated Cables":"/api/media/file/relics-69a1ef708127613d6d111e24-1772224688721.png","Golden Eye":"/api/media/file/relics-69a1efa08127613d6d111eb5-1772224610559.png","Gremlin Horn":"/api/media/file/relics-69a1ef718127613d6d111e29-1772224405361.png","Happy Flower":"/api/media/file/relics-69a1ef578127613d6d111dc1-1772224407931.png","Holy Water":"/api/media/file/relics-69a1efc28127613d6d111f2d-1772224409279.png","Horn Cleat":"/api/media/file/relics-69a1ef728127613d6d111e2c-1772224410949.png","Hovering Kite":"/api/media/file/relics-69a1efd88127613d6d111f61-1772224412233.png","Ice Cream":"/api/media/file/relics-69a1efa18127613d6d111eba-1772224413518.png","Incense Burner":"/api/media/file/relics-69a1efa38127613d6d111ebd-1772224414807.png","Ink Bottle":"/api/media/file/relics-69a1ef728127613d6d111e2f-1772224416114.png","Inserter":"/api/media/file/relics-69a1efd48127613d6d111f57-1772224417399.png","Juzu Bracelet":"/api/media/file/relics-69a1ef588127613d6d111dc4-1772224418695.png","Kunai":"/api/media/file/relics-69a1ef738127613d6d111e32-1772224420040.png","Lantern":"/api/media/file/relics-69a1ef588127613d6d111dc7-1772224421321.png","Lee's Waffle":"/api/media/file/relics-69a1efe78127613d6d111f82-1772224422602.png","Letter Opener":"/api/media/file/relics-69a1ef748127613d6d111e35-1772224423939.png","Lizard Tail":"/api/media/file/relics-69a1efa48127613d6d111ec0-1772224425224.png","Magic Flower":"/api/media/file/relics-69a1efa58127613d6d111ec3-1772224426512.png","Mango":"/api/media/file/relics-69a1efa68127613d6d111ec8-1772224427794.png","Mark of Pain":"/api/media/file/relics-69a1efbc8127613d6d111f16-1772224429081.png","Matryoshka":"/api/media/file/relics-69a1ef748127613d6d111e38-1772224431643.png","Maw Bank":"/api/media/file/relics-69a1ef5a8127613d6d111dca-1772224432929.png","Meal Ticket":"/api/media/file/relics-69a1ef5a8127613d6d111dcd-1772224434209.png","Meat on the Bone":"/api/media/file/relics-69a1ef758127613d6d111e3b-1772224435513.png","Medical Kit":"/api/media/file/relics-69a1efe88127613d6d111f85-1772224436802.png","Membership Card":"/api/media/file/relics-69a1efea8127613d6d111f8d-1772224439392.png","Mercury Hourglass":"/api/media/file/relics-69a1ef758127613d6d111e3e-1772224440691.png","Molten Egg":"/api/media/file/relics-69a1ef768127613d6d111e41-1772224611986.png","Mummified Hand":"/api/media/file/relics-69a1ef778127613d6d111e44-1772224441972.png","Ninja Scroll":"/api/media/file/relics-69a1ef778127613d6d111e47-1772224448391.png","Nuclear Battery":"/api/media/file/relics-69a1efd78127613d6d111f5c-1772224449680.png","Nunchaku":"/api/media/file/relics-69a1ef5c8127613d6d111dd0-1772224450970.png","Oddly Smooth Stone":"/api/media/file/relics-69a1ef5c8127613d6d111dd3-1772224453548.png","Old Coin":"/api/media/file/relics-69a1efa78127613d6d111ecb-1772224454829.png","Omamori":"/api/media/file/relics-69a1ef5c8127613d6d111dd6-1772224456122.png","Orange Pellets":"/api/media/file/relics-69a1efeb8127613d6d111f90-1772224457408.png","Orichalcum":"/api/media/file/relics-69a1ef5d8127613d6d111dd9-1772224458694.png","Ornamental Fan":"/api/media/file/relics-69a1ef798127613d6d111e4c-1772224459981.png","Orrery":"/api/media/file/relics-69a1efec8127613d6d111f93-1772224461264.png","Pandora's Box":"/api/media/file/relics-69a1efc58127613d6d111f38-1772224462551.png","Pantograph":"/api/media/file/relics-69a1ef7a8127613d6d111e4f-1772224463924.png","Paper Krane":"/api/media/file/relics-69a1ef7b8127613d6d111e52-1772224696351.png","Paper Phrog":"/api/media/file/relics-69a1ef7b8127613d6d111e57-1772224697705.png","Peace Pipe":"/api/media/file/relics-69a1efaa8127613d6d111ece-1772224465203.png","Pear":"/api/media/file/relics-69a1ef7c8127613d6d111e5c-1772224466489.png","Pen Nib":"/api/media/file/relics-69a1ef5d8127613d6d111ddc-1772224467774.png","Philosopher's Stone":"/api/media/file/relics-69a1efba8127613d6d111f0a-1772224469057.png","Potion Belt":"/api/media/file/relics-69a1ef5e8127613d6d111ddf-1772224470340.png","Prayer Wheel":"/api/media/file/relics-69a1efaa8127613d6d111ed1-1772224471663.png","Preserved Insect":"/api/media/file/relics-69a1ef5e8127613d6d111de2-1772224472949.png","Prismatic Shard":"/api/media/file/relics-69a1efec8127613d6d111f96-1772224474241.png","Pure Water":"/api/media/file/relics-69a1ef2a8127613d6d111d76-1772224475609.png","Question Card":"/api/media/file/relics-69a1ef7c8127613d6d111e5f-1772224476899.png","Red Mask":"/api/media/file/relics-69a1f0008127613d6d111fd9-1772224478173.png","Red Skull":"/api/media/file/relics-69a1ef5f8127613d6d111de5-1772224479455.png","Regal Pillow":"/api/media/file/relics-69a1ef618127613d6d111dea-1772224480740.png","Ring of the Serpent":"/api/media/file/relics-69a1efc08127613d6d111f23-1772224482021.png","Ring of the Snake":"/api/media/file/relics-69a1ef298127613d6d111d6e-1772224483309.png","Runic Capacitor":"/api/media/file/relics-69a1efee8127613d6d111f99-1772224484593.png","Runic Cube":"/api/media/file/relics-69a1efda8127613d6d111f66-1772224485873.png","Runic Dome":"/api/media/file/relics-69a1efba8127613d6d111f0d-1772224487162.png","Runic Pyramid":"/api/media/file/relics-69a1efc48127613d6d111f35-1772224488445.png","Sacred Bark":"/api/media/file/relics-69a1efcd8127613d6d111f47-1772224489730.png","Self-Forming Clay":"/api/media/file/relics-69a1ef7d8127613d6d111e62-1772224491004.png","Shovel":"/api/media/file/relics-69a1efab8127613d6d111ed4-1772224492287.png","Shuriken":"/api/media/file/relics-69a1ef7e8127613d6d111e67-1772224493561.png","Singing Bowl":"/api/media/file/relics-69a1ef7e8127613d6d111e6a-1772224494854.png","Slaver's Collar":"/api/media/file/relics-69a1efbd8127613d6d111f1b-1772224496175.png","Smiling Mask":"/api/media/file/relics-69a1ef618127613d6d111ded-1772224497455.png","Snecko Eye":"/api/media/file/relics-69a1efc38127613d6d111f32-1772224498737.png","Snecko Skull":"/api/media/file/relics-69a1ef638127613d6d111df0-1772224700407.png","Sozu":"/api/media/file/relics-69a1efbb8127613d6d111f10-1772224500041.png","Stone Calendar":"/api/media/file/relics-69a1efac8127613d6d111ed7-1772224503955.png","Strange Spoon":"/api/media/file/relics-69a1efef8127613d6d111fa1-1772224505234.png","Strawberry":"/api/media/file/relics-69a1ef648127613d6d111df5-1772224506509.png","Strike Dummy":"/api/media/file/relics-69a1ef7f8127613d6d111e6d-1772224507849.png","Sundial":"/api/media/file/relics-69a1ef808127613d6d111e70-1772224509127.png","Symbiotic Virus":"/api/media/file/relics-69a1ef818127613d6d111e73-1772224510406.png","Teardrop Locket":"/api/media/file/relics-69a1ef818127613d6d111e78-1772224511889.png","The Abacus":"/api/media/file/relics-69a1eff08127613d6d111fa4-1772224513168.png","The Boot":"/api/media/file/relics-69a1ef658127613d6d111df8-1772224701760.png","The Courier":"/api/media/file/relics-69a1ef828127613d6d111e7d-1772224514447.png","The Specimen":"/api/media/file/relics-69a1efad8127613d6d111eda-1772224515737.png","Thread and Needle":"/api/media/file/relics-69a1efad8127613d6d111edf-1772224517020.png","Tingsha":"/api/media/file/relics-69a1efae8127613d6d111ee2-1772224518294.png","Tiny Chest":"/api/media/file/relics-69a1ef658127613d6d111dfb-1772224519582.png","Tiny House":"/api/media/file/relics-69a1efcf8127613d6d111f4a-1772224520859.png","Toolbox":"/api/media/file/relics-69a1eff18127613d6d111fa7-1772224522137.png","Torii":"/api/media/file/relics-69a1efaf8127613d6d111ee7-1772224523416.png","Tough Bandages":"/api/media/file/relics-69a1efb08127613d6d111eea-1772224524696.png","Toxic Egg":"/api/media/file/relics-69a1ef838127613d6d111e80-1772224613557.png","Toy Ornithopter":"/api/media/file/relics-69a1ef668127613d6d111dfe-1772224525989.png","Tungsten Rod":"/api/media/file/relics-69a1efb18127613d6d111eef-1772224527276.png","Turnip":"/api/media/file/relics-69a1efb28127613d6d111ef2-1772224528555.png","Twisted Funnel":"/api/media/file/relics-69a1eff28127613d6d111faa-1772224529838.png","Unceasing Top":"/api/media/file/relics-69a1efb38127613d6d111ef5-1772224531119.png","Vajra":"/api/media/file/relics-69a1ef668127613d6d111e01-1772224532411.png","Velvet Choker":"/api/media/file/relics-69a1efbb8127613d6d111f13-1772224533688.png","Violet Lotus":"/api/media/file/relics-69a1efd18127613d6d111f4d-1772224615449.png","War Paint":"/api/media/file/relics-69a1ef678127613d6d111e04-1772224534980.png","Warped Tongs":"/api/media/file/relics-69a1f0028127613d6d111fe2-1772224536314.png","Whetstone":"/api/media/file/relics-69a1ef678127613d6d111e07-1772224537611.png","White Beast Statue":"/api/media/file/relics-69a1ef848127613d6d111e83-1772224538901.png","Wing Boots":"/api/media/file/relics-69a1efb48127613d6d111ef8-1772224703101.png","Wrist Blade":"/api/media/file/relics-69a1efd38127613d6d111f52-1772224540361.png"};
+const LOADED_DIE_IMAGE="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' rx='11' fill='%23eadcae' stroke='%236e531c' stroke-width='4'/%3E%3Ccircle cx='19' cy='19' r='4' fill='%233c2d14'/%3E%3Ccircle cx='45' cy='19' r='4' fill='%233c2d14'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23a32e32'/%3E%3Ccircle cx='19' cy='45' r='4' fill='%233c2d14'/%3E%3Ccircle cx='45' cy='45' r='4' fill='%233c2d14'/%3E%3C/svg%3E";
+const STARTER_DECKS={"Soldat de fer": [{"name": "Strike", "qty": 5, "upgraded": 0}, {"name": "Defend", "qty": 4, "upgraded": 0}, {"name": "Bash", "qty": 1, "upgraded": 0}], "La Silencieuse": [{"name": "Strike", "qty": 5, "upgraded": 0}, {"name": "Defend", "qty": 5, "upgraded": 0}, {"name": "Neutralize", "qty": 1, "upgraded": 0}, {"name": "Survivor", "qty": 1, "upgraded": 0}], "Le Défectueux": [{"name": "Strike", "qty": 4, "upgraded": 0}, {"name": "Defend", "qty": 4, "upgraded": 0}, {"name": "Dualcast", "qty": 1, "upgraded": 0}, {"name": "Zap", "qty": 1, "upgraded": 0}], "La Gardienne": [{"name": "Strike", "qty": 4, "upgraded": 0}, {"name": "Defend", "qty": 4, "upgraded": 0}, {"name": "Eruption", "qty": 1, "upgraded": 0}, {"name": "Vigilance", "qty": 1, "upgraded": 0}]};
+const STARTER_RELIC={"Soldat de fer": "Burning Blood", "La Silencieuse": "Ring of the Snake", "Le Défectueux": "Cracked Core", "La Gardienne": "Pure Water"};
+const POTION_CATALOG=["Ancient Potion", "Attack Potion", "Blessing of the Forge", "Block Potion", "Blood Potion", "Bottled Miracle", "Colorless Potion", "Cultist Potion", "Cunning Potion", "Dexterity Potion", "Distilled Chaos", "Duplication Potion", "Elixir", "Energy Potion", "Entropic Brew", "Essence of Darkness", "Essence of Steel", "Explosive Potion", "Fairy in a Bottle", "Fear Potion", "Fire Potion", "Flex Potion", "Focus Potion", "Fruit Juice", "Gambler's Brew", "Ghost in a Jar", "Heart of Iron", "Liquid Bronze", "Liquid Memories", "Power Potion", "Potion of Capacity", "Poison Potion", "Regen Potion", "Skill Potion", "Smoke Bomb", "Snecko Oil", "Speed Potion", "Strength Potion", "Swift Potion", "Weak Potion"];
+const POTION_FR={"Ancient Potion": "Potion antique", "Attack Potion": "Potion d’attaque", "Blessing of the Forge": "Bénédiction de la forge", "Block Potion": "Potion de blocage", "Blood Potion": "Potion de sang", "Bottled Miracle": "Miracle en bouteille", "Colorless Potion": "Potion incolore", "Cultist Potion": "Potion de cultiste", "Cunning Potion": "Potion de ruse", "Dexterity Potion": "Potion de dextérité", "Distilled Chaos": "Chaos distillé", "Duplication Potion": "Potion de duplication", "Elixir": "Élixir", "Energy Potion": "Potion d’énergie", "Entropic Brew": "Infusion entropique", "Essence of Darkness": "Essence des ténèbres", "Essence of Steel": "Essence d’acier", "Explosive Potion": "Potion explosive", "Fairy in a Bottle": "Fée en bouteille", "Fear Potion": "Potion de peur", "Fire Potion": "Potion de feu", "Flex Potion": "Potion de flexibilité", "Focus Potion": "Potion de concentration", "Fruit Juice": "Jus de fruit", "Gambler's Brew": "Breuvage du joueur", "Ghost in a Jar": "Fantôme en bocal", "Heart of Iron": "Cœur de fer", "Liquid Bronze": "Bronze liquide", "Liquid Memories": "Souvenirs liquides", "Power Potion": "Potion de pouvoir", "Potion of Capacity": "Potion de capacité", "Poison Potion": "Potion de poison", "Regen Potion": "Potion de régénération", "Skill Potion": "Potion de compétence", "Smoke Bomb": "Bombe fumigène", "Snecko Oil": "Huile de Snecko", "Speed Potion": "Potion de vitesse", "Strength Potion": "Potion de force", "Swift Potion": "Potion de célérité", "Weak Potion": "Potion de faiblesse"};
+const CHARACTER_IMAGE={"Soldat de fer": "Ironclad.png", "La Silencieuse": "Silent.png", "Le Défectueux": "Defect.png", "La Gardienne": "Watcher.png"};
+const ENERGY_PLUS_RELICS=["Busted Crown", "Coffee Dripper", "Cursed Key", "Ectoplasm", "Fusion Hammer", "Mark of Pain", "Philosopher's Stone", "Runic Dome", "Sozu", "Velvet Choker"];
+const ENERGY_CONDITIONAL={"Slaver's Collar": "+1 énergie pendant les combats Élite et Boss", "Hovering Kite": "+1 énergie la première fois que tu défausses une carte pendant ton tour", "Violet Lotus": "+1 énergie supplémentaire quand tu quittes Calme", "Nuclear Battery": "Commence avec un Orbe Plasma (source d’énergie, pas +1 permanent)"};
+
+
+
+// ===== Gestionnaire de partie local =====
+const STS_KEY='sts_tbg_saves_v1', STS_PROGRESS='sts_tbg_progress_v1';
+const gamePanel=document.getElementById('gamePanel');
+const chars=['Soldat de fer','La Silencieuse','Le Défectueux','La Gardienne'];
+const loadJSON=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const saveJSON=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function showPanel(x){gamePanel.hidden=false;gamePanel.innerHTML=x;gamePanel.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function newGame(){
+ showPanel(`<h3>✨ Nouvelle partie</h3><div class="gm-row"><label>Nom de la partie <input id="gname" class="gm-input" value="Partie ${new Date().toLocaleDateString('fr-FR')}"></label>
+ <label>Joueurs <select id="gcount" class="gm-select">${[1,2,3,4].map(n=>`<option>${n}</option>`).join('')}</select></label>
+ <label>Acte de départ <select id="gact" class="gm-select"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+ <button class="gm-btn" id="createGame">Créer</button></div><p class="muted">En solo, la relique <strong>Dé pipé</strong> est ajoutée automatiquement avec la relique de départ.</p>`);
+ document.getElementById('createGame').onclick=()=>{
+  const n=+document.getElementById('gcount').value;
+  const g={id:Date.now(),name:document.getElementById('gname').value||'Partie',act:+document.getElementById('gact').value,
+  created:new Date().toISOString(),updated:new Date().toISOString(),
+  players:Array.from({length:n},(_,i)=>{
+   const c=chars[i%4];
+   const startingRelics=[{name:STARTER_RELIC[c],qty:1,upgraded:0}];
+   if(n===1)startingRelics.push({name:'Loaded Die',qty:1,upgraded:0});
+   return {name:`Joueur ${i+1}`,character:c,gold:0,hp:'',cards:structuredClone(STARTER_DECKS[c]||[]),relics:startingRelics,potions:[],notes:''}
+ })};
+  let saves=loadJSON(STS_KEY,[]);saves.push(g);saveJSON(STS_KEY,saves);editGame(g.id)
+ }
+}
+function loadGames(){
+ const saves=loadJSON(STS_KEY,[]);
+ showPanel(`<h3>📂 Parties sauvegardées</h3>${saves.length?saves.map(g=>`<div class="save-card"><strong>${esc(g.name)}</strong> · Acte ${g.act} · ${g.players.length} joueur(s)
+ <div class="muted">Dernière sauvegarde : ${new Date(g.updated).toLocaleString('fr-FR')}</div>
+ <div class="gm-row"><button class="gm-btn" onclick="editGame(${g.id})">▶ Charger</button><button class="gm-btn danger" onclick="deleteGame(${g.id})">🗑 Supprimer</button></div></div>`).join(''):'<p>Aucune partie sauvegardée.</p>'}
+ <div class="gm-row"><button class="gm-btn" onclick="exportAll()">⬇ Exporter les sauvegardes</button><label class="gm-btn">⬆ Importer <input type="file" id="importSave" accept=".json" hidden></label></div>`);
+ const inp=document.getElementById('importSave'); if(inp) inp.onchange=importAll;
+}
+window.deleteGame=id=>{if(confirm('Supprimer cette sauvegarde ?')){saveJSON(STS_KEY,loadJSON(STS_KEY,[]).filter(g=>g.id!==id));loadGames()}}
+window.editGame=id=>{
+ const g=loadJSON(STS_KEY,[]).find(x=>x.id===id);if(!g)return;
+ showPanel(`<div class="gm-row"><h3 style="margin-right:auto">🎲 ${esc(g.name)}</h3><label>Acte <select id="editAct" class="gm-select">${[1,2,3,4].map(n=>`<option ${g.act===n?'selected':''}>${n}</option>`).join('')}</select></label><button class="gm-btn" id="saveGame">💾 Sauvegarder</button></div>
+ <div id="playersEdit">${g.players.map((p,i)=>playerHTML(p,i)).join('')}</div>`);
+ document.getElementById('saveGame').onclick=()=>saveEditedGame(id); document.querySelectorAll('.catalog-wrap').forEach(w=>sortCatalog(w.querySelector('.gm-btn'))); document.querySelectorAll('.player-card').forEach(updateEnergy);
+}
+
+function playerHTML(p,i){
+ const char=p.character||chars[i%4];
+ return `<div class="player-card" data-p="${i}" style="--catalog-size:105px">
+ <h4>Joueur ${i+1}</h4>
+ <div class="gm-row"><label>Nom <input class="gm-input pname" value="${esc(p.name)}"></label>
+ <label>PV <input class="gm-input php" value="${esc(p.hp)}" size="5"></label>
+ <label>Or <input type="number" class="gm-input pgold" value="${+p.gold||0}" min="0"></label></div>
+
+ <div class="character-picker">${chars.map(c=>`<button type="button" class="character-option ${char===c?'selected':''}" data-char="${c}" onclick="chooseCharacter(this)" title="${c}"><img src="${charImageURL(c)}" alt="${esc(c)}" loading="eager" decoding="async" referrerpolicy="no-referrer" data-img-type="character" data-img-name="${esc(c)}" data-img-char="${esc(c)}" data-img-stage="0" onerror="imgFallback(this)"></button>`).join('')}</div>
+ <select class="gm-select pchar character-hidden" data-prev="${char}" onchange="changeCharCatalog(this)">${chars.map(c=>`<option ${char===c?'selected':''}>${c}</option>`).join('')}</select>
+
+ <div class="energy-panel"><div class="energy-orb"><span class="energy-value">3</span></div><div class="energy-text"><b>Énergie au début du tour : <span class="energy-label">3</span></b><small class="energy-detail">Base : 3</small><div class="energy-conditions"></div></div></div>
+
+ <div class="collection-master">
+   <div class="collection-search-row">
+     <input class="master-search" placeholder="🔎 Rechercher une carte, relique ou potion…" oninput="masterCatalogSearch(this)">
+   </div>
+   <div class="category-tabs">
+     <button type="button" class="category-tab active" data-cat="all" onclick="setCategoryView(this,'all')">Tout</button>
+     <button type="button" class="category-tab" data-cat="cards" onclick="setCategoryView(this,'cards')">🃏 Cartes</button>
+     <button type="button" class="category-tab" data-cat="relics" onclick="setCategoryView(this,'relics')">💎 Reliques</button>
+     <button type="button" class="category-tab" data-cat="potions" onclick="setCategoryView(this,'potions')">🧪 Potions</button>
+   </div>
+ </div>
+
+ ${catalogEditor('🃏 Cartes du deck','cards',char,p.cards||[],true)}
+ ${catalogEditor('💎 Reliques','relics',char,p.relics||[],false)}
+ ${catalogEditor('🧪 Potions','potions',char,p.potions||[],false)}
+ <label>Notes de reprise<textarea class="gm-textarea pnotes" placeholder="Boss, salle, effets à retenir…">${esc(p.notes)}</textarea></label>
+ </div>`
+}
+window.chooseCharacter=btn=>{
+ const card=btn.closest('.player-card'),sel=card.querySelector('.pchar'),old=sel.value,next=btn.dataset.char;
+ if(old!==next&&!confirm('Changer de personnage remet le deck et la relique de départ à zéro pour ce joueur. Continuer ?'))return;
+ card.querySelectorAll('.character-option').forEach(x=>x.classList.toggle('selected',x===btn));
+ sel.value=next;sel.dataset.prev=next;changeCharCatalog(sel,true)
+}
+function normalizeOwned(items){
+ return (items||[]).map(x=>{
+   if(typeof x==='string')return {name:x,qty:1,upgraded:0};
+   return {name:x.name,qty:Number(x.qty??1),upgraded:Number(typeof x.upgraded==='boolean'?(x.upgraded?1:0):(x.upgraded??0))}
+ })
+}
+function displayFR(name,key){
+ if(key==='relics')return RELIC_FR[name]||name;
+ if(key==='potions')return POTION_FR[name]||name;
+ return CARD_FR[name]||name
+}
+function compactArtName(name){
+ return name.replace(/[’']/g,'').split(/[^A-Za-z0-9]+/).filter(Boolean).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join('')
+}
+function cardImagePath(name,char){
+ const group=CARD_IMAGE_GROUP[char]||'colorless',file=CARD_IMAGE_FILE_OVERRIDES[name]||name;
+ return `/images/cards/${group}/${encodeURIComponent(file)}.png`
+}
+function charImageURL(char){
+ return `${IMAGE_HOSTS.catalogue}/images/characters/${encodeURIComponent(CHARACTER_IMAGE[char]||'Ironclad.png')}`
+}
+function cardArtURL(name,char){
+ return IMAGE_HOSTS.catalogue+cardImagePath(name,char)
+}
+function potionArtURL(name){
+ const file=POTION_IMAGE_FILE[name]||compactArtName(name);
+ return `${IMAGE_HOSTS.catalogue}/images/potions/${encodeURIComponent(file)}.png`
+}
+function relicArtURL(name){
+ if(name==='Loaded Die')return LOADED_DIE_IMAGE;
+ const path=RELIC_IMAGE_PATH[name];
+ return path?IMAGE_HOSTS.reliques+path:`${IMAGE_HOSTS.catalogue}/images/relics/${encodeURIComponent(compactArtName(name))}.png`
+}
+function imageCandidates(type,name,char){
+ if(type==='character')return [charImageURL(char||name)];
+ if(type==='card')return [cardArtURL(name,char)];
+ if(type==='relic'){
+   if(name==='Loaded Die')return [LOADED_DIE_IMAGE];
+   const urls=[relicArtURL(name),`${IMAGE_HOSTS.catalogue}/images/relics/${encodeURIComponent(compactArtName(name))}.png`];
+   return [...new Set(urls.filter(Boolean))]
+ }
+ if(type==='potion')return [potionArtURL(name)];
+ return []
+}
+function primaryImageURL(type,name,char){
+ return imageCandidates(type,name,char)[0]||''
+}
+window.imgFallback=img=>{
+ const type=img.dataset.imgType||'',name=img.dataset.imgName||'',char=img.dataset.imgChar||'';
+ const urls=imageCandidates(type,name,char),next=Number(img.dataset.imgStage||0)+1;
+ if(next<urls.length){
+   img.dataset.imgStage=String(next);
+   img.src=urls[next];
+   return
+ }
+ img.onerror=null;
+ const label=name||char||'Illustration indisponible';
+ const marker=type==='relic'?'💎':type==='potion'?'🧪':type==='card'?'🃏':'?';
+ img.parentElement.innerHTML=`<span class="fallback-visual" role="img" aria-label="${esc(label)}"><span aria-hidden="true" style="font-size:1.4rem">${marker}</span><small>${esc(label)}</small></span>`
+}
+function catalogEditor(title,key,char,owned,upgrade){
+ let o=normalizeOwned(owned);
+ if(key==='relics'||key==='potions')o=o.map(x=>({...x,qty:x.qty>0?1:0,upgraded:0}));
+ const map=new Map(o.map(x=>[x.name,x]));
+ const cat=(key==='cards'?(CARD_CATALOG[char]||[]):key==='relics'?RELIC_CATALOG:POTION_CATALOG).slice();
+ o.forEach(x=>{if(!cat.includes(x.name))cat.push(x.name)});
+ const color={'Soldat de fer':'#d85f56','La Silencieuse':'#5fbd7a','Le Défectueux':'#5d91d7','La Gardienne':'#9b72d2'}[char]||'#777';
+ const total=o.reduce((s,x)=>s+x.qty,0);
+ return `<section class="catalog-wrap category-section" data-key="${key}" data-upgrade="${upgrade?'1':'0'}" style="--char-color:${color}">
+ <div class="catalog-section-head">
+   <h4>${title} <span class="catalog-count">${total} ${key==='cards'?'carte(s)':key==='relics'?'relique(s)':'potion(s)'}</span></h4>
+   <button class="collapse-btn" type="button" onclick="toggleCategoryCollapse(this)" title="Réduire / agrandir">▾</button>
+ </div>
+ ${key==='cards'?`<div class="deck-summary"><b>Deck actuel : <span class="deck-total">${total}</span> cartes</b><div class="deck-summary-list"></div></div>`:''}
+ <div class="catalog-content">
+   <div class="catalog-grid">${cat.sort((a,b)=>{
+   const aSel=Number(map.get(a)?.qty||0)>0?1:0, bSel=Number(map.get(b)?.qty||0)>0?1:0;
+   return (bSel-aSel)||displayFR(a,key).localeCompare(displayFR(b,key),'fr')
+ }).map(name=>catalogItem(name,map.get(name)||{qty:0,upgraded:0},upgrade,char,key)).join('')}</div>
+ </div>
+ </section>`
+}
+
+
+function catalogItem(name,state,upgrade,char,key){
+ const isUnique=key==='relics'||key==='potions';
+ const qty=isUnique?(Number(state.qty||0)>0?1:0):Number(state.qty||0);
+ const up=Math.min(Number(state.upgraded||0),qty),selected=qty>0;
+ const fr=displayFR(name,key);
+ const isStarter=(STARTER_DECKS[char]||[]).some(x=>x.name===name)||(key==='relics'&&STARTER_RELIC[char]===name);
+
+ return `<div class="catalog-item catalog-character ${key==='relics'?'relic-item':key==='potions'?'potion-item':''} ${selected?'selected':''} ${up>0?'upgraded':''}"
+ data-name="${esc(name)}"
+ data-search="${esc((fr+' '+name).toLowerCase())}"
+ data-qty="${qty}"
+ data-up="${up}"
+ ${isUnique?`onclick="toggleUniqueItem(this)"`:''}>
+
+ <div class="catalog-imgbox ${isUnique?'object-imgbox':''}">
+   <span class="image-placeholder" hidden>${key==='relics'?(name==='Loaded Die'?'🎲':'💎'):key==='potions'?'🧪':'🃏'}</span>
+   <img class="${isUnique?'object-art':'card-art'}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+        src="${primaryImageURL(key==='relics'?'relic':key==='potions'?'potion':'card',name,char)}"
+        alt="${esc(fr)}"
+        data-img-type="${key==='relics'?'relic':key==='potions'?'potion':'card'}"
+        data-img-name="${esc(name)}"
+        data-img-char="${esc(char)}"
+        data-img-stage="0"
+        onerror="imgFallback(this)">
+ </div>
+
+ <div class="catalog-body">
+   <span class="cat-check">✓</span>
+   <div class="cat-name">${esc(fr)}</div>
+   ${fr!==name?`<div class="cat-en">${esc(name)}</div>`:''}
+   ${isStarter?'<div class="starting-tag">★ Carte / relique de départ</div>':(key==='relics'&&name==='Loaded Die'?'<div class="starting-tag">🎲 Relique solo de départ</div>':'')}
+   <div class="cat-sub">${selected?'Dans la partie':'Non sélectionnée'}</div>
+
+   ${isUnique?'':`<div class="qty-row">
+     <div class="qty-controls">
+       <button class="qty-btn" type="button" onclick="changeQty(event,this,-1)">−</button>
+       <span class="qty-num">${qty}</span>
+       <button class="qty-btn" type="button" onclick="changeQty(event,this,1)">+</button>
+     </div>
+     ${upgrade&&selected?`<div class="up-controls">★ améliorée
+       <button class="qty-btn" type="button" onclick="changeUp(event,this,-1)">−</button>
+       <span class="up-num">${up}</span>
+       <button class="qty-btn" type="button" onclick="changeUp(event,this,1)">+</button>
+     </div>`:''}
+   </div>`}
+ </div>
+ </div>`
+}
+
+window.toggleUniqueItem=item=>{
+ const wrap=item.closest('.catalog-wrap');
+ const selected=Number(item.dataset.qty||0)>0;
+
+ item.dataset.qty=selected?'0':'1';
+ item.dataset.up='0';
+ item.classList.toggle('selected',!selected);
+ item.classList.remove('upgraded');
+
+ const sub=item.querySelector('.cat-sub');
+ if(sub)sub.textContent=!selected?'Dans la partie':'Non sélectionnée';
+
+ updateCatalogCount(wrap);
+ sortCatalog(item);
+
+ if(wrap.dataset.key==='relics'){
+   updateEnergy(item.closest('.player-card'));
+ }
+}
+window.changeQty=(ev,btn,delta)=>{
+ ev.stopPropagation();const item=btn.closest('.catalog-item'),wrap=item.closest('.catalog-wrap');
+ let q=Math.max(0,Number(item.dataset.qty||0)+delta);let up=Math.min(Number(item.dataset.up||0),q);
+ item.dataset.qty=q;item.dataset.up=up;item.classList.toggle('selected',q>0);item.classList.toggle('upgraded',up>0);
+ item.querySelector('.qty-num').textContent=q;item.querySelector('.cat-sub').textContent=q>0?'Dans la partie':'Non sélectionnée';
+ refreshUpgradeControls(item);updateCatalogCount(wrap);sortCatalog(item);if(wrap.dataset.key==='relics')updateEnergy(item.closest('.player-card'))
+}
+window.changeUp=(ev,btn,delta)=>{
+ ev.stopPropagation();const item=btn.closest('.catalog-item'),q=Number(item.dataset.qty||0);
+ let u=Math.max(0,Math.min(q,Number(item.dataset.up||0)+delta));item.dataset.up=u;item.classList.toggle('upgraded',u>0);
+ refreshUpgradeControls(item);updateCatalogCount(item.closest('.catalog-wrap'))
+}
+function refreshUpgradeControls(item){
+ const wrap=item.closest('.catalog-wrap'),upgrade=wrap.dataset.upgrade==='1',q=Number(item.dataset.qty||0),u=Number(item.dataset.up||0);
+ let area=item.querySelector('.up-controls');
+ if(upgrade&&q>0){
+  if(!area){item.querySelector('.qty-row').insertAdjacentHTML('beforeend',`<div class="up-controls">★ améliorée <button class="qty-btn" type="button" onclick="changeUp(event,this,-1)">−</button><span class="up-num">${u}</span><button class="qty-btn" type="button" onclick="changeUp(event,this,1)">+</button></div>`)}
+  else area.querySelector('.up-num').textContent=u
+ } else if(area) area.remove()
+}
+
+window.sortCatalog=el=>{
+ const wrap=el.closest('.catalog-wrap');
+ if(!wrap)return;
+ const grid=wrap.querySelector('.catalog-grid'),key=wrap.dataset.key;
+
+ [...grid.children].sort((a,b)=>{
+   const aSel=Number(a.dataset.qty||0)>0?1:0;
+   const bSel=Number(b.dataset.qty||0)>0?1:0;
+   return (bSel-aSel)||displayFR(a.dataset.name,key).localeCompare(displayFR(b.dataset.name,key),'fr');
+ }).forEach(x=>grid.appendChild(x));
+
+ updateDeckSummary(wrap)
+}
+
+window.masterCatalogSearch=input=>{
+ const card=input.closest('.player-card'),q=input.value.trim().toLowerCase(),searching=!!q;
+ card.classList.toggle('catalog-searching',searching);
+ card.querySelectorAll('.category-section').forEach(sec=>{
+   let hits=0;
+   sec.querySelectorAll('.catalog-item').forEach(item=>{
+     const ok=!q||item.dataset.search.includes(q);
+     item.style.display=ok?'':'none'; if(ok)hits++;
+   });
+   sec.classList.toggle('search-no-hit',searching&&hits===0);
+ });
+}
+
+window.setCategoryView=(btn,key)=>{
+ const card=btn.closest('.player-card');
+ card.querySelectorAll('.category-tab').forEach(b=>b.classList.toggle('active',b===btn));
+ card.dataset.categoryView=key;
+ card.querySelectorAll('.category-section').forEach(sec=>{
+   sec.classList.toggle('category-filter-hidden',key!=='all'&&sec.dataset.key!==key);
+ });
+}
+window.toggleCategoryCollapse=btn=>{
+ const sec=btn.closest('.category-section');
+ sec.classList.toggle('collapsed');
+ btn.textContent=sec.classList.contains('collapsed')?'▸':'▾';
+}
+function updateCatalogCount(wrap){
+ const total=[...wrap.querySelectorAll('.catalog-item')].reduce((s,x)=>s+Number(x.dataset.qty||0),0);
+ wrap.querySelector('.catalog-count').textContent=total+' '+(wrap.dataset.key==='cards'?'carte(s)':'relique(s)');
+ if(wrap.dataset.key==='cards')updateDeckSummary(wrap)
+}
+function updateDeckSummary(wrap){
+ if(wrap.dataset.key!=='cards')return;const list=wrap.querySelector('.deck-summary-list'),key=wrap.dataset.key;
+ const selected=[...wrap.querySelectorAll('.catalog-item')].filter(x=>Number(x.dataset.qty)>0);
+ wrap.querySelector('.deck-total').textContent=selected.reduce((s,x)=>s+Number(x.dataset.qty),0);
+ list.innerHTML=selected.sort((a,b)=>displayFR(a.dataset.name,key).localeCompare(displayFR(b.dataset.name,key),'fr')).map(x=>`<span class="deck-chip">${Number(x.dataset.qty)}× ${esc(displayFR(x.dataset.name,key))}${Number(x.dataset.up)>0?' · ★'+x.dataset.up:''}</span>`).join('')
+}
+
+window.changeCharCatalog=(sel,skipConfirm=false)=>{
+ const card=sel.closest('.player-card'),old=sel.dataset.prev||'',next=sel.value;
+ if(!skipConfirm&&old&&old!==next&&!confirm('Changer de personnage remet le deck et la relique de départ à zéro pour ce joueur. Continuer ?')){sel.value=old;return}
+ sel.dataset.prev=next;card.querySelectorAll('.character-option').forEach(b=>b.classList.toggle('selected',b.dataset.char===next));
+ const cardsWrap=card.querySelector('.catalog-wrap[data-key="cards"]'),relicWrap=card.querySelector('.catalog-wrap[data-key="relics"]');
+ const temp=document.createElement('div');temp.innerHTML=catalogEditor('🃏 Cartes du deck','cards',next,structuredClone(STARTER_DECKS[next]||[]),true);cardsWrap.replaceWith(temp.firstElementChild);
+ const temp2=document.createElement('div');temp2.innerHTML=catalogEditor('💎 Reliques','relics',next,[{name:STARTER_RELIC[next],qty:1,upgraded:0}],false);relicWrap.replaceWith(temp2.firstElementChild);
+ card.querySelectorAll('.catalog-wrap').forEach(w=>sortCatalog(w.querySelector('.gm-btn')));updateEnergy(card)
+}
+
+function updateEnergy(card){
+ const relicWrap=card.querySelector('.catalog-wrap[data-key="relics"]');if(!relicWrap)return;
+ const selected=[...relicWrap.querySelectorAll('.catalog-item')].filter(x=>Number(x.dataset.qty)>0).map(x=>x.dataset.name);
+ const plus=selected.filter(x=>ENERGY_PLUS_RELICS.includes(x));
+ const energy=Math.min(6,3+plus.length);
+ card.querySelector('.energy-value').textContent=energy;card.querySelector('.energy-label').textContent=energy;
+ card.querySelector('.energy-detail').textContent=plus.length?`Base 3 + ${plus.length} grâce à : ${plus.map(x=>displayFR(x,'relics')).join(', ')}`:'Base : 3';
+ const cond=selected.filter(x=>ENERGY_CONDITIONAL[x]);
+ card.querySelector('.energy-conditions').innerHTML=cond.map(x=>`<span class="energy-condition">${esc(displayFR(x,'relics'))} : ${esc(ENERGY_CONDITIONAL[x])}</span>`).join(' ');
+}
+function collectionEditor(title,key,items,upgrade,i){
+ return `<h4>${title}</h4><div class="item-list ${key}-list">${(items||[]).map((x,j)=>chip(x,j,key,upgrade)).join('')}</div>
+ <div class="gm-row"><input class="gm-input add-${key}" placeholder="Nom">
+ ${upgrade?`<label><input type="checkbox" class="up-${key}"> améliorée</label>`:''}
+ <button class="gm-btn" type="button" onclick="addItem(this,'${key}',${upgrade})">+ Ajouter</button></div>`
+}
+function chip(x,j,key,upgrade){
+ const o=typeof x==='string'?{name:x,upgraded:false}:x;
+ return `<span class="item-chip ${o.upgraded?'upgraded':''}" data-name="${esc(o.name)}" data-up="${o.upgraded?'1':'0'}">${o.upgraded?'★ ':''}${esc(o.name)}<button type="button" onclick="this.parentElement.remove()">×</button></span>`
+}
+function readChips(card,key){
+ const catalog=card.querySelector('.catalog-wrap[data-key="'+key+'"]');
+ if(catalog)return [...catalog.querySelectorAll('.catalog-item')].filter(c=>Number(c.dataset.qty)>0).map(c=>({name:c.dataset.name,qty:Number(c.dataset.qty),upgraded:Number(c.dataset.up||0)}));
+ return [...card.querySelectorAll('.'+key+'-list .item-chip')].map(c=>({name:c.dataset.name,upgraded:c.dataset.up==='1'}))
+}
+function saveEditedGame(id){
+ let saves=loadJSON(STS_KEY,[]),g=saves.find(x=>x.id===id);if(!g)return;
+ g.act=+document.getElementById('editAct').value;g.updated=new Date().toISOString();
+ g.players=[...document.querySelectorAll('.player-card')].map(card=>({name:card.querySelector('.pname').value,character:card.querySelector('.pchar').value,
+ hp:card.querySelector('.php').value,gold:+card.querySelector('.pgold').value||0,cards:readChips(card,'cards'),relics:readChips(card,'relics'),
+ potions:readChips(card,'potions'),notes:card.querySelector('.pnotes').value}));
+ saveJSON(STS_KEY,saves);alert('Partie sauvegardée sur cet appareil.');
+}
+function progress(){
+ let p=loadJSON(STS_PROGRESS,{ascension:0,unlocks:[],current:[]});
+ showPanel(`<h3>🏆 Ascensions & déblocages</h3>
+ <div class="progress-card"><label>Niveau d’Ascension débloqué <select id="ascLvl" class="gm-select">${Array.from({length:14},(_,i)=>`<option value="${i}" ${p.ascension===i?'selected':''}>${i}</option>`).join('')}</select></label>
+ <p class="muted">Le suivi ci-dessous sert de pense-bête pour le matériel que tu as réellement débloqué. Il n’invente pas automatiquement le contenu des paquets.</p></div>
+ <div class="progress-card"><h4>Déblocages permanents</h4><div id="unlockList">${(p.unlocks||[]).map((x,i)=>`<div class="checkrow"><input type="checkbox" checked disabled><span>${esc(x)}</span><button class="gm-btn danger" onclick="this.parentElement.remove()">×</button></div>`).join('')}</div>
+ <div class="gm-row"><input id="unlockName" class="gm-input" placeholder="Carte, relique ou paquet débloqué"><button class="gm-btn" id="addUnlock">+ Ajouter</button></div></div>
+ <div class="progress-card"><h4>À mettre dans la partie en cours / prochain palier</h4><div id="currentList">${(p.current||[]).map(x=>`<div class="checkrow"><input type="checkbox" ${x.done?'checked':''}><span>${esc(x.name)}</span><button class="gm-btn danger" onclick="this.parentElement.remove()">×</button></div>`).join('')}</div>
+ <div class="gm-row"><input id="currentName" class="gm-input" placeholder="Élément à ajouter / en cours"><button class="gm-btn" id="addCurrent">+ Ajouter</button></div></div>
+ <button class="gm-btn" id="saveProgress">💾 Sauvegarder la progression</button>`);
+ document.getElementById('addUnlock').onclick=()=>addCheck('unlockList','unlockName',false);
+ document.getElementById('addCurrent').onclick=()=>addCheck('currentList','currentName',true);
+ document.getElementById('saveProgress').onclick=()=>{
+  const unlocks=[...document.querySelectorAll('#unlockList .checkrow span')].map(x=>x.textContent);
+  const current=[...document.querySelectorAll('#currentList .checkrow')].map(r=>({name:r.querySelector('span').textContent,done:r.querySelector('input').checked}));
+  saveJSON(STS_PROGRESS,{ascension:+document.getElementById('ascLvl').value,unlocks,current});alert('Progression sauvegardée.');
+ }
+}
+function addCheck(list,input,check){
+ const i=document.getElementById(input);if(!i.value.trim())return;
+ document.getElementById(list).insertAdjacentHTML('beforeend',`<div class="checkrow"><input type="checkbox" ${check?'':'checked disabled'}><span>${esc(i.value.trim())}</span><button class="gm-btn danger" onclick="this.parentElement.remove()">×</button></div>`);i.value='';
+}
+window.exportAll=()=>{
+ const blob=new Blob([JSON.stringify({saves:loadJSON(STS_KEY,[]),progress:loadJSON(STS_PROGRESS,{})},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='slay-the-spire-sauvegardes.json';a.click();URL.revokeObjectURL(a.href)
+}
+window.importAll=e=>{
+ const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.saves)saveJSON(STS_KEY,d.saves);if(d.progress)saveJSON(STS_PROGRESS,d.progress);loadGames()}catch(x){alert('Fichier de sauvegarde invalide.')}};r.readAsText(f)
+}
+document.getElementById('newGameBtn').onclick=newGame;
+document.getElementById('loadGameBtn').onclick=loadGames;
+document.getElementById('progressBtn').onclick=progress;
+
+
+
+function setMainMode(mode){
+ const isGame = mode === 'partie';
+ document.body.classList.toggle('mode-partie', isGame);
+ document.body.classList.toggle('mode-regles', !isGame);
+
+ document.querySelectorAll('.main-mode').forEach(btn=>{
+   btn.classList.toggle('active', btn.dataset.mode === mode);
+ });
+
+ const target = isGame ? document.getElementById('partie') : document.querySelector('.sidebar');
+ if(target){
+   requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));
+ }
+}
+
+document.querySelectorAll('.main-mode').forEach(btn=>{
+ btn.addEventListener('click', function(){
+   setMainMode(this.dataset.mode);
+ });
+});
+
+setMainMode('partie');
+
+</script>
+</body>
+</html>
