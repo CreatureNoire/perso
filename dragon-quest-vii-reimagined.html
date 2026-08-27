@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#166a58">
+  <meta name="description" content="Carnet interactif français pour Dragon Quest VII Reimagined : aventure, fragments, mini-médailles, vocations, secrets et défis.">
+  <title>Dragon Quest VII Reimagined — Carnet des fragments</title>
+  <style>
+    :root{
+      --ink:#20352f;--muted:#62766f;--paper:#fffaf0;--paper-2:#f6eedc;
+      --green:#176b59;--green-2:#0f5146;--mint:#dff4e8;--gold:#e8a928;
+      --orange:#e97632;--red:#cc4d43;--blue:#4388b9;--shadow:0 14px 34px #18392b24;
+      --radius:20px;--line:#d9d0b8;--focus:#1d6fc4;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);background:
+      radial-gradient(circle at 15% 12%,#fff7c7 0 4%,transparent 4.2%),
+      radial-gradient(circle at 87% 20%,#d7f5ea 0 7%,transparent 7.2%),
+      linear-gradient(180deg,#cceee7 0 300px,#edf3df 520px,#efe5ca 100%);
+      font-family:ui-rounded,"Trebuchet MS",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      min-height:100vh;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:
+      linear-gradient(30deg,#ffffff55 12%,transparent 12.5%,transparent 87%,#ffffff55 87.5%),
+      linear-gradient(150deg,#ffffff55 12%,transparent 12.5%,transparent 87%,#ffffff55 87.5%);
+      background-size:42px 74px;z-index:-1}
+    button,input,select{font:inherit}
+    button{color:inherit}
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    [hidden]{display:none!important}
+    a{color:var(--green-2)}
+    .skip{position:fixed;left:12px;top:-60px;background:#fff;padding:10px 14px;border-radius:10px;z-index:1000}
+    .skip:focus{top:12px}
+    .cloud-bar{display:none;position:sticky;top:0;z-index:90;align-items:center;gap:10px;min-height:42px;padding:7px max(14px,env(safe-area-inset-left));background:#103c35;color:#fff;box-shadow:0 3px 12px #0003;font-size:.82rem}
+    .cloud-bar.show{display:flex}
+    .cloud-dot{width:9px;height:9px;border-radius:50%;background:#8be6b6;box-shadow:0 0 0 4px #8be6b62b;flex:none}
+    .cloud-status{margin-left:auto;color:#d6eee7}
+    .cloud-status.ok{color:#a7f0c9}.cloud-status.warn{color:#ffe18b}.cloud-status.err{color:#ffb0a9}
+    .cloud-bar button{border:1px solid #ffffff55;background:#ffffff12;color:#fff;border-radius:999px;padding:5px 10px;cursor:pointer}
+    .wrap{width:min(1180px,calc(100% - 28px));margin:0 auto}
+    .hero{position:relative;padding:38px 0 24px;isolation:isolate}
+    .hero-card{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr 230px;gap:24px;align-items:center;padding:34px clamp(22px,5vw,58px);border:2px solid #ffffff9a;border-radius:34px;background:linear-gradient(120deg,#fffdf3e8,#fff8d3db);box-shadow:var(--shadow)}
+    .hero-card:before,.hero-card:after{content:"";position:absolute;border-radius:50%;z-index:-1}
+    .hero-card:before{width:280px;height:280px;right:-105px;top:-125px;background:#68c4a6}
+    .hero-card:after{width:160px;height:160px;right:95px;bottom:-100px;background:#ffd56c}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 10px;padding:6px 11px;border-radius:999px;background:#e6f5e9;color:#28604f;font-weight:900;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:0;max-width:760px;color:#164e43;font-size:clamp(2rem,5.2vw,4rem);line-height:.98;letter-spacing:-.05em;text-wrap:balance}
+    h1 span{display:block;color:var(--orange);font-size:.48em;letter-spacing:.01em;margin-top:10px}
+    .hero-copy{max-width:700px;margin:17px 0 0;color:#536961;line-height:1.6}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:13px;padding:11px 15px;background:#fff;color:var(--ink);box-shadow:0 5px 15px #173c2e1a;font-weight:900;cursor:pointer;transition:.18s transform,.18s box-shadow}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #173c2e29}.btn.primary{background:var(--green);color:#fff}.btn.danger{color:#a42f28;background:#fff3ef}
+    .slime-stage{display:grid;place-items:center;min-height:200px;filter:drop-shadow(0 16px 12px #1d4c3940)}
+    .slime{position:relative;width:170px;height:134px;border-radius:50% 50% 45% 45% / 58% 58% 42% 42%;background:linear-gradient(145deg,#53aade,#1e75ad);border:4px solid #174e75;transform:rotate(-2deg);animation:float 3.6s ease-in-out infinite}
+    .slime:before{content:"";position:absolute;left:61px;top:-39px;width:48px;height:65px;border-radius:85% 12% 60% 45%;background:#53aade;border-left:4px solid #174e75;border-top:4px solid #174e75;transform:rotate(45deg)}
+    .slime .eye{position:absolute;top:49px;width:16px;height:25px;border-radius:50%;background:#fff;border:3px solid #153d54}.slime .eye:after{content:"";position:absolute;width:6px;height:10px;border-radius:50%;background:#172b34;left:4px;top:7px}.slime .eye.left{left:43px}.slime .eye.right{right:43px}
+    .slime .mouth{position:absolute;left:58px;top:87px;width:48px;height:24px;border-bottom:6px solid #d7433d;border-radius:0 0 50% 50%;transform:rotate(2deg)}
+    .slime-badge{position:absolute;right:22px;bottom:16px;border:3px solid #b67a12;background:#ffdc74;color:#69490d;padding:7px 10px;border-radius:999px;font-size:.8rem;font-weight:950;transform:rotate(7deg)}
+    @keyframes float{50%{transform:translateY(-9px) rotate(2deg)}}
+    .dash{display:grid;grid-template-columns:220px 1fr 300px;gap:13px;margin-top:-4px;margin-bottom:17px}
+    .stat-card{display:flex;align-items:center;gap:12px;min-height:92px;padding:14px 16px;border:1px solid #ffffffcc;border-radius:18px;background:#ffffffd9;box-shadow:0 8px 22px #153b2d16}
+    .ring{--p:0;display:grid;place-items:center;flex:none;width:62px;height:62px;border-radius:50%;background:conic-gradient(var(--green) calc(var(--p)*1%),#dbe7df 0);position:relative}
+    .ring:after{content:"";position:absolute;inset:7px;border-radius:50%;background:#fff}
+    .ring strong{position:relative;z-index:1;font-size:.85rem}
+    .stat-copy small{display:block;color:var(--muted);font-size:.73rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.stat-copy strong{display:block;margin-top:3px;font-size:1.06rem}.stat-copy span{display:block;margin-top:3px;color:var(--muted);font-size:.75rem}
+    .quest-level{background:linear-gradient(135deg,#fff7cf,#fff)}
+    .cloud-summary{background:linear-gradient(135deg,#e4f7f0,#fff)}
+    .level-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#fff0b4;font-size:1.55rem;box-shadow:inset 0 0 0 2px #f4d676;flex:none}
+    .tab-shell{position:sticky;top:42px;z-index:70;margin-bottom:18px}
+    body:not(.online) .tab-shell{top:0}
+    .tabs{display:grid;grid-template-columns:repeat(8,minmax(105px,1fr));gap:6px;padding:8px;border:1px solid #ffffffbd;border-radius:19px;background:#fffdf3e8;box-shadow:0 10px 28px #19372a20;backdrop-filter:blur(14px);overflow-x:auto;scrollbar-width:thin}
+    .tab{border:0;border-radius:13px;background:transparent;padding:10px 8px;min-width:100px;font-weight:900;font-size:.8rem;line-height:1.15;cursor:pointer;white-space:nowrap}
+    .tab .ico{display:block;margin-bottom:4px;font-size:1.25rem}.tab.active{background:var(--green);color:#fff;box-shadow:0 5px 14px #176b5945}.tab:hover:not(.active){background:#e8f5ed}
+    .toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:10px;align-items:center;margin:0 0 17px}
+    .searchbox{position:relative}.searchbox span{position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none}.searchbox input{width:100%;height:44px;border:1px solid var(--line);border-radius:13px;background:#fffdf8;padding:0 13px 0 40px;color:var(--ink);box-shadow:0 5px 16px #153a2c12}
+    .filters{display:flex;gap:5px;padding:4px;border:1px solid var(--line);border-radius:13px;background:#fffdf8}.filter{border:0;background:transparent;border-radius:9px;padding:7px 10px;font-weight:850;font-size:.76rem;cursor:pointer}.filter.active{background:#dff1e8;color:#125b4c}
+    .panel{min-height:450px;margin-bottom:50px}
+    .panel-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:17px;padding:0 4px}.panel-head h2{margin:0;color:#174f43;font-size:clamp(1.55rem,3.5vw,2.25rem);letter-spacing:-.035em}.panel-head p{max-width:680px;margin:7px 0 0;color:var(--muted);line-height:1.5}.panel-progress{min-width:130px;text-align:right;color:var(--muted);font-weight:850}.panel-progress strong{display:block;color:var(--green);font-size:1.35rem}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{position:relative;border:1px solid #e1d7bf;border-radius:var(--radius);background:#fffdf8;box-shadow:0 8px 22px #173b2c14;overflow:hidden}
+    .card-head{padding:17px 18px 13px;border-bottom:1px dashed #ddcfad;background:linear-gradient(110deg,#fff9e8,#f8f5e8)}.card-head h3{margin:0;color:#29594d;font-size:1.05rem}.card-head p{margin:6px 0 0;color:var(--muted);font-size:.82rem;line-height:1.45}.card-body{padding:8px 14px 14px}
+    .route-card{min-height:100%}.route-card .route-number{position:absolute;right:15px;top:10px;color:#e4d6b6;font-size:3rem;font-weight:950;line-height:1}.route-card.done{border-color:#83c7a8;background:#f5fff9}.route-card.done .card-head{background:#e8f8ef}
+    .task{display:grid;grid-template-columns:34px 1fr 34px;gap:9px;align-items:start;padding:11px 2px;border-bottom:1px dashed #e8dfcb}.task:last-child{border-bottom:0}.task-main{min-width:0}.task-title{font-weight:850;line-height:1.35}.task-note{margin-top:4px;color:var(--muted);font-size:.78rem;line-height:1.42}.task.done .task-title{text-decoration:line-through;color:#788780}.task.later{background:#fff8da;border-radius:10px;padding-left:7px;padding-right:7px}.check,.later-btn{display:grid;place-items:center;width:31px;height:31px;border:2px solid #abc5b8;border-radius:10px;background:#fff;cursor:pointer;font-weight:950}.check:hover{border-color:var(--green)}.task.done .check{background:var(--green);border-color:var(--green);color:#fff}.later-btn{border-color:transparent;background:transparent;color:#b6aa8e;font-size:1.1rem}.task.later .later-btn{color:#db8a17;background:#fff0b5}
+    .tag{display:inline-flex;align-items:center;margin:5px 5px 0 0;padding:3px 7px;border-radius:999px;background:#edf3ef;color:#42645a;font-size:.68rem;font-weight:850}.tag.warn{background:#fff0d6;color:#a35a0c}.tag.spoiler{background:#f4e7f4;color:#774b7b}.tag.key{background:#e4eef9;color:#39627f}
+    .empty{grid-column:1/-1;padding:45px 20px;border:2px dashed #cfc3a8;border-radius:20px;background:#fff9;text-align:center;color:var(--muted)}
+    .fragment-groups{display:grid;gap:14px}.fragment-card{--frag:#999}.fragment-card .card-head{border-left:9px solid var(--frag);display:flex;align-items:center;justify-content:space-between;gap:12px}.fragment-card .count{padding:5px 9px;border-radius:999px;background:#fff;font-size:.77rem;font-weight:950;box-shadow:0 2px 8px #0001}.fragment-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px}.fragment{display:grid;grid-template-columns:29px 1fr;gap:8px;align-items:center;padding:8px;border:1px solid #e8deca;border-radius:11px;background:#fff;cursor:pointer;text-align:left}.fragment:hover{border-color:var(--frag)}.fragment.done{background:#eff9f3;border-color:#7dbb9d}.shard{width:22px;height:27px;background:var(--frag);clip-path:polygon(47% 0,100% 28%,84% 100%,20% 86%,0 31%);box-shadow:inset 0 0 0 3px #fff6}.fragment b{display:block;font-size:.78rem}.fragment span{display:block;color:var(--muted);font-size:.7rem;line-height:1.3;margin-top:2px}
+    .medal-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.medal-board{padding:16px}.medal-grid{display:grid;grid-template-columns:repeat(10,minmax(32px,1fr));gap:7px}.medal{aspect-ratio:1;border:2px solid #d9b452;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff7be,#e7ad31 70%);color:#704b08;font-weight:950;font-size:.74rem;cursor:pointer;box-shadow:inset 0 0 0 3px #f8d875,0 3px 6px #805b151a}.medal:hover{transform:translateY(-2px)}.medal.done{filter:saturate(.55);background:#d8e5dc;border-color:#79a88e;color:#3a6754;box-shadow:inset 0 0 0 3px #edf5f0}.medal.selected{outline:4px solid #4388b94d;outline-offset:2px}.medal.special:after{content:"★";position:absolute}.medal-info{position:sticky;top:150px;align-self:start}.medal-info .big-medal{display:grid;place-items:center;width:92px;height:92px;margin:18px auto 13px;border:5px double #c48c19;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff7be,#e7ad31 72%);color:#73510b;font-size:1.7rem;font-weight:950}.medal-info h3{text-align:center;margin:0}.medal-info p{padding:0 18px;color:var(--muted);line-height:1.55;font-size:.86rem}.medal-info .btn{width:calc(100% - 32px);margin:0 16px 17px}
+    .vocation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.vocation{padding:16px}.vocation-top{display:flex;align-items:center;gap:12px}.vocation-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#e6f1e9;font-size:1.35rem}.vocation h3{margin:0;font-size:1rem}.vocation small{color:var(--muted)}.vocation.mastered{border-color:#e4b137;background:linear-gradient(145deg,#fffdf7,#fff7cf)}.rank-row{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:14px}.rank{height:25px;border:0;border-radius:7px;background:#e6e2d6;color:#807969;font-size:.65rem;font-weight:950;cursor:pointer}.rank.on{background:var(--gold);color:#593b00}.vocation.mastered .rank.on{background:var(--green);color:#fff}.requires{min-height:34px;margin:10px 0 0;color:var(--muted);font-size:.72rem;line-height:1.4}
+    .counter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.counter-card{padding:16px}.counter-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.counter-top span:first-child{font-weight:900}.counter-top span:last-child{font-size:1.35rem}.counter-card input{width:100%;margin-top:12px;accent-color:var(--green)}.counter-number{display:flex;align-items:center;gap:7px;margin-top:10px}.counter-number input{width:100%;height:40px;margin:0;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff}.counter-number b{white-space:nowrap;color:var(--muted);font-size:.8rem}
+    .overview-hero{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:center;padding:22px;margin-bottom:14px;background:linear-gradient(135deg,#ecf8f0,#fff8d9)}.overview-ring{--p:0;display:grid;place-items:center;width:170px;height:170px;border-radius:50%;background:conic-gradient(var(--green) calc(var(--p)*1%),#d8e4dc 0);position:relative;margin:auto}.overview-ring:after{content:"";position:absolute;inset:13px;border-radius:50%;background:#fffdf8}.overview-ring strong{position:relative;z-index:1;font-size:2.1rem;color:var(--green)}.overview-hero h2{margin:0;color:#174f43;font-size:1.8rem}.overview-hero p{color:var(--muted);line-height:1.55}.overview-badges{display:flex;flex-wrap:wrap;gap:7px}.badge{padding:6px 9px;border-radius:999px;background:#fff;border:1px solid #daceb1;font-size:.73rem;font-weight:850}.badge.won{background:#dff3e7;border-color:#8ac2a2;color:#155746}
+    .overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.overview-tile{padding:16px;cursor:pointer}.overview-tile:hover{transform:translateY(-2px)}.overview-tile .tile-ico{font-size:1.5rem}.overview-tile h3{margin:9px 0 4px;font-size:.95rem}.overview-tile p{margin:0;color:var(--muted);font-size:.75rem}.progressbar{height:7px;margin-top:12px;border-radius:999px;background:#e2e8e3;overflow:hidden}.progressbar i{display:block;height:100%;border-radius:inherit;background:var(--green)}
+    .source-card{padding:18px;margin-top:14px}.source-card h3{margin:0 0 8px}.source-card p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.55}.source-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.source-links a{padding:7px 10px;border-radius:10px;background:#eaf5ef;text-decoration:none;font-weight:850;font-size:.76rem}
+    .modal-backdrop{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:18px;background:#102c2785;backdrop-filter:blur(6px)}
+    .modal{width:min(620px,100%);max-height:min(760px,90vh);overflow:auto;border:2px solid #fff;border-radius:24px;background:var(--paper);box-shadow:0 24px 70px #0c241f69}.modal-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:#fffaf0ee;backdrop-filter:blur(9px)}.modal-head h2{margin:0}.icon-btn{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:12px;background:#eee9dc;cursor:pointer;font-size:1.2rem}.modal-body{padding:20px}.settings-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.settings-block{margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}.settings-block h3{margin:0 0 8px}.settings-block p{color:var(--muted);font-size:.82rem;line-height:1.5}.switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0}.switch-row input{width:20px;height:20px;accent-color:var(--green)}
+    .auth-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:linear-gradient(150deg,#bde5db,#f4e8c8)}.auth-card{width:min(430px,100%);padding:28px;border:2px solid #fff;border-radius:26px;background:#fffaf2;box-shadow:0 24px 70px #17372f3d}.auth-logo{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 13px;border-radius:21px;background:#dff3e7;font-size:2rem}.auth-card h2{text-align:center;margin:0}.auth-card>p{text-align:center;color:var(--muted);line-height:1.5}.auth-card label{display:block;margin:12px 0 5px;font-size:.78rem;font-weight:900}.auth-card input{width:100%;height:45px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 12px}.auth-card .btn{width:100%;margin-top:16px}.auth-error{min-height:20px;margin-top:10px;color:#b3352c;font-size:.78rem;text-align:center}.auth-note{font-size:.72rem!important;margin-top:15px}.auth-note strong{color:var(--green)}
+    .toast{position:fixed;left:50%;bottom:24px;z-index:250;transform:translate(-50%,30px);opacity:0;pointer-events:none;max-width:calc(100% - 28px);padding:11px 16px;border-radius:999px;background:#123f36;color:#fff;box-shadow:0 10px 30px #0004;font-weight:850;font-size:.83rem;transition:.25s}.toast.show{transform:translate(-50%,0);opacity:1}
+    .confetti{position:fixed;z-index:240;pointer-events:none;width:9px;height:14px;border-radius:2px;animation:confetti 1.3s ease-out forwards}@keyframes confetti{to{transform:translate(var(--x),115vh) rotate(660deg);opacity:0}}
+    footer{padding:0 0 40px;text-align:center;color:#60746d;font-size:.76rem}.tiny{font-size:.7rem;color:var(--muted)}
+    @media(max-width:980px){.dash{grid-template-columns:1fr 1fr}.cloud-summary{grid-column:1/-1}.tabs{grid-template-columns:repeat(8,112px)}.grid.three,.vocation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.counter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.medal-layout{grid-template-columns:1fr}.medal-info{position:static}.medal-info .big-medal{width:70px;height:70px;margin-top:12px}.medal-info p{text-align:center}}
+    @media(max-width:720px){.wrap{width:min(100% - 18px,1180px)}.hero{padding-top:18px}.hero-card{grid-template-columns:1fr;padding:25px 20px;border-radius:25px}.slime-stage{display:none}.hero-copy{font-size:.9rem}.dash{grid-template-columns:1fr}.cloud-summary{grid-column:auto}.stat-card{min-height:76px}.tab-shell{margin-left:-2px;margin-right:-2px}.tabs{border-radius:15px}.toolbar{grid-template-columns:1fr auto}.filters{grid-column:1/-1;overflow-x:auto}.panel-head{align-items:start;flex-direction:column}.panel-progress{text-align:left}.grid,.grid.three,.vocation-grid,.counter-grid{grid-template-columns:1fr}.fragment-list{grid-template-columns:1fr}.medal-grid{grid-template-columns:repeat(5,minmax(39px,1fr));gap:9px}.overview-hero{grid-template-columns:1fr;text-align:center}.overview-ring{width:140px;height:140px}.overview-badges{justify-content:center}.settings-actions{grid-template-columns:1fr}.cloud-user{display:none}.cloud-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cloud-bar{gap:6px}.cloud-bar button{padding:5px 8px}.overview-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:420px){h1{font-size:2rem}.hero-actions{display:grid;grid-template-columns:1fr 1fr}.hero-actions .btn{padding:10px 8px;font-size:.78rem}.overview-grid{grid-template-columns:1fr}.medal-grid{grid-template-columns:repeat(5,1fr)}.task{grid-template-columns:32px 1fr 32px}.card-head{padding-left:14px;padding-right:14px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Aller au contenu</a>
+  <div id="cloudBar" class="cloud-bar show" aria-live="polite">
+    <span class="cloud-dot" aria-hidden="true"></span>
+    <strong id="cloudUser" class="cloud-user">Mode local</strong>
+    <span id="cloudStatus" class="cloud-status ok">Sauvegarde sur cet appareil</span>
+    <button id="cloudSyncNow" type="button" hidden>Synchroniser</button>
+    <button id="cloudLogout" type="button" hidden>Déconnexion</button>
+  </div>
+
+  <header class="hero wrap">
+    <div class="hero-card">
+      <div>
+        <p class="eyebrow">✦ Carnet d’aventure interactif</p>
+        <h1>Dragon Quest VII <span>Reimagined — Carnet des fragments</span></h1>
+        <p class="hero-copy">Restaure les îles, rassemble les fragments et maîtrise tes vocations. Tout se coche, se recherche et se sauvegarde automatiquement, sans gâcher l’aventure si tu masques les spoilers.</p>
+        <div class="hero-actions">
+          <button class="btn primary" id="continueBtn" type="button">🧭 Continuer l’aventure</button>
+          <button class="btn" id="settingsBtn" type="button">⚙️ Outils et sauvegarde</button>
+        </div>
+      </div>
+      <div class="slime-stage" aria-hidden="true">
+        <div class="slime"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i><span class="slime-badge" id="slimeBadge">Niv. 1</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="wrap dash" aria-label="Progression générale">
+    <div class="stat-card">
+      <div class="ring" id="overallRing"><strong id="overallPercent">0 %</strong></div>
+      <div class="stat-copy"><small>Progression</small><strong id="overallDone">0 objectifs</strong><span id="overallTotal">sur 0 suivis</span></div>
+    </div>
+    <div class="stat-card quest-level">
+      <div class="level-icon" aria-hidden="true">🗺️</div>
+      <div class="stat-copy"><small>Rang d’explorateur</small><strong id="levelName">Apprenti voyageur</strong><span id="levelHint">La carte n’attend que toi</span></div>
+    </div>
+    <div class="stat-card cloud-summary">
+      <div class="level-icon" aria-hidden="true">💾</div>
+      <div class="stat-copy"><small>Sauvegarde</small><strong id="saveMode">Locale automatique</strong><span id="saveTime">Aucune modification</span></div>
+    </div>
+  </section>
+
+  <div class="wrap tab-shell">
+    <nav id="tabs" class="tabs" aria-label="Rubriques du guide"></nav>
+  </div>
+
+  <main id="main" class="wrap">
+    <div class="toolbar" id="toolbar">
+      <label class="searchbox"><span aria-hidden="true">🔎</span><input id="search" type="search" placeholder="Rechercher dans cette rubrique…" autocomplete="off"></label>
+      <div class="filters" id="filters" aria-label="Filtrer les objectifs">
+        <button class="filter active" type="button" data-filter="all">Tous</button>
+        <button class="filter" type="button" data-filter="todo">À faire</button>
+        <button class="filter" type="button" data-filter="later">Plus tard</button>
+        <button class="filter" type="button" data-filter="done">Faits</button>
+      </div>
+      <button class="btn" id="topBtn" type="button" title="Revenir en haut">↑ Haut</button>
+    </div>
+    <section id="panel" class="panel" aria-live="polite"></section>
+  </main>
+
+  <footer class="wrap">
+    Guide personnel non officiel. Les noms et marques Dragon Quest appartiennent à leurs ayants droit. Aucun visuel du jeu n’est chargé depuis un site externe.
+  </footer>
+
+  <div id="settingsModal" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <header class="modal-head"><h2 id="settingsTitle">Outils du carnet</h2><button class="icon-btn" id="closeSettings" type="button" aria-label="Fermer">×</button></header>
+      <div class="modal-body">
+        <div class="settings-actions">
+          <button class="btn primary" id="exportBtn" type="button">⬇️ Exporter la progression</button>
+          <button class="btn" id="importBtn" type="button">⬆️ Importer une sauvegarde</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden>
+          <button class="btn" id="resetTabBtn" type="button">↺ Réinitialiser la rubrique</button>
+          <button class="btn danger" id="resetAllBtn" type="button">🗑️ Tout réinitialiser</button>
+        </div>
+        <div class="settings-block">
+          <h3>Affichage</h3>
+          <label class="switch-row"><span><strong>Afficher les détails sensibles</strong><br><span class="tiny">Révèle les notes portant la mention « spoiler ».</span></span><input id="spoilerToggle" type="checkbox"></label>
+        </div>
+        <div class="settings-block">
+          <h3>À propos du contenu</h3>
+          <p>Ce carnet vise la version <strong>Dragon Quest VII Reimagined (2026)</strong>. Il n’ajoute pas les systèmes supprimés ou propres aux anciennes versions. Les localisations françaises peuvent légèrement varier selon la plateforme et les mises à jour.</p>
+          <div class="source-links">
+            <a href="https://dragonquest.square-enix-games.com/games/en-gb/dragon-quest-vii-reimagined/" target="_blank" rel="noreferrer">Site officiel</a>
+            <a href="https://www.psthc.fr/unjeu/dragon-quest-vii-reimagined-ps5/guide-trophees.htm" target="_blank" rel="noreferrer">Guide français PSthc</a>
+            <a href="https://www.rpgsite.net/guide/19492-dragon-quest-vii-reimagined-walkthrough-where-to-go-all-mini-medals-tablet-fragments-step-by-step-guide" target="_blank" rel="noreferrer">Parcours RPG Site</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="authGate" class="auth-gate" hidden>
+    <form id="authForm" class="auth-card">
+      <div class="auth-logo" aria-hidden="true">🗝️</div>
+      <h2>Retrouver ton carnet</h2>
+      <p>Connecte-toi avec ton compte Firebase pour synchroniser la progression entre tes appareils.</p>
+      <label for="authEmail">Adresse e-mail</label><input id="authEmail" type="email" autocomplete="username" required>
+      <label for="authPassword">Mot de passe</label><input id="authPassword" type="password" autocomplete="current-password" required>
+      <button class="btn primary" id="authSubmit" type="submit">Se connecter</button>
+      <div class="auth-error" id="authError" aria-live="polite"></div>
+      <p class="auth-note"><strong>Ouverture locale :</strong> aucune connexion n’est demandée et les données restent dans le navigateur.</p>
+    </form>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  "use strict";
+  const TABS=[
+    {id:"adventure",label:"Aventure",icon:"🧭"},
+    {id:"missables",label:"À ne pas louper",icon:"⚠️"},
+    {id:"fragments",label:"Fragments",icon:"🧩"},
+    {id:"medals",label:"Mini-médailles",icon:"🪙"},
+    {id:"vocations",label:"Vocations",icon:"⚔️"},
+    {id:"secrets",label:"Quêtes & secrets",icon:"🗝️"},
+    {id:"challenges",label:"Défis & 100 %",icon:"🏆"},
+    {id:"overview",label:"Vue générale",icon:"📖"}
+  ];
+
+  const ADVENTURE=[
+    {title:"Le monde commence à s’ouvrir",subtitle:"Baie d’Alevin · Meylor · Sanctuaire des Mystères",tasks:[
+      {id:"adv-prologue-fishing",title:"Terminer La grande pêche et explorer toute la Baie d’Alevin",note:"Fouille les maisons, les tonneaux et le puits avant de suivre l’objectif principal."},
+      {id:"adv-prologue-castle",title:"Visiter le château de Meylor et son passage souterrain",note:"Plusieurs portes et coffres demanderont des clés obtenues plus tard.",tags:["retour"]},
+      {id:"adv-prologue-shrine",title:"Ouvrir le premier portail au Sanctuaire des Mystères",note:"Le fragment jaune donné ici lance réellement le voyage entre les époques."},
+      {id:"adv-prologue-demo",title:"Récupérer la Tenue de repos de Maribel si une sauvegarde de démo est présente",note:"Bonus cosmétique lié au transfert de la démo.",tags:["bonus"]}
+    ]},
+    {title:"Kerael et le mont Brûlé",subtitle:"Forêt inconnue · Kerael · La Tour · Brasilla",tasks:[
+      {id:"adv-kerael",title:"Sauver Kerael et fouiller les étages de La Tour",note:"Deux fragments et plusieurs objets de départ sont répartis entre le village et la tour."},
+      {id:"adv-volcano-past",title:"Résoudre la crise du mont Brûlé dans le passé",note:"Bats le Grand Fulminant et vérifie les couloirs latéraux avant de repartir."},
+      {id:"adv-brasilla-present",title:"Revenir à Brasilla et au mont Brûlé dans le présent",note:"Le retour dans le présent contient de nouveaux coffres, un fragment et une mini-médaille."},
+      {id:"adv-kerael-dark",title:"Vaincre le monstre sombre de cette étape",note:"Les monstres sombres sont uniques et comptent pour un objectif de collection.",tags:["monstre sombre"]}
+    ]},
+    {title:"Morfosis et les automates",subtitle:"Regenstein · Morfosis · Faraday · Fort Watt",tasks:[
+      {id:"adv-regenstein",title:"Voir l’histoire optionnelle de Regenstein",note:"Cette île grise n’est pas nécessaire à la trame principale, mais possède des trésors et une mini-médaille.",tags:["optionnel"]},
+      {id:"adv-morfosis",title:"Résoudre l’étrange métamorphose de Morfosis",note:"Cherche le fragment jaune dans la maison du maire du présent."},
+      {id:"adv-robots",title:"Traverser le Bastion des automates et libérer Faraday",note:"Le boss du bastion laisse un fragment bleu."},
+      {id:"adv-robots-present",title:"Revisiter Fort Watt et l’Institut royal d’automation",note:"Parle à Ambroise et inspecte la réserve pour récupérer les deux fragments jaunes."}
+    ]},
+    {title:"Le camp des Pérégrins",subtitle:"Grotte du lac · Perd-Pèlerin · Abbaye des Vocations",tasks:[
+      {id:"adv-pilgrims",title:"Explorer le camp, la grotte du lac et Au repos du Pèlerin",note:"Cette longue étape contient de nombreux détours, mini-médailles et deux fragments jaunes."},
+      {id:"adv-abbey",title:"Sauver l’Abbaye des Vocations",note:"Les vocations deviennent disponibles après cette histoire."},
+      {id:"adv-first-vocation",title:"Attribuer une première vocation à chaque personnage",note:"Le niveau d’un personnage et le rang de sa vocation progressent séparément."},
+      {id:"adv-bandits",title:"Trouver le Repaire des bandits dans le présent",note:"Le chef Gland remet le dernier fragment jaune de cette série.",tags:["secret"]}
+    ]},
+    {title:"Le désert et la tribu nomade",subtitle:"Al-Balad · Palais des sables · Effigie du Grand démon",tasks:[
+      {id:"adv-albalad",title:"Enquêter à Al-Balad et au Palais des sables",note:"Fouille les réserves et le sous-sol du palais dans les deux époques."},
+      {id:"adv-zora",title:"Aider Zora et restaurer l’espoir de la tribu",note:"Zora remet un fragment bleu au promontoire sur l’océan."},
+      {id:"adv-effigy",title:"Explorer entièrement l’Effigie du Grand démon",note:"Une mini-médaille se trouve dans le donjon du passé."},
+      {id:"adv-desert-present",title:"Revenir au palais et à l’effigie dans le présent",note:"De nouveaux objets deviennent accessibles après la résolution de l’histoire."}
+    ]},
+    {title:"Vives-eaux et la plus haute tour",subtitle:"La Houle · Vives-eaux · Tour Haussec",tasks:[
+      {id:"adv-aquatic",title:"Résoudre la crise de Vives-eaux et affronter Gracos",note:"Inspecte la salle au trésor de La Houle dans les deux époques."},
+      {id:"adv-gawain",title:"Retrouver sieur Gauvain et ouvrir la Tour la plus haute",note:"La progression mène à deux fragments rouges et au réveil du héros."},
+      {id:"adv-tower-high",title:"Fouiller les deux visites de la Tour Haussec",note:"Serpenlair garde un fragment turquoise dans le présent."},
+      {id:"adv-aquatic-present",title:"Revenir voir Gracos dans sa salle du trône",note:"Le combat contre Gracos V permet d’obtenir un fragment argenté.",tags:["retour"]}
+    ]},
+    {title:"Charmeville et la vallée d’Éole",subtitle:"Grand Envoûtorium · Grotte Cascadelle · Cirrus",tasks:[
+      {id:"adv-charmeville",title:"Lever la malédiction de Charmeville",note:"Magiestère puis la reine Euphonie remettent les deux fragments verts de cette histoire."},
+      {id:"adv-envoûtorium",title:"Découvrir la salle secrète du Grand Envoûtorium",note:"Elle contient notamment un fragment gris."},
+      {id:"adv-eole",title:"Résoudre le destin de la vallée d’Éole et des Cirrus",note:"Fouille la maison du Tétrarque avant de poursuivre."},
+      {id:"adv-sanctuary-cirrus",title:"Explorer le Sanctuaire des Cirrus jusqu’au niveau 4",note:"Le dernier fragment bleu de cette zone s’y trouve."}
+    ]},
+    {title:"Le Roi démon et le Tout-puissant",subtitle:"Grand phare · concours de cistre · Autel",tasks:[
+      {id:"adv-lighthouse",title:"Atteindre le sommet du Grand phare et terrasser le Roi démon",note:"Un fragment noir est lié au combat de Togrus Maximus."},
+      {id:"adv-cistre",title:"Terminer le concours de cistre",note:"Cette séquence prépare le réveil du Tout-puissant."},
+      {id:"adv-almighty",title:"Assister au réveil du Tout-puissant",note:"Fais une sauvegarde séparée avant les grandes décisions de la fin.",tags:["sauvegarde"]},
+      {id:"adv-peace",title:"Explorer le monde pendant les jours paisibles",note:"Plusieurs villes et personnages proposent de nouveaux dialogues et objets."}
+    ]},
+    {title:"Le réveil des esprits",subtitle:"Feu · Terre · Vent · Dragon des mers",tasks:[
+      {id:"adv-fire-spirit",title:"Réveiller l’Esprit du feu au mont Brûlé",note:"Revisite aussi Brasilla dans le présent pour les trésors ajoutés."},
+      {id:"adv-sea-dragon",title:"Monter à bord du Dragon des mers",note:"Parle au chat sous le pont : il donne une mini-médaille très facile à oublier.",tags:["important"]},
+      {id:"adv-earth-spirit",title:"Répondre à la requête de la reine Néferta et réveiller l’Esprit de la terre",note:"La pyramide secrète possède sa propre mini-médaille."},
+      {id:"adv-wind-spirit",title:"Retrouver Séraphine et réveiller l’Esprit du vent",note:"Revisite la Vallée d’Éole puis la Tour des Vents."}
+    ]},
+    {title:"L’affrontement final",subtitle:"Killyan · Cathédrale souillée · Roi démon",tasks:[
+      {id:"adv-kiefer-save",title:"Créer une sauvegarde avant le choix concernant Killyan",note:"Ce choix change sa présence comme invité et certains éléments de conclusion.",tags:["choix","spoiler"],spoiler:true},
+      {id:"adv-kiefer-choice",title:"Décider du destin de Killyan",note:"L’autoriser à venir permet de l’avoir comme invité dans le dernier donjon.",tags:["spoiler"],spoiler:true},
+      {id:"adv-final-cathedral",title:"Fouiller toutes les branches de la Cathédrale souillée",note:"Les grottes de l’Enfer et l’abîme du Chaos contiennent chacun une mini-médaille."},
+      {id:"adv-final-boss",title:"Vaincre le Roi démon et restaurer le monde",note:"Après le générique, recharge la sauvegarde marquée pour ouvrir l’après-jeu."}
+    ]},
+    {title:"Par-delà l’océan",subtitle:"Après-jeu · Grotte vers un autre monde · Arène",tasks:[
+      {id:"adv-post-silver",title:"Assembler la tablette argentée et terminer Vers un autre monde",note:"Le fragment argenté du manoir du roi Maximo exige 50 mini-médailles."},
+      {id:"adv-post-gold",title:"Rassembler les huit fragments dorés",note:"Plusieurs sont dans la première grotte d’après-jeu et les récifs coralliens."},
+      {id:"adv-post-beyond",title:"Terminer Vers un outre-monde",note:"Prépare des vocations avancées maîtrisées et un équipement résistant."},
+      {id:"adv-post-arena",title:"Achever les quatre Voies de la rixe",note:"La dernière voie et les superboss constituent le défi ultime du carnet."}
+    ]}
+  ];
+
+  const MISSABLES=[
+    {title:"Avant et pendant le voyage",subtitle:"Petites vérifications qui évitent les regrets",tasks:[
+      {id:"miss-demo-dress",title:"Transférer la sauvegarde de la démo pour la Tenue de repos de Maribel",note:"Il s’agit d’un bonus cosmétique ; il n’est pas requis pour terminer l’histoire.",tags:["bonus"]},
+      {id:"miss-crackers",title:"Acheter les Craquelins de sardine à la Baie d’Alevin",note:"Cet objet compte dans le registre et n’est vendu que dans cette zone.",tags:["objet"]},
+      {id:"miss-chests",title:"Noter les coffres fermés et revenir après chaque nouvelle clé",note:"Les coffres visités trop tôt sont faciles à oublier ; l’onglet Quêtes & secrets contient une liste de retour.",tags:["clé"]},
+      {id:"miss-nose",title:"Utiliser Détectotrésor après l’arrivée de Raph",note:"La compétence indique les trésors restants dans la zone courante.",tags:["astuce"]},
+      {id:"miss-present",title:"Revisiter chaque île dans le présent",note:"Une histoire résolue dans le passé crée souvent de nouveaux trésors, dialogues et mini-médailles dans le présent."}
+    ]},
+    {title:"Combats uniques",subtitle:"À contrôler avant de quitter une grande région",tasks:[
+      {id:"miss-dark-all",title:"Vaincre les 10 monstres sombres",note:"Chacun est une rencontre unique et laisse un cœur propre à sa vocation de monstre.",tags:["collection"]},
+      {id:"miss-dark-hearts",title:"Conserver au moins un exemplaire de chaque cœur unique",note:"Ne vends pas les récompenses exclusives avant d’avoir complété la collection."},
+      {id:"miss-metal-30",title:"Vaincre 30 monstres de métal",note:"Les rencontres sont plus faciles à exploiter avec des attaques à coups multiples ou critiques.",tags:["objectif"]},
+      {id:"miss-bestiary",title:"Inspecter la liste de monstres après chaque île",note:"Le registre complet compte 333 entrées dans Reimagined."}
+    ]},
+    {title:"Qui Paire Gagne",subtitle:"Trois plateaux et quelques récompenses exclusives",tasks:[
+      {id:"miss-lucky-daily",title:"Utiliser les trois parties quotidiennes puis dormir pour réinitialiser",note:"Le repos permet de relancer rapidement la recherche d’un équipement précis."},
+      {id:"miss-lucky-easy",title:"Récupérer le Costume de lapin sur le premier plateau",note:"Récompense exclusive de la version de départ du mini-jeu.",tags:["exclusif"]},
+      {id:"miss-lucky-final",title:"Obtenir les équipements exclusifs du plateau final",note:"Lame-scie, boucliers de métal, armes de gluants de métal, Coiffe de réflexion et Armure miroir font partie des objets à contrôler.",tags:["exclusif"]},
+      {id:"miss-lucky-achievements",title:"Terminer les niveaux Relevé et Pimenté, puis trouver un panneau de gluant de métal",note:"Ces trois objectifs ont chacun leur récompense ou trophée associé."}
+    ]},
+    {title:"Choix et conclusions",subtitle:"Fais une sauvegarde séparée avant ces scènes",tasks:[
+      {id:"miss-nottagen-save",title:"Sauvegarder avant la décision de Malempis",note:"Répondre « Non » évite l’issue la moins favorable et la perte de petits objets.",tags:["choix","spoiler"],spoiler:true},
+      {id:"miss-kiefer-save",title:"Sauvegarder avant la décision concernant Killyan",note:"L’autoriser à accompagner le groupe modifie sa présence dans le dernier donjon et la conclusion.",tags:["choix","spoiler"],spoiler:true},
+      {id:"miss-party-gear",title:"Ne pas t’inquiéter de l’équipement de Killyan lors de son départ",note:"Dans Reimagined, son équipement est rendu au groupe.",tags:["astuce","spoiler"],spoiler:true},
+      {id:"miss-final-save",title:"Conserver une sauvegarde marquée après le générique",note:"Elle sert de point de départ aux tablettes argentées et dorées de l’après-jeu."}
+    ]}
+  ];
+
+  const FRAGMENT_GROUPS=[
+    {id:"yellow",title:"Fragments jaunes",color:"#e3b72d",items:[
+      "Sanctuaire des Mystères (présent) — donné lors de la première visite",
+      "Passage souterrain de Meylor (présent) — salle d’épreuve après les Initiatueurs",
+      "Crique arc-en-ciel (présent) — épreuve des blocs",
+      "Baie d’Alevin (présent) — donné par Sandro au retour",
+      "Morfosis (présent) — maison du maire, côté nord-est",
+      "Institut royal d’automation (passé) — réserve",
+      "Fort Watt (présent) — centre-ville, à l’ouest de l’auberge",
+      "Institut royal d’automation (présent) — parler à Ambroise",
+      "Grotte du lac (passé) — sous-sol 3, côté nord-est",
+      "Abbaye des Vocations (passé) — Grande Prêtresse après Dumal",
+      "Abbaye des Vocations (présent) — parler à Cybelle au niveau 1",
+      "Repaire des bandits (présent) — remis par le chef Gland"
+    ]},
+    {id:"red",title:"Fragments rouges",color:"#cf5148",items:[
+      "La Tour (passé) — 5e étage, au sol",
+      "Mines Chromalis (présent) — emplacement de la Gemme verte",
+      "Château de Meylor (présent) — salle secrète accessible en radeau",
+      "Mont Brûlé (passé) — récompense du Grand Fulminant",
+      "Grotta del Sigillo (passé) — 2e étage, côté nord",
+      "Grotta del Sigillo (présent) — 1er étage",
+      "Grotta del Sigillo (présent) — catafalque à la fin de l’événement",
+      "Tour Haussec (passé) — après la défaite de Gracos",
+      "La Houle (présent) — salle au trésor ouest",
+      "La Tour la plus haute (présent) — après le réveil de sieur Gauvain"
+    ]},
+    {id:"green",title:"Fragments verts",color:"#4f9f5e",items:[
+      "La Tour (passé) — récompense du Golem",
+      "Kerael (présent) — tour de guet / marchand",
+      "Brasilla (passé) — remis par Lucilde après le Grand Fulminant",
+      "Brasilla (présent) — dans la boutique",
+      "Tombe des Héros inconnus (présent)",
+      "Grotte Cascadelle (passé) — maison avant la cascade",
+      "Charmeville (passé) — remis par Magiestère",
+      "Château de Charmeville (présent) — remis par la reine Euphonie"
+    ]},
+    {id:"blue",title:"Fragments bleus",color:"#458cc4",items:[
+      "Bastion des automates (passé) — récompense du Massacrobot",
+      "Site de fouilles (présent) — à l’intérieur de la tente",
+      "Château de Meylor (présent) — le roi après le départ de Killyan",
+      "Perd-Pèlerin (passé) — côté ouest de la carte",
+      "Al-Balad (passé) — réserve du sous-sol 1",
+      "Palais des sables (présent) — 1er étage, partie nord-centre",
+      "Promontoire sur l’océan (présent) — lorsque Zora rejoint le groupe",
+      "La Bravoure (présent) — puits, sommet du piédestal",
+      "Vallée d’Éole (passé) — maison du Tétrarque",
+      "Sanctuaire des Cirrus (présent) — niveau 4"
+    ]},
+    {id:"grey",title:"Fragments gris — histoires optionnelles",color:"#7f8b90",items:[
+      "Mont Brûlé (présent) — sous-sol 1",
+      "Château de Faraday (présent) — donjon, côté nord-est",
+      "Camp des Pérégrins (passé) — côté nord-ouest",
+      "Abbaye des Vocations (passé) — sous-sol 1, côté est",
+      "Vives-eaux (passé) — maison du maire, 2e étage",
+      "Palais des sables (passé) — sous-sol 1",
+      "Al-Balad (présent) — dans une urne",
+      "Palazzo di Salvio (présent) — près de la cuisine",
+      "Grand Envoûtorium (présent) — salle secrète est",
+      "La Houle (passé) — salle au trésor, dans la cage",
+      "Sanctuaire sacré (présent) — derrière l’autel sud",
+      "Dragon des mers (présent) — pont inférieur"
+    ]},
+    {id:"turquoise",title:"Fragments turquoise",color:"#42b8ae",items:[
+      "Tour Haussec (présent) — récompense de Serpenlair",
+      "Palais de la flibuste (passé) — ponton est",
+      "Petit Val (passé) — maison du contremaître"
+    ]},
+    {id:"black",title:"Fragments noirs",color:"#3b4248",items:[
+      "Grand phare (passé) — récompense de Togrus Maximus",
+      "Autel de l’Arrivée (passé) — partie sud",
+      "Sanctuaire étrange (présent) — région de La Houle"
+    ]},
+    {id:"curious",title:"Fragment étrange",color:"#a56cc1",items:[
+      "Autel du Tout-puissant (présent) — examiner trois fois la créature"
+    ]},
+    {id:"silver",title:"Fragments argentés",color:"#aab8c0",items:[
+      "Salle du trône de Gracos (présent) — vaincre Gracos V",
+      "Perd-Pèlerin (passé) — derrière l’accueil de l’auberge",
+      "Meylor (présent) — puits au sud-est, après l’histoire",
+      "Manoir du roi Maximo (présent) — récompense de 50 mini-médailles"
+    ]},
+    {id:"gold",title:"Fragments dorés — après-jeu",color:"#de991f",items:[
+      "Al-Shallal (présent) — près de l’entrée",
+      "Passage souterrain de Meylor (présent) — sous-sol 2",
+      "Récif corallien (présent) — quête du monstre marin du roi Triston",
+      "Récif corallien (passé) — disponible après l’histoire principale",
+      "Grotte vers un autre monde — 4e étage",
+      "Grotte vers un autre monde — puits près de l’auberge",
+      "Sanctuaire de l’Autre Monde — vaincre le Tout-puissant",
+      "Palais de la flibuste — terminer la dernière Voie de la rixe"
+    ]}
+  ];
+
+  const MEDAL_LOCATIONS=[
+    "Château de Meylor (présent)","La Tour (passé)","Kerael (présent)","Château de Meylor (présent)","Mont Brûlé (passé)",
+    "Brasilla (présent)","Mont Brûlé (présent)","Regenstein (passé)","Île sans nom (présent)","Morfosis (passé)",
+    "Grotta del Sigillo (passé)","Quai (présent)","Grotta del Sigillo (présent)","Institut royal d’automation (présent)","Fort Watt (présent)",
+    "Bastion des automates (présent)","Lac de Piété (présent)","Camp des Pérégrins (passé)","Grotte du lac (passé)","Site de fouilles (présent)",
+    "Région du camp des Pérégrins (présent)","Au repos du Pèlerin (passé)","Perd-Pèlerin (passé)","Grotte ouest (passé)","Précipic (passé)",
+    "Donjon de l’oblique (passé)","Tunnel vers l’abbaye (passé)","Abbaye des Vocations (passé)","Perd-Pèlerin (passé)","Baie d’Alevin (présent)",
+    "La Bravoure (présent)","Au repos du Pèlerin (présent)","Ruines près de l’Abbaye des Vocations (présent)","Repaire des bandits (présent)","Al-Balad (passé)",
+    "Palais des sables (passé)","Camp des Pérégrins (présent)","Palais des sables (présent)","Effigie du Grand démon (passé)","La Houle (passé)",
+    "Région de Vives-eaux (passé)","Région de Vives-eaux (passé)","Ruines à l’ouest de Cœurfané (présent)","Grotte près de Cœurfané (passé)","La Bravoure (présent)",
+    "Tombe des Héros inconnus (présent)","Effigie du Grand esprit (présent)","Palazzo di Salvio (présent)","Site de fouilles (présent)","Meylor (présent)",
+    "Tour Haussec (présent)","La Tour la plus haute (présent)","La Tour la plus haute (présent)","Château Bellirixe (passé)","Site de fouilles (présent)",
+    "Site de fouilles (présent)","Grand Envoûtorium (présent)","Vogograd (présent) — tombe, médaille 1 sur 5","Vogograd (présent) — tombe, médaille 2 sur 5","Vogograd (présent) — tombe, médaille 3 sur 5",
+    "Vogograd (présent) — tombe, médaille 4 sur 5","Vogograd (présent) — tombe, médaille 5 sur 5","Vallée d’Éole (passé)","Campement des gardiens (passé)","Grand phare (passé)",
+    "Palais de la flibuste (présent)","Repaire des Nains (présent)","Autel de l’Arrivée (passé)","Région de Vives-eaux (présent)","Cathédrale sacrée (présent)",
+    "Château de Meylor (présent)","Château de Meylor (présent)","Baie d’Alevin (présent)","Palais de la flibuste (présent)","Grand phare (présent)",
+    "Brasilla (présent)","Mont Brûlé (présent)","Vallée d’Éole (présent)","Tour des Vents","Ancestralia (présent)",
+    "Al-Balad (présent)","Palais des sables (présent)","Pyramide secrète (présent)","Domaine du roi Triston (présent)","Salle du trône de Gracos (présent)",
+    "Château de Charmeville (présent)","Grotte de Malempis (passé)","Colline boisée (présent) — examiner le trou","Malempis (présent)","Dragon des mers (présent) — parler au chat sous le pont",
+    "Enclos de l’expiation (passé)","Cathédrale souillée (présent)","Cathédrale souillée : grotte de l’Enfer","Cathédrale souillée : abîme du Chaos","Grotte vers un autre monde (présent)",
+    "Grotte vers un autre monde (présent)","Grotte vers un autre monde (présent)","Grotte vers un outre-monde (présent)","Grotte vers un outre-monde (présent)","Grotte vers un outre-monde (présent)"
+  ];
+
+  const VOCATIONS=[
+    {id:"warrior",name:"Guerrier",tier:"Débutant",icon:"🗡️",requires:"Disponible directement à l’Abbaye."},
+    {id:"martial",name:"Artiste martial",tier:"Débutant",icon:"🥊",requires:"Disponible directement à l’Abbaye."},
+    {id:"mage",name:"Mage",tier:"Débutant",icon:"🔥",requires:"Disponible directement à l’Abbaye."},
+    {id:"priest",name:"Prêtre",tier:"Débutant",icon:"✨",requires:"Disponible directement à l’Abbaye."},
+    {id:"dancer",name:"Danseur",tier:"Débutant",icon:"💃",requires:"Disponible directement à l’Abbaye."},
+    {id:"thief",name:"Voleur",tier:"Débutant",icon:"🗝️",requires:"Disponible directement à l’Abbaye."},
+    {id:"bard",name:"Barde",tier:"Débutant",icon:"🎵",requires:"Disponible directement à l’Abbaye."},
+    {id:"sailor",name:"Matelot",tier:"Débutant",icon:"⚓",requires:"Disponible directement à l’Abbaye."},
+    {id:"shepherd",name:"Berger",tier:"Débutant",icon:"🐑",requires:"Disponible directement à l’Abbaye."},
+    {id:"jester",name:"Baladin",tier:"Débutant",icon:"🎭",requires:"Disponible directement à l’Abbaye."},
+    {id:"gladiator",name:"Gladiateur",tier:"Intermédiaire",icon:"⚔️",requires:"Maîtriser Guerrier + Artiste martial."},
+    {id:"armamentalist",name:"Armagicien",tier:"Intermédiaire",icon:"🪄",requires:"Maîtriser Guerrier + Mage."},
+    {id:"sage",name:"Sage",tier:"Intermédiaire",icon:"📜",requires:"Maîtriser Mage + Prêtre."},
+    {id:"luminary",name:"Sommité",tier:"Intermédiaire",icon:"🌟",requires:"Maîtriser Danseur + Barde + Baladin."},
+    {id:"pirate",name:"Pirate",tier:"Intermédiaire",icon:"🏴‍☠️",requires:"Maîtriser Voleur + Matelot."},
+    {id:"paladin",name:"Paladin",tier:"Intermédiaire",icon:"🛡️",requires:"Maîtriser Artiste martial + Prêtre."},
+    {id:"monster",name:"Maître des monstres",tier:"Intermédiaire",icon:"🐲",requires:"Maîtriser Voleur + Berger."},
+    {id:"champion",name:"Champion",tier:"Avancé",icon:"👑",requires:"Maîtriser Gladiateur + Paladin."},
+    {id:"druid",name:"Druide",tier:"Avancé",icon:"🌿",requires:"Maîtriser deux parmi Sage, Sommité et Pirate."},
+    {id:"hero",name:"Héros",tier:"Avancé",icon:"☀️",requires:"Maîtriser trois vocations intermédiaires admissibles."}
+  ];
+
+  const SECRETS=[
+    {title:"Histoires optionnelles des fragments gris",subtitle:"Des îles entières à découvrir en marge du chemin principal",tasks:[
+      {id:"secret-regenstein",title:"Regenstein",note:"Une histoire courte et mélancolique accessible avec un fragment gris."},
+      {id:"secret-poussevert",title:"Poussevert et Cœurfané",note:"Explore les ruines à l’ouest de Cœurfané et la grotte voisine dans les deux époques."},
+      {id:"secret-vogograd",title:"Vogograd",note:"Inspecte une tombe du présent : elle remet cinq mini-médailles successivement.",tags:["5 médailles"]},
+      {id:"secret-malempis",title:"Malempis",note:"Sauvegarde avant la décision et examine le trou de la Colline boisée pour une mini-médaille.",tags:["choix"]},
+      {id:"secret-charmeville",title:"Les détours de Charmeville",note:"Reviens au Grand Envoûtorium et au château après la levée de la malédiction."},
+      {id:"secret-sea",title:"Récifs coralliens et quêtes marines",note:"Les récifs du passé et du présent cachent deux fragments dorés d’après-jeu."}
+    ]},
+    {title:"Trousseau de l’explorateur",subtitle:"Ouvre les anciennes portes dès que la clé correspondante est obtenue",tasks:[
+      {id:"key-thief",title:"Obtenir la clef de voleur",note:"Revisite les premiers villages, La Tour et le château de Meylor.",tags:["clé"]},
+      {id:"key-magic",title:"Obtenir la clef magique",note:"Contrôle les portes signalées dans les châteaux, palais et donjons déjà visités.",tags:["clé"]},
+      {id:"key-ultimate",title:"Obtenir la clef suprême",note:"Elle ouvre les dernières cellules et salles au trésor du monde.",tags:["clé"]},
+      {id:"key-meylor",title:"Retour : château et passage souterrain de Meylor",note:"Inclut la salle secrète accessible avec le radeau."},
+      {id:"key-abbey",title:"Retour : Abbaye des Vocations et Perd-Pèlerin",note:"Vérifie le sous-sol, l’auberge et les ruines du présent."},
+      {id:"key-palaces",title:"Retour : Palais des sables, Charmeville et Grand Envoûtorium",note:"Les palais concentrent plusieurs portes verrouillées et salles cachées."},
+      {id:"key-ships",title:"Retour : La Houle, La Bravoure et Dragon des mers",note:"Fouille les ponts inférieurs et les salles au trésor."}
+    ]},
+    {title:"Outils et petits secrets",subtitle:"Pour vider une carte sans consulter chaque ligne du guide",tasks:[
+      {id:"secret-detect",title:"Débloquer et utiliser Détectotrésor",note:"Lance la compétence dans chaque ville et chaque étage de donjon."},
+      {id:"secret-map",title:"Comparer le passé et le présent sur la carte",note:"Une zone peut changer entièrement après sa restauration."},
+      {id:"secret-wells",title:"Inspecter tous les puits, tombes, chats et trous",note:"Plusieurs mini-médailles ne sont pas dans des coffres classiques."},
+      {id:"secret-books",title:"Lire les bibliothèques et examiner les objets brillants",note:"Certains objets de registre et indices sont placés dans le décor."},
+      {id:"secret-npcs",title:"Reparler aux personnages importants après chaque événement",note:"Les récompenses de retour ne portent pas toujours un marqueur de quête."}
+    ]}
+  ];
+
+  const CHALLENGES=[
+    {title:"Arène du Palais de la flibuste",subtitle:"Des coupes classiques aux quatre Voies de la rixe",tasks:[
+      {id:"challenge-bronze",title:"Remporter la coupe de bronze"},{id:"challenge-silver",title:"Remporter la coupe d’argent"},{id:"challenge-gold",title:"Remporter la coupe d’or"},
+      {id:"challenge-road1",title:"Surmonter la Voie de la querelle"},{id:"challenge-road2",title:"Surmonter la Voie du grabuge"},{id:"challenge-road3",title:"Surmonter la Voie de la bagarre"},{id:"challenge-road4",title:"Surmonter la Voie du pugilat",note:"La récompense finale est liée au dernier fragment doré.",tags:["ultime"]}
+    ]},
+    {title:"Qui Paire Gagne",subtitle:"Mémoire, récompenses et équipement exclusif",tasks:[
+      {id:"challenge-panel-normal",title:"Terminer le premier niveau"},{id:"challenge-panel-hard",title:"Terminer le niveau Relevé"},{id:"challenge-panel-spicy",title:"Terminer le niveau Pimenté"},
+      {id:"challenge-panel-slime",title:"Trouver un panneau de gluant de métal"},{id:"challenge-panel-exclusive",title:"Contrôler toutes les récompenses exclusives avant de conclure le registre d’objets"}
+    ]},
+    {title:"Après-jeu",subtitle:"Tablettes argentée et dorée, grottes et superboss",tasks:[
+      {id:"challenge-silver-tablet",title:"Assembler la tablette argentée"},{id:"challenge-other-world",title:"Terminer la Grotte vers un autre monde"},
+      {id:"challenge-gold-tablet",title:"Assembler la tablette dorée"},{id:"challenge-beyond-world",title:"Terminer la Grotte vers un outre-monde"},
+      {id:"challenge-almighty",title:"Vaincre le Tout-puissant"},{id:"challenge-superboss",title:"Vaincre le dernier superboss de l’arène",tags:["ultime"]}
+    ]}
+  ];
+
+  const COUNTERS=[
+    {id:"items",label:"Objets découverts",icon:"🎒",goal:476,step:1},
+    {id:"monsters",label:"Monstres du registre",icon:"🐉",goal:333,step:1},
+    {id:"gold",label:"Pièces d’or obtenues",icon:"💰",goal:300000,step:1000},
+    {id:"field",label:"Attaques sur le terrain",icon:"💥",goal:500,step:10},
+    {id:"instant",label:"Victoires rapides",icon:"⚡",goal:100,step:5},
+    {id:"battles",label:"Combats remportés",icon:"⚔️",goal:1000,step:10},
+    {id:"defeated",label:"Monstres vaincus",icon:"👾",goal:2000,step:25},
+    {id:"pep",label:"Entrées dans les gonds",icon:"🔥",goal:100,step:5},
+    {id:"metal",label:"Monstres de métal vaincus",icon:"🥈",goal:30,step:1}
+  ];
+  const STORAGE_KEY="dq7r-carnet-v1";
+  const FORMAT_VERSION=1;
+  const LOCAL_PREVIEW=location.protocol==="file:"||location.hostname==="localhost"||location.hostname==="127.0.0.1";
+  const TASK_GROUPS={adventure:ADVENTURE,missables:MISSABLES,secrets:SECRETS,challenges:CHALLENGES};
+  const ALL_TASKS=[].concat.apply([],Object.values(TASK_GROUPS).map(function(groups){return [].concat.apply([],groups.map(function(group){return group.tasks}))}));
+  let currentFilter="all";
+  let selectedMedal=1;
+  let toastTimer=0;
+
+  function freshState(){return {version:FORMAT_VERSION,tab:"adventure",tasks:{},later:{},fragments:{},medals:{},vocations:{},counters:{},spoilers:false,lastSaved:0}}
+  function objectMap(value){return value&&typeof value==="object"&&!Array.isArray(value)?Object.assign({},value):{}}
+  function normaliseState(raw){
+    const base=freshState();
+    if(!raw||typeof raw!=="object")return base;
+    base.tab=TABS.some(function(t){return t.id===raw.tab})?raw.tab:"adventure";
+    base.tasks=objectMap(raw.tasks);base.later=objectMap(raw.later);base.fragments=objectMap(raw.fragments);base.medals=objectMap(raw.medals);base.vocations=objectMap(raw.vocations);base.counters=objectMap(raw.counters);
+    base.spoilers=Boolean(raw.spoilers);base.lastSaved=Number(raw.lastSaved)||0;
+    Object.keys(base.vocations).forEach(function(k){base.vocations[k]=Math.max(0,Math.min(8,Math.round(Number(base.vocations[k])||0)))});
+    COUNTERS.forEach(function(c){base.counters[c.id]=Math.max(0,Math.min(c.goal,Number(base.counters[c.id])||0))});
+    return base;
+  }
+  function loadState(){
+    try{return normaliseState(JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"))}catch(error){console.warn("Sauvegarde locale illisible",error);return freshState()}
+  }
+  let state=loadState();
+
+  const refs={
+    tabs:document.getElementById("tabs"),panel:document.getElementById("panel"),toolbar:document.getElementById("toolbar"),search:document.getElementById("search"),filters:document.getElementById("filters"),
+    overallRing:document.getElementById("overallRing"),overallPercent:document.getElementById("overallPercent"),overallDone:document.getElementById("overallDone"),overallTotal:document.getElementById("overallTotal"),
+    levelName:document.getElementById("levelName"),levelHint:document.getElementById("levelHint"),slimeBadge:document.getElementById("slimeBadge"),saveTime:document.getElementById("saveTime"),saveMode:document.getElementById("saveMode"),
+    settings:document.getElementById("settingsModal"),spoilers:document.getElementById("spoilerToggle"),toast:document.getElementById("toast"),cloudBar:document.getElementById("cloudBar")
+  };
+  document.body.classList.toggle("online",!LOCAL_PREVIEW);
+  if(!LOCAL_PREVIEW){refs.cloudBar.classList.remove("show");refs.saveMode.textContent="Firebase + sauvegarde locale"}
+
+  function el(tag,className,textValue){
+    const node=document.createElement(tag);
+    if(className)node.className=className;
+    if(textValue!==undefined&&textValue!==null)node.textContent=textValue;
+    return node;
+  }
+  function fold(value){return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
+  function taskText(task){return fold(task.title+" "+(task.note||"")+" "+(task.tags||[]).join(" "))}
+  function query(){return fold(refs.search.value.trim())}
+  function statusPass(done,later){
+    if(currentFilter==="done")return done;
+    if(currentFilter==="todo")return !done;
+    if(currentFilter==="later")return !done&&later;
+    return true;
+  }
+  function taskPass(task){return taskText(task).includes(query())&&statusPass(Boolean(state.tasks[task.id]),Boolean(state.later[task.id]))}
+  function groupTaskMetric(groups){
+    const tasks=[].concat.apply([],groups.map(function(g){return g.tasks}));
+    return {done:tasks.filter(function(t){return state.tasks[t.id]}).length,total:tasks.length};
+  }
+  function fragmentMetric(){
+    let total=0,done=0;
+    FRAGMENT_GROUPS.forEach(function(group){group.items.forEach(function(_,index){total++;if(state.fragments[group.id+"-"+(index+1)])done++})});
+    return {done:done,total:total};
+  }
+  function medalMetric(){return {done:Object.keys(state.medals).filter(function(k){return state.medals[k]&&Number(k)>=1&&Number(k)<=100}).length,total:MEDAL_LOCATIONS.length}}
+  function vocationMetric(){let done=0;VOCATIONS.forEach(function(v){done+=Number(state.vocations[v.id])||0});return {done:done,total:VOCATIONS.length*8}}
+  function counterMetric(){let done=0;COUNTERS.forEach(function(c){done+=Math.min(1,(Number(state.counters[c.id])||0)/c.goal)});return {done:done,total:COUNTERS.length}}
+  function tabMetric(id){
+    if(TASK_GROUPS[id]){
+      const task=groupTaskMetric(TASK_GROUPS[id]);
+      if(id==="challenges"){const counter=counterMetric();return {done:task.done+counter.done,total:task.total+counter.total}}
+      return task;
+    }
+    if(id==="fragments")return fragmentMetric();
+    if(id==="medals")return medalMetric();
+    if(id==="vocations")return vocationMetric();
+    return overallMetric();
+  }
+  function overallMetric(){
+    const task={done:ALL_TASKS.filter(function(t){return state.tasks[t.id]}).length,total:ALL_TASKS.length};
+    const frag=fragmentMetric(),medal=medalMetric(),vocation=vocationMetric(),counter=counterMetric();
+    return {done:task.done+frag.done+medal.done+vocation.done+counter.done,total:task.total+frag.total+medal.total+vocation.total+counter.total};
+  }
+  function percent(metric){return metric.total?Math.round(metric.done/metric.total*100):0}
+  function formatTime(ts){if(!ts)return "Aucune modification";try{return "Dernière modification : "+new Intl.DateTimeFormat("fr-FR",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"}).format(new Date(ts))}catch(error){return "Progression enregistrée"}}
+  function saveLocal(queueCloud){
+    state.lastSaved=Date.now();
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    refs.saveTime.textContent=formatTime(state.lastSaved);
+    if(queueCloud!==false&&typeof window.dq7rQueueCloudSave==="function")window.dq7rQueueCloudSave();
+  }
+  function commit(options){
+    const before=options&&Number.isFinite(options.before)?options.before:null;
+    saveLocal(true);renderAll(false);
+    if(options&&options.toast)showToast(options.toast);
+    if(before!==null&&before<100&&percent(tabMetric(state.tab))===100)celebrate();
+  }
+  function showToast(message){
+    clearTimeout(toastTimer);refs.toast.textContent=message;refs.toast.classList.add("show");
+    toastTimer=setTimeout(function(){refs.toast.classList.remove("show")},2400);
+  }
+  function celebrate(){
+    showToast("Rubrique terminée ! Le monde reprend des couleurs ✨");
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    const colors=["#e8a928","#176b59","#4388b9","#e97632","#cc4d43"];
+    for(let i=0;i<32;i++){
+      const piece=el("i","confetti");piece.style.left=(8+Math.random()*84)+"vw";piece.style.top=(-10-Math.random()*20)+"px";piece.style.background=colors[i%colors.length];piece.style.setProperty("--x",(-90+Math.random()*180)+"px");piece.style.animationDelay=(Math.random()*.28)+"s";document.body.appendChild(piece);setTimeout(function(){piece.remove()},1800);
+    }
+  }
+  function createPanelHead(title,description,metric){
+    const head=el("header","panel-head"),copy=el("div"),h=el("h2",null,title),p=el("p",null,description),score=el("div","panel-progress");
+    copy.append(h,p);score.append(el("strong",null,percent(metric)+" %"),document.createTextNode(Math.floor(metric.done)+" / "+metric.total));head.append(copy,score);return head;
+  }
+  function createTag(text){let cls="tag";if(/important|choix|sauvegarde|ultime/i.test(text))cls+=" warn";if(/spoiler/i.test(text))cls+=" spoiler";if(/clé/i.test(text))cls+=" key";return el("span",cls,text)}
+  function createTask(task){
+    const done=Boolean(state.tasks[task.id]),later=Boolean(state.later[task.id]);
+    const row=el("div","task"+(done?" done":"")+(later&&!done?" later":""));row.dataset.taskId=task.id;
+    const check=el("button","check",done?"✓":"");check.type="button";check.setAttribute("aria-pressed",String(done));check.setAttribute("aria-label",done?"Marquer comme à faire":"Marquer comme fait");
+    check.addEventListener("click",function(){const before=percent(tabMetric(state.tab));state.tasks[task.id]=!done;if(!done)delete state.later[task.id];else delete state.tasks[task.id];commit({before:before})});
+    const main=el("div","task-main"),title=el("div","task-title",task.title);main.appendChild(title);
+    if(task.note){const hidden=task.spoiler&&!state.spoilers;main.appendChild(el("div","task-note",hidden?"Détail masqué — active les spoilers dans les outils.":task.note))}
+    (task.tags||[]).forEach(function(tag){main.appendChild(createTag(tag))});
+    const laterBtn=el("button","later-btn",later&&!done?"★":"☆");laterBtn.type="button";laterBtn.title=later?"Retirer de Plus tard":"Garder pour plus tard";laterBtn.setAttribute("aria-label",laterBtn.title);
+    laterBtn.addEventListener("click",function(){if(done)return;state.later[task.id]=!later;if(later)delete state.later[task.id];commit()});
+    row.append(check,main,laterBtn);return row;
+  }
+  function renderTaskGroups(groups,title,description){
+    refs.panel.appendChild(createPanelHead(title,description,tabMetric(state.tab)));
+    const grid=el("div","grid"+(state.tab==="adventure"?"":""));let shown=0;
+    groups.forEach(function(group,index){
+      const visible=group.tasks.filter(taskPass);if(!visible.length)return;shown++;
+      const complete=group.tasks.every(function(task){return state.tasks[task.id]});
+      const card=el("article","card route-card"+(complete?" done":""));
+      if(state.tab==="adventure")card.appendChild(el("div","route-number",String(index+1).padStart(2,"0")));
+      const head=el("header","card-head"),h=el("h3",null,group.title),p=el("p",null,group.subtitle||"");head.append(h,p);
+      const body=el("div","card-body");visible.forEach(function(task){body.appendChild(createTask(task))});card.append(head,body);grid.appendChild(card);
+    });
+    if(!shown)grid.appendChild(el("div","empty","Aucun objectif ne correspond à cette recherche ou à ce filtre."));refs.panel.appendChild(grid);
+  }
+  function renderAdventure(){renderTaskGroups(ADVENTURE,"La carte de l’aventure","Onze escales regroupent le fil principal sans remplacer l’exploration. Les retours dans le présent sont placés au moment où ils deviennent utiles.")}
+  function renderMissables(){renderTaskGroups(MISSABLES,"À ne pas louper","Les vrais points de vigilance de Reimagined : objets peu visibles, rencontres uniques, mini-jeu et décisions. Les détails sensibles restent masqués par défaut.")}
+  function renderSecrets(){renderTaskGroups(SECRETS,"Quêtes et secrets","Les récits optionnels, retours avec les clés et petits réflexes d’explorateur sont regroupés ici.")}
+
+  function renderFragments(){
+    refs.panel.appendChild(createPanelHead("Les 71 fragments","Clique sur un fragment pour le placer dans ton carnet. Les couleurs séparent le chemin principal, les îles optionnelles et l’après-jeu.",fragmentMetric()));
+    const wrap=el("div","fragment-groups"),q=query();let shown=0;
+    FRAGMENT_GROUPS.forEach(function(group){
+      const visible=[];group.items.forEach(function(location,index){const key=group.id+"-"+(index+1),done=Boolean(state.fragments[key]);if(fold(location+" "+group.title).includes(q)&&statusPass(done,false))visible.push({location:location,index:index,key:key,done:done})});
+      if(!visible.length)return;shown++;
+      const groupDone=group.items.filter(function(_,index){return state.fragments[group.id+"-"+(index+1)]}).length;
+      const card=el("section","card fragment-card");card.style.setProperty("--frag",group.color);
+      const head=el("header","card-head"),h=el("h3",null,group.title),count=el("span","count",groupDone+" / "+group.items.length);head.append(h,count);
+      const list=el("div","fragment-list");visible.forEach(function(item){
+        const btn=el("button","fragment"+(item.done?" done":""));btn.type="button";btn.setAttribute("aria-pressed",String(item.done));btn.title=item.done?"Retirer ce fragment":"Ajouter ce fragment";
+        const shard=el("i","shard"),copy=el("span"),name=el("b",null,"Fragment "+(item.index+1)),where=el("span",null,item.location);copy.append(name,where);btn.append(shard,copy);
+        btn.addEventListener("click",function(){const before=percent(fragmentMetric());if(item.done)delete state.fragments[item.key];else state.fragments[item.key]=true;commit({before:before})});list.appendChild(btn);
+      });
+      card.append(head,list);wrap.appendChild(card);
+    });
+    if(!shown)wrap.appendChild(el("div","empty","Aucun fragment ne correspond à cette recherche ou à ce filtre."));refs.panel.appendChild(wrap);
+  }
+
+  function medalVisible(number){const done=Boolean(state.medals[number]);return fold(number+" "+MEDAL_LOCATIONS[number-1]).includes(query())&&statusPass(done,false)}
+  function renderMedals(){
+    refs.panel.appendChild(createPanelHead("Les 100 mini-médailles","Sélectionne une pièce pour afficher sa zone, puis valide-la. Les sept médailles sans coffre classique sont clairement signalées.",medalMetric()));
+    const layout=el("div","medal-layout"),board=el("section","card medal-board"),grid=el("div","medal-grid");let shown=0,firstVisible=0;
+    MEDAL_LOCATIONS.forEach(function(location,index){const number=index+1;if(!medalVisible(number))return;shown++;if(!firstVisible)firstVisible=number;const done=Boolean(state.medals[number]);const special=(number>=58&&number<=62)||number===88||number===90;const btn=el("button","medal"+(done?" done":"")+(selectedMedal===number?" selected":"")+(special?" special":""),String(number));btn.type="button";btn.title=location+(special?" — hors coffre classique":"");btn.setAttribute("aria-label","Mini-médaille "+number+" : "+location);btn.addEventListener("click",function(){selectedMedal=number;renderPanel()});grid.appendChild(btn)});
+    if(!shown)board.appendChild(el("div","empty","Aucune mini-médaille ne correspond à cette recherche ou à ce filtre."));else board.appendChild(grid);
+    if(!medalVisible(selectedMedal)&&firstVisible)selectedMedal=firstVisible;
+    const info=el("aside","card medal-info");if(firstVisible){
+      const number=selectedMedal,done=Boolean(state.medals[number]),special=(number>=58&&number<=62)||number===88||number===90;
+      info.appendChild(el("div","big-medal",String(number)));info.appendChild(el("h3",null,"Mini-médaille n° "+number));info.appendChild(el("p",null,MEDAL_LOCATIONS[number-1]+(special?". Cette médaille ne se trouve pas dans un coffre classique.":".")));
+      const toggle=el("button","btn "+(done?"":"primary"),done?"✓ Médaille récupérée — annuler":"Ajouter au carnet");toggle.type="button";toggle.addEventListener("click",function(){const before=percent(medalMetric());if(done)delete state.medals[number];else state.medals[number]=true;commit({before:before})});info.appendChild(toggle);
+    }else info.appendChild(el("p",null,"Modifie la recherche ou le filtre pour afficher une médaille."));
+    layout.append(board,info);refs.panel.appendChild(layout);
+  }
+
+  function renderVocations(){
+    refs.panel.appendChild(createPanelHead("Les 20 vocations à maîtriser","Chaque bouton représente un rang. Atteins le rang 8 pour maîtriser une vocation ; le Double emploi permet ensuite d’en associer deux.",vocationMetric()));
+    const tip=el("section","card source-card");tip.append(el("h3",null,"✨ Double emploi"),el("p",null,"Une fois la mécanique débloquée, combine deux vocations actives pour utiliser leurs sorts, aptitudes et avantages propres. Les vocations personnelles des héros existent en plus des 20 spécialisations suivies ici."));refs.panel.appendChild(tip);
+    const grid=el("div","vocation-grid"),q=query();let shown=0;
+    VOCATIONS.forEach(function(v){const rank=Number(state.vocations[v.id])||0,done=rank===8;if(!fold(v.name+" "+v.tier+" "+v.requires).includes(q)||!statusPass(done,false))return;shown++;
+      const card=el("article","card vocation"+(done?" mastered":"")),top=el("div","vocation-top"),icon=el("div","vocation-icon",v.icon),copy=el("div");copy.append(el("h3",null,v.name),el("small",null,v.tier+" · rang "+rank+" / 8"));top.append(icon,copy);card.appendChild(top);
+      const row=el("div","rank-row");for(let n=1;n<=8;n++){const b=el("button","rank"+(n<=rank?" on":""),String(n));b.type="button";b.title="Définir le rang "+n;b.setAttribute("aria-label",v.name+" : rang "+n);b.addEventListener("click",function(){const before=percent(vocationMetric());state.vocations[v.id]=rank===n?n-1:n;commit({before:before})});row.appendChild(b)}card.append(row,el("p","requires",v.requires));grid.appendChild(card);
+    });
+    if(!shown)grid.appendChild(el("div","empty","Aucune vocation ne correspond à cette recherche ou à ce filtre."));refs.panel.appendChild(grid);
+  }
+
+  function renderCounters(){
+    const title=el("section","card source-card");title.append(el("h3",null,"Compteurs de complétion"),el("p",null,"Reporte ici les valeurs du menu du jeu. Un compteur arrivé à son objectif participe à la progression générale."));refs.panel.appendChild(title);
+    const grid=el("div","counter-grid"),q=query();let shown=0;
+    COUNTERS.forEach(function(c){const value=Number(state.counters[c.id])||0,done=value>=c.goal;if(!fold(c.label).includes(q)||!statusPass(done,false))return;shown++;const card=el("article","card counter-card"),top=el("div","counter-top");top.append(el("span",null,c.label),el("span",null,c.icon));card.appendChild(top);
+      const range=el("input");range.type="range";range.min="0";range.max=String(c.goal);range.step=String(c.step);range.value=String(value);range.setAttribute("aria-label",c.label);
+      const line=el("div","counter-number"),number=el("input");number.type="number";number.min="0";number.max=String(c.goal);number.step=String(c.step);number.value=String(value);number.setAttribute("aria-label",c.label+" valeur");const goal=el("b",null,"/ "+c.goal.toLocaleString("fr-FR"));line.append(number,goal);
+      function update(raw){state.counters[c.id]=Math.max(0,Math.min(c.goal,Number(raw)||0));saveLocal(true);renderAll(false)}
+      range.addEventListener("change",function(){update(range.value)});number.addEventListener("change",function(){update(number.value)});card.append(range,line);grid.appendChild(card)
+    });
+    if(!shown)grid.appendChild(el("div","empty","Aucun compteur ne correspond à cette recherche ou à ce filtre."));refs.panel.appendChild(grid);
+  }
+  function renderChallenges(){renderTaskGroups(CHALLENGES,"Défis et 100 %","Arène, Qui Paire Gagne, après-jeu et compteurs de collection. Les valeurs chiffrées peuvent être recopiées depuis le menu du jeu.");renderCounters()}
+
+  function overviewBadges(){
+    const badges=[
+      {label:"71 fragments",won:fragmentMetric().done===71},{label:"100 mini-médailles",won:medalMetric().done===100},
+      {label:"20 vocations",won:VOCATIONS.every(function(v){return state.vocations[v.id]===8})},{label:"333 monstres",won:Number(state.counters.monsters)>=333},
+      {label:"476 objets",won:Number(state.counters.items)>=476},{label:"Après-jeu",won:Boolean(state.tasks["challenge-beyond-world"])}
+    ];
+    const row=el("div","overview-badges");badges.forEach(function(b){row.appendChild(el("span","badge"+(b.won?" won":""),(b.won?"✓ ":"")+b.label))});return row;
+  }
+  function renderOverview(){
+    const overall=overallMetric(),hero=el("section","card overview-hero"),ring=el("div","overview-ring");ring.style.setProperty("--p",percent(overall));ring.appendChild(el("strong",null,percent(overall)+" %"));const copy=el("div");copy.append(el("h2",null,"Ton monde restauré"),el("p",null,"Cette vue additionne les objectifs cochés, les fragments, les mini-médailles, les rangs de vocation et les compteurs de complétion."),overviewBadges());hero.append(ring,copy);refs.panel.appendChild(hero);
+    const grid=el("div","overview-grid");TABS.filter(function(t){return t.id!=="overview"}).forEach(function(tab){const metric=tabMetric(tab.id),p=percent(metric),card=el("article","card overview-tile");card.tabIndex=0;card.setAttribute("role","button");card.append(el("span","tile-ico",tab.icon),el("h3",null,tab.label),el("p",null,Math.floor(metric.done)+" / "+metric.total+" · "+p+" %"));const bar=el("div","progressbar"),fill=el("i");fill.style.width=p+"%";bar.appendChild(fill);card.appendChild(bar);function open(){setTab(tab.id,true)}card.addEventListener("click",open);card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}});grid.appendChild(card)});refs.panel.appendChild(grid);
+    const note=el("section","card source-card");note.append(el("h3",null,"Ce qui est propre à Reimagined"),el("p",null,"Le carnet suit les tablettes, le Double emploi et les objectifs de la version 2026. Il n’inclut pas le Parc des monstres de l’édition 3DS ni un casino classique ; le mini-jeu pertinent est Qui Paire Gagne."));const links=el("div","source-links");[["Présentation officielle","https://dragonquest.square-enix-games.com/games/en-gb/dragon-quest-vii-reimagined/"],["Guide des 100 mini-médailles","https://www.psthc.fr/unjeu/dragon-quest-vii-reimagined-ps5/guide-trophees.htm"],["Parcours et fragments","https://www.rpgsite.net/guide/19492-dragon-quest-vii-reimagined-walkthrough-where-to-go-all-mini-medals-tablet-fragments-step-by-step-guide"]].forEach(function(link){const a=el("a",null,link[0]);a.href=link[1];a.target="_blank";a.rel="noreferrer";links.appendChild(a)});note.appendChild(links);refs.panel.appendChild(note);
+  }
+
+  function renderTabs(){
+    refs.tabs.replaceChildren();TABS.forEach(function(tab){const b=el("button","tab"+(state.tab===tab.id?" active":""));b.type="button";b.dataset.tab=tab.id;b.setAttribute("aria-current",state.tab===tab.id?"page":"false");b.append(el("span","ico",tab.icon),document.createTextNode(tab.label));b.addEventListener("click",function(){setTab(tab.id,true)});refs.tabs.appendChild(b)})
+  }
+  function updateToolbar(){
+    refs.toolbar.hidden=state.tab==="overview";
+    const laterButton=refs.filters.querySelector('[data-filter="later"]');laterButton.hidden=["fragments","medals","vocations"].includes(state.tab);
+    if(laterButton.hidden&&currentFilter==="later"){currentFilter="all";refs.filters.querySelectorAll(".filter").forEach(function(b){b.classList.toggle("active",b.dataset.filter==="all")})}
+    refs.search.placeholder=state.tab==="medals"?"Rechercher un lieu ou un numéro…":state.tab==="fragments"?"Rechercher un fragment ou un lieu…":"Rechercher dans cette rubrique…";
+  }
+  function renderPanel(){
+    refs.panel.replaceChildren();updateToolbar();
+    if(state.tab==="adventure")renderAdventure();else if(state.tab==="missables")renderMissables();else if(state.tab==="fragments")renderFragments();else if(state.tab==="medals")renderMedals();else if(state.tab==="vocations")renderVocations();else if(state.tab==="secrets")renderSecrets();else if(state.tab==="challenges")renderChallenges();else renderOverview();
+  }
+  function updateHeader(){
+    const metric=overallMetric(),p=percent(metric),levels=[
+      [0,"Apprenti voyageur","La carte n’attend que toi"],[10,"Chercheur de fragments","Les premières îles réapparaissent"],[25,"Éclaireur des époques","Passé et présent n’ont plus de secrets"],[45,"Maître des tablettes","Ton carnet prend fière allure"],[65,"Héros des îles","Le monde retrouve ses couleurs"],[82,"Légende de Meylor","Les derniers défis se dressent"],[100,"Sauveur du monde","Aventure complétée !"]
+    ];let level=levels[0];levels.forEach(function(l){if(p>=l[0])level=l});refs.overallRing.style.setProperty("--p",p);refs.overallPercent.textContent=p+" %";refs.overallDone.textContent=Math.floor(metric.done)+" objectifs";refs.overallTotal.textContent="sur "+metric.total+" suivis";refs.levelName.textContent=level[1];refs.levelHint.textContent=level[2];refs.slimeBadge.textContent="Niv. "+(levels.indexOf(level)+1);refs.saveTime.textContent=formatTime(state.lastSaved);
+  }
+  function renderAll(scrollTop){renderTabs();updateHeader();refs.spoilers.checked=state.spoilers;renderPanel();if(scrollTop)document.getElementById("main").scrollIntoView({behavior:"smooth",block:"start"})}
+  function setTab(id,scroll){if(!TABS.some(function(t){return t.id===id}))return;state.tab=id;refs.search.value="";currentFilter="all";refs.filters.querySelectorAll(".filter").forEach(function(b){b.classList.toggle("active",b.dataset.filter==="all")});saveLocal(true);renderAll(scroll)}
+
+  refs.search.addEventListener("input",renderPanel);
+  refs.filters.addEventListener("click",function(event){const button=event.target.closest(".filter");if(!button)return;currentFilter=button.dataset.filter;refs.filters.querySelectorAll(".filter").forEach(function(b){b.classList.toggle("active",b===button)});renderPanel()});
+  document.getElementById("topBtn").addEventListener("click",function(){scrollTo({top:0,behavior:"smooth"})});
+  document.getElementById("continueBtn").addEventListener("click",function(){document.getElementById("main").scrollIntoView({behavior:"smooth"})});
+  function openSettings(){refs.settings.hidden=false;refs.spoilers.checked=state.spoilers;document.getElementById("closeSettings").focus()}
+  function closeSettings(){refs.settings.hidden=true;document.getElementById("settingsBtn").focus()}
+  document.getElementById("settingsBtn").addEventListener("click",openSettings);document.getElementById("closeSettings").addEventListener("click",closeSettings);
+  refs.settings.addEventListener("click",function(e){if(e.target===refs.settings)closeSettings()});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!refs.settings.hidden)closeSettings()});
+  refs.spoilers.addEventListener("change",function(){state.spoilers=refs.spoilers.checked;saveLocal(true);renderPanel()});
+
+  function download(name,text){const blob=new Blob([text],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000)}
+  document.getElementById("exportBtn").addEventListener("click",function(){download("dragon-quest-vii-reimagined-progression.json",JSON.stringify({format:"dq7r-carnet",version:FORMAT_VERSION,exportedAt:new Date().toISOString(),state:state},null,2));showToast("Sauvegarde exportée")});
+  document.getElementById("importBtn").addEventListener("click",function(){document.getElementById("importFile").click()});
+  document.getElementById("importFile").addEventListener("change",async function(event){const file=event.target.files&&event.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text()),payload=parsed.state||parsed.data||parsed;state=normaliseState(payload);saveLocal(true);renderAll(false);closeSettings();showToast("Progression importée avec succès")}catch(error){showToast("Ce fichier de sauvegarde n’est pas valide")}event.target.value=""});
+  function taskIdsForTab(tab){return TASK_GROUPS[tab]?[].concat.apply([],TASK_GROUPS[tab].map(function(g){return g.tasks.map(function(t){return t.id})})):[]}
+  document.getElementById("resetTabBtn").addEventListener("click",function(){
+    if(state.tab==="overview"){showToast("Choisis d’abord une rubrique à réinitialiser");return}const label=TABS.find(function(t){return t.id===state.tab}).label;if(!confirm("Réinitialiser seulement la rubrique « "+label+" » ?"))return;
+    taskIdsForTab(state.tab).forEach(function(id){delete state.tasks[id];delete state.later[id]});
+    if(state.tab==="fragments")state.fragments={};if(state.tab==="medals")state.medals={};if(state.tab==="vocations")state.vocations={};if(state.tab==="challenges")state.counters={};saveLocal(true);renderAll(false);closeSettings();showToast("Rubrique réinitialisée")
+  });
+  document.getElementById("resetAllBtn").addEventListener("click",function(){if(!confirm("Effacer toute la progression Dragon Quest VII sur cet appareil et dans la prochaine synchronisation ?"))return;state=freshState();saveLocal(true);renderAll(false);closeSettings();showToast("Le carnet a été remis à zéro")});
+
+  window.dq7rGetCloudData=function(){return JSON.parse(JSON.stringify(state))};
+  window.dq7rApplyCloudData=function(data){state=normaliseState(data);localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderAll(false)};
+  renderAll(false);
+  </script>
+
+  <script type="module">
+  const LOCAL_FIREBASE_PREVIEW=location.protocol==="file:"||location.hostname==="localhost"||location.hostname==="127.0.0.1";
+  if(!LOCAL_FIREBASE_PREVIEW){
+    const gate=document.getElementById("authGate"),form=document.getElementById("authForm"),emailInput=document.getElementById("authEmail"),passwordInput=document.getElementById("authPassword"),submit=document.getElementById("authSubmit"),errorBox=document.getElementById("authError"),cloudBar=document.getElementById("cloudBar"),cloudUser=document.getElementById("cloudUser"),cloudStatus=document.getElementById("cloudStatus"),logoutBtn=document.getElementById("cloudLogout"),syncBtn=document.getElementById("cloudSyncNow");
+    gate.hidden=false;
+    try{
+      const [appApi,authApi,firestoreApi]=await Promise.all([
+        import("https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js")
+      ]);
+      const {initializeApp}=appApi;
+      const {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence}=authApi;
+      const {getFirestore,doc,getDoc,setDoc,serverTimestamp}=firestoreApi;
+      const firebaseConfig={
+        apiKey:"AIzaSyA1ZbLM6whPsKCzfnNzo8tVgEkTHHU-kSY",
+        authDomain:"perso-4fdd3.firebaseapp.com",
+        projectId:"perso-4fdd3",
+        storageBucket:"perso-4fdd3.firebasestorage.app",
+        messagingSenderId:"197036607768",
+        appId:"1:197036607768:web:a07e4d9dd03300c736f66d"
+      };
+      const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),PENDING_KEY="dq7r-cloud-pending-v1";
+      let currentUser=null,cloudReady=false,syncTimer=null,syncing=false;
+      function setStatus(text,kind){cloudStatus.textContent=text;cloudStatus.className="cloud-status"+(kind?" "+kind:"")}
+      function friendlyAuthError(code){const map={"auth/invalid-credential":"E-mail ou mot de passe incorrect.","auth/invalid-email":"Adresse e-mail invalide.","auth/user-disabled":"Ce compte Firebase est désactivé.","auth/too-many-requests":"Trop de tentatives. Réessaie un peu plus tard.","auth/network-request-failed":"Connexion réseau impossible.","auth/unauthorized-domain":"Ce domaine doit être ajouté aux domaines autorisés dans Firebase Authentication."};return map[code]||("Connexion impossible ("+String(code||"erreur inconnue")+").")}
+      function getRef(user){return doc(db,"users",user.uid,"apps","dragon-quest-vii-reimagined")}
+      async function uploadNow(){
+        if(!currentUser||!cloudReady||syncing||!window.dq7rGetCloudData)return;
+        syncing=true;setStatus("Firebase : synchronisation…","warn");
+        try{await setDoc(getRef(currentUser),{version:1,updatedAt:serverTimestamp(),updatedAtMs:Date.now(),data:window.dq7rGetCloudData()},{merge:true});localStorage.removeItem(PENDING_KEY);setStatus("Firebase : progression synchronisée","ok")}
+        catch(error){localStorage.setItem(PENDING_KEY,"1");setStatus("Firebase : sauvegarde locale en attente","err");console.error("DQ7R Firebase upload",error)}finally{syncing=false}
+      }
+      function queueUpload(){localStorage.setItem(PENDING_KEY,"1");if(!currentUser||!cloudReady)return;clearTimeout(syncTimer);syncTimer=setTimeout(uploadNow,650)}
+      window.dq7rQueueCloudSave=queueUpload;
+      async function loadCloud(user){
+        cloudReady=false;setStatus("Firebase : chargement de la progression…","warn");
+        try{const snap=await getDoc(getRef(user)),hasPending=localStorage.getItem(PENDING_KEY)==="1";if(hasPending){cloudReady=true;await uploadNow();return}if(snap.exists()){const saved=snap.data();if(saved&&saved.data&&window.dq7rApplyCloudData)window.dq7rApplyCloudData(saved.data);setStatus("Firebase : progression chargée","ok");cloudReady=true}else{cloudReady=true;localStorage.setItem(PENDING_KEY,"1");await uploadNow()}}
+        catch(error){cloudReady=true;setStatus("Firebase indisponible : sauvegarde locale active","err");console.error("DQ7R Firebase load",error)}
+      }
+      form.addEventListener("submit",async function(event){event.preventDefault();errorBox.textContent="";submit.disabled=true;submit.textContent="Connexion…";try{await setPersistence(auth,browserLocalPersistence);await signInWithEmailAndPassword(auth,emailInput.value.trim(),passwordInput.value);passwordInput.value=""}catch(error){errorBox.textContent=friendlyAuthError(error.code)}finally{submit.disabled=false;submit.textContent="Se connecter"}});
+      logoutBtn.addEventListener("click",async function(){try{await signOut(auth)}catch(error){console.error(error)}});syncBtn.addEventListener("click",function(){localStorage.setItem(PENDING_KEY,"1");uploadNow()});
+      onAuthStateChanged(auth,async function(user){currentUser=user||null;if(user){gate.hidden=false;submit.disabled=true;submit.textContent="Chargement…";cloudBar.classList.add("show");cloudUser.textContent=user.email||user.uid;logoutBtn.hidden=false;syncBtn.hidden=false;await loadCloud(user);gate.hidden=true;submit.disabled=false;submit.textContent="Se connecter"}else{cloudReady=false;cloudBar.classList.remove("show");cloudUser.textContent="Non connecté";logoutBtn.hidden=true;syncBtn.hidden=true;setStatus("Firebase : déconnecté","");gate.hidden=false;errorBox.textContent="";setTimeout(function(){emailInput.focus()},50)}});
+    }catch(error){errorBox.textContent="Firebase n’a pas pu être chargé. Vérifie la connexion Internet puis recharge la page.";submit.disabled=true;console.error("Chargement Firebase",error)}
+  }
+  </script>
+</body>
+</html>
